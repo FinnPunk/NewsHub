@@ -140,7 +140,8 @@ async function cacheFirstStrategy(request) {
 async function networkFirstStrategy(request) {
     try {
         const networkResponse = await fetch(request);
-        if (networkResponse.ok) {
+        // Кэшируем только GET запросы
+        if (networkResponse.ok && request.method === 'GET') {
             const cache = await caches.open(DYNAMIC_CACHE);
             cache.put(request, networkResponse.clone());
         }

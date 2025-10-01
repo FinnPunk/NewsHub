@@ -344,6 +344,29 @@
   border-color: rgba(255, 107, 71, 0.3);
 }
 
+/* Header base styles */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 0;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
 /* Header theme styles - Frosted Glass Effect */
 [data-theme="dark"] .header {
   background: rgba(26, 26, 26, 0.4);
@@ -2920,36 +2943,7 @@ p {
   transform: translateX(4px);
 }
 
-/* Header Styles */
-.header {
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-  color: white;
-  padding: 0;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--spacing-lg);
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-lg);
-}
+/* Дублирующие стили header удалены - используются из начала файла */
 
 .app-title {
   font-size: 1.5rem;
