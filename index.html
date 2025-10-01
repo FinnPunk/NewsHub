@@ -38,8 +38,6 @@
                             <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                         </svg>
                     </button>
-                    <!-- VK Login Container -->
-                    <div id="vkLoginContainer" style="display: flex; align-items: center;"></div>
                 </div>
             </div>
 
@@ -61,8 +59,8 @@
             <h3>⚙️ Настройки</h3>
             <div class="setting-item">
                 <div class="setting-info">
-                    <div class="setting-title">RSS источники</div>
-                    <div class="setting-desc">Управление новостными лентами</div>
+                    <div class="setting-title">Источники</div>
+                    <div class="setting-desc">Управление RSS и VK источниками</div>
                 </div>
                 <button class="btn btn--secondary btn--sm" id="manageSourcesBtn">Настроить</button>
             </div>
@@ -93,15 +91,23 @@
             </div>
         </div>
 
-        <!-- RSS Sources Management Modal -->
+        <!-- Sources Management Modal (RSS + VK) -->
         <div class="modal hidden" id="rssSourcesModal">
-            <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-content" style="max-width: 800px;">
                 <div class="modal-header">
-                    <h2>📡 Управление RSS источниками</h2>
+                    <h2>📡 Управление источниками</h2>
                     <button class="modal-close" data-modal="rssSourcesModal">×</button>
                 </div>
                 <div class="modal-body">
-                    <p class="modal-desc">Добавляйте и управляйте источниками новостей для персонализированной ленты</p>
+                    <!-- Вкладки -->
+                    <div class="tabs" style="margin-bottom: 1.5rem;">
+                        <button class="tab-btn active" data-tab="rss">📰 RSS источники</button>
+                        <button class="tab-btn" data-tab="vk">📱 VK группы</button>
+                    </div>
+                    
+                    <!-- RSS Tab -->
+                    <div class="tab-content active" id="rss-tab">
+                        <p class="modal-desc">Добавляйте и управляйте RSS источниками новостей</p>
                     
                     <!-- Add New Source -->
                     <div class="rss-add-section">
@@ -127,6 +133,39 @@
                         <h3>📋 Активные источники</h3>
                         <div id="rssSourcesList" class="sources-grid">
                             <!-- Sources will be loaded here -->
+                        </div>
+                    </div>
+                    </div>
+                    
+                    <!-- VK Tab -->
+                    <div class="tab-content" id="vk-tab">
+                        <p class="modal-desc">Управляйте VK группами для загрузки новостей</p>
+                        
+                        <!-- VK Groups List -->
+                        <div class="vk-groups-list">
+                            <h3>📱 VK Группы</h3>
+                            <div id="vkGroupsList" class="sources-grid">
+                                <!-- VK groups will be loaded here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Add Custom VK Group -->
+                        <div class="vk-add-section" style="margin-top: 1.5rem;">
+                            <h3>➕ Добавить VK группу</h3>
+                            <div class="rss-add-form">
+                                <input type="text" id="vkGroupName" class="form-control" placeholder="Название группы" style="margin-bottom: 0.5rem;">
+                                <input type="text" id="vkGroupId" class="form-control" placeholder="ID группы (например: habr)" style="margin-bottom: 0.5rem;">
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <select id="vkGroupCategory" class="form-control">
+                                        <option value="tech">Технологии</option>
+                                        <option value="business">Бизнес</option>
+                                        <option value="design">Дизайн</option>
+                                        <option value="education">Образование</option>
+                                        <option value="general">Общее</option>
+                                    </select>
+                                    <button id="addVkGroupBtn" class="btn btn--primary">Добавить</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -190,6 +229,7 @@
                     <div class="filter-chips">
                         <button class="filter-chip active" data-filter="all">Все</button>
                         <button class="filter-chip" data-filter="news">Новости</button>
+                        <button class="filter-chip" data-filter="vk-news">Новости из ВК</button>
                         <button class="filter-chip" data-filter="jobs">Вакансии</button>
                     </div>
                     <div style="display: flex; gap: 0.5rem; align-items: center;">
@@ -454,15 +494,7 @@
                         <div class="job-filter-group">
                             <label for="jobCity">🌍 Город</label>
                             <select id="jobCity" class="form-control">
-                                <option value="1">Москва</option>
-                                <option value="2">Санкт-Петербург</option>
-                                <option value="4">Новосибирск</option>
-                                <option value="88">Казань</option>
-                                <option value="66">Нижний Новгород</option>
-                                <option value="78">Самара</option>
-                                <option value="54">Екатеринбург</option>
-                                <option value="1146">Краснодар</option>
-                                <option value="113">Вся Россия</option>
+                                <!-- Заполняется из CONFIG.cities -->
                             </select>
                         </div>
 
@@ -470,10 +502,7 @@
                             <label for="jobExperience">💼 Опыт</label>
                             <select id="jobExperience" class="form-control">
                                 <option value="">Любой</option>
-                                <option value="noExperience">Нет опыта</option>
-                                <option value="between1And3">1-3 года</option>
-                                <option value="between3And6">3-6 лет</option>
-                                <option value="moreThan6">Более 6 лет</option>
+                                <!-- Заполняется из CONFIG.experienceLevels -->
                             </select>
                         </div>
 
@@ -481,11 +510,7 @@
                             <label for="jobSchedule">📅 График</label>
                             <select id="jobSchedule" class="form-control">
                                 <option value="">Любой</option>
-                                <option value="remote">🏠 Удаленная работа</option>
-                                <option value="fullDay">🕐 Полный день</option>
-                                <option value="shift">🔄 Сменный</option>
-                                <option value="flexible">⏰ Гибкий</option>
-                                <option value="flyInFlyOut">🛫 Вахта</option>
+                                <!-- Заполняется из CONFIG.schedules -->
                             </select>
                         </div>
 
@@ -493,11 +518,7 @@
                             <label for="jobEmployment">🏢 Занятость</label>
                             <select id="jobEmployment" class="form-control">
                                 <option value="">Любая</option>
-                                <option value="full">Полная</option>
-                                <option value="part">Частичная</option>
-                                <option value="project">Проект</option>
-                                <option value="volunteer">Волонтерство</option>
-                                <option value="probation">Стажировка</option>
+                                <!-- Заполняется из CONFIG.employmentTypes -->
                             </select>
                         </div>
 
@@ -1982,21 +2003,53 @@
                 return;
             }
             
-            // Для "Новости" - восстанавливаем сохраненные новости
+            // Для "Новости" - показываем только RSS новости
             if (filter === 'news') {
                 if (window.cachedNewsHTML) {
                     feedContainer.innerHTML = window.cachedNewsHTML;
                 }
-                // Показываем только новости
+                // Показываем только RSS новости (не VK)
                 const articles = feedContainer.querySelectorAll('.news-card');
                 articles.forEach(article => {
-                    if (!article.classList.contains('job-card')) {
+                    const sourceType = article.dataset.sourceType;
+                    if (sourceType !== 'vk' && !article.classList.contains('job-card')) {
                         article.style.display = 'block';
                         article.style.animation = 'fadeInUp 0.3s ease';
                     } else {
                         article.style.display = 'none';
                     }
                 });
+                return;
+            }
+            
+            // Для "Новости из ВК" - показываем только VK посты
+            if (filter === 'vk-news') {
+                if (window.cachedNewsHTML) {
+                    feedContainer.innerHTML = window.cachedNewsHTML;
+                }
+                // Показываем только VK новости
+                const articles = feedContainer.querySelectorAll('.news-card');
+                let vkCount = 0;
+                articles.forEach(article => {
+                    const sourceType = article.dataset.sourceType;
+                    if (sourceType === 'vk') {
+                        article.style.display = 'block';
+                        article.style.animation = 'fadeInUp 0.3s ease';
+                        vkCount++;
+                    } else {
+                        article.style.display = 'none';
+                    }
+                });
+                
+                // Если нет VK постов, показываем сообщение
+                if (vkCount === 0) {
+                    feedContainer.innerHTML = `
+                        <div style="text-align: center; padding: 3rem;">
+                            <h3>📱 Новости из ВК загружаются...</h3>
+                            <p>Посты из VK групп появятся автоматически при загрузке новостей</p>
+                        </div>
+                    `;
+                }
                 return;
             }
             
@@ -2278,80 +2331,20 @@
     <script type="module">
         import HHApiClient from './js/hhApi.js';
         import VKApiClient from './js/vkApi.js';
+        import CONFIG from './js/config.js';
 
         // Инициализация API клиентов
         window.hhApi = new HHApiClient();
         window.vkApi = new VKApiClient();
         window.apiReady = true;
+        window.CONFIG = CONFIG; // Доступ к конфигу глобально
 
         console.log('✅ HH.ru API initialized');
         console.log('✅ VK API initialized');
         console.log('✅ API Ready flag set');
-
-        // VK ID SDK Initialization
-        if ('VKIDSDK' in window) {
-            const VKID = window.VKIDSDK;
-
-            VKID.Config.init({
-                app: 54198571,
-                redirectUrl: 'https://newshub-omega.vercel.app/',
-                responseMode: VKID.ConfigResponseMode.Callback,
-                source: VKID.ConfigSource.LOWCODE,
-                scope: '',
-            });
-
-            const oneTap = new VKID.OneTap();
-            const container = document.getElementById('vkLoginContainer');
-
-            if (container) {
-                oneTap.render({
-                    container: container,
-                    showAlternativeLogin: true
-                })
-                .on(VKID.WidgetEvents.ERROR, vkidOnError)
-                .on(VKID.OneTapInternalEvents.LOGIN_SUCCESS, function (payload) {
-                    const code = payload.code;
-                    const deviceId = payload.device_id;
-
-                    VKID.Auth.exchangeCode(code, deviceId)
-                        .then(vkidOnSuccess)
-                        .catch(vkidOnError);
-                });
-            }
-
-            function vkidOnSuccess(data) {
-                console.log('VK Auth Success:', data);
-                
-                // Сохраняем данные пользователя и токен
-                if (data.access_token) {
-                    localStorage.setItem('vk_access_token', data.access_token);
-                    localStorage.setItem('vk_user_id', data.user_id);
-                    
-                    // Используем сервисный ключ для VK API
-                    const serviceToken = 'b497266db497266db497266d25b7ac2746bb497b497266ddc4a0f620a0b8b417e9dc4aa';
-                    localStorage.setItem('vk_service_token', serviceToken);
-                    
-                    if (window.vkApi) {
-                        window.vkApi.serviceToken = serviceToken;
-                        window.vkApi.accessToken = data.access_token;
-                    }
-                    
-                    if (typeof showToast === 'function') {
-                        showToast('✅ VK подключен успешно!', 'success');
-                    }
-                    
-                    // Обновляем UI
-                    container.innerHTML = '<span style="color: var(--success-color); font-size: 0.875rem; margin-left: 0.5rem;">✅ VK подключен</span>';
-                }
-            }
-
-            function vkidOnError(error) {
-                console.error('VK Auth Error:', error);
-                if (typeof showToast === 'function') {
-                    showToast('❌ Ошибка авторизации VK', 'error');
-                }
-            }
-        }
+        
+        // VK работает через service token, авторизация не требуется
+        console.log('📱 VK API использует service token для публичных постов');
 
         // Обработка фильтров вакансий
         function setupJobFilters() {
@@ -2517,6 +2510,9 @@
 
         // Инициализация при загрузке
         document.addEventListener('DOMContentLoaded', function() {
+            // Инициализируем селекты из CONFIG
+            initializeJobFiltersFromConfig();
+            
             setupJobFilters();
             
             // Загружаем сохраненные фильтры в UI
@@ -2535,8 +2531,80 @@
             // Загрузка профиля при инициализации
             loadProfile();
             
+            // Инициализация переключения вкладок
+            initializeTabs();
+            
             console.log('🚀 NewsHub API Integration ready!');
         });
+        
+        // Функция инициализации селектов из CONFIG
+        function initializeJobFiltersFromConfig() {
+            if (!window.CONFIG) return;
+            
+            // Города
+            const citySelect = document.getElementById('jobCity');
+            if (citySelect && window.CONFIG.cities) {
+                window.CONFIG.cities.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city.id;
+                    option.textContent = city.name;
+                    citySelect.appendChild(option);
+                });
+            }
+            
+            // Опыт
+            const expSelect = document.getElementById('jobExperience');
+            if (expSelect && window.CONFIG.experienceLevels) {
+                window.CONFIG.experienceLevels.forEach(exp => {
+                    const option = document.createElement('option');
+                    option.value = exp.id;
+                    option.textContent = exp.name;
+                    expSelect.appendChild(option);
+                });
+            }
+            
+            // График
+            const scheduleSelect = document.getElementById('jobSchedule');
+            if (scheduleSelect && window.CONFIG.schedules) {
+                window.CONFIG.schedules.forEach(schedule => {
+                    const option = document.createElement('option');
+                    option.value = schedule.id;
+                    option.textContent = schedule.name;
+                    scheduleSelect.appendChild(option);
+                });
+            }
+            
+            // Занятость
+            const empSelect = document.getElementById('jobEmployment');
+            if (empSelect && window.CONFIG.employmentTypes) {
+                window.CONFIG.employmentTypes.forEach(emp => {
+                    const option = document.createElement('option');
+                    option.value = emp.id;
+                    option.textContent = emp.name;
+                    empSelect.appendChild(option);
+                });
+            }
+        }
+        
+        // Функция инициализации вкладок
+        function initializeTabs() {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const targetTab = this.dataset.tab;
+                    
+                    // Убираем active у всех
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Добавляем active к текущему
+                    this.classList.add('active');
+                    document.getElementById(`${targetTab}-tab`)?.classList.add('active');
+                });
+            });
+        }
 
         // ======= Функции для вакансий =======
         

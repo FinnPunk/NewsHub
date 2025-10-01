@@ -174,12 +174,9 @@ class RSSAggregator {
                 }
             }
             
-            // Если ни один источник не сработал, используем демо-данные
+            // Если ни один источник не сработал, возвращаем пустой массив
             if (allArticles.length === 0) {
-                // RSS источники недоступны, используем демо-данные
-                allArticles = this.selectedProfessions.length > 0 
-                    ? this.generatePersonalizedDemoArticles() 
-                    : this.generateDemoArticles();
+                console.warn('⚠️ Нет статей из источников');
             }
             
             // Дедупликация и сортировка
@@ -213,14 +210,12 @@ class RSSAggregator {
         } catch (error) {
             // Критическая ошибка агрегации
             
-            // В случае критической ошибки возвращаем демо-данные
-            this.articles = this.selectedProfessions.length > 0 
-                ? this.generatePersonalizedDemoArticles() 
-                : this.generateDemoArticles();
+            // В случае критической ошибки возвращаем пустой массив
+            this.articles = [];
                 
             // Уведомляем пользователя
             if (typeof window.showToast === 'function') {
-                window.showToast('Ошибка загрузки RSS, показываем демо-контент', 'error');
+                window.showToast('Ошибка загрузки новостей', 'error');
             }
             
             return this.articles;
@@ -398,126 +393,6 @@ class RSSAggregator {
         return fallbackArticles;
     }
     
-    // Демо данные для тестирования
-    generateDemoArticles() {
-        const demoArticles = [
-            {
-                id: 'demo-1',
-                title: 'Новые возможности React 19: что изменится для разработчиков',
-                description: 'React 19 принесет множество улучшений, включая новые хуки, улучшенную производительность и лучшую поддержку серверного рендеринга.',
-                link: 'https://habr.com/ru/articles/demo-1',
-                publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
-                source: { name: 'Habr', category: 'tech' },
-                category: 'tech',
-                readingTime: 5,
-                likes: 42,
-                isFallback: true
-            },
-            {
-                id: 'demo-2', 
-                title: 'ЦБ РФ повысил ключевую ставку до 21%',
-                description: 'Центральный банк России принял решение о повышении ключевой ставки для борьбы с инфляцией.',
-                link: 'https://rbc.ru/economics/demo-2',
-                publishedAt: new Date(Date.now() - 4 * 60 * 60 * 1000),
-                source: { name: 'РБК', category: 'business' },
-                category: 'business',
-                readingTime: 3,
-                likes: 28,
-                isFallback: true
-            },
-            {
-                id: 'demo-3',
-                title: 'Искусственный интеллект в медицине: прорывы 2024 года',
-                description: 'Обзор самых значимых достижений ИИ в области здравоохранения за текущий год.',
-                link: 'https://ria.ru/science/demo-3',
-                publishedAt: new Date(Date.now() - 6 * 60 * 60 * 1000),
-                source: { name: 'РИА Новости', category: 'science' },
-                category: 'science',
-                readingTime: 7,
-                likes: 156,
-                isFallback: true
-            },
-            {
-                id: 'demo-4',
-                title: 'Стартап из России привлек $50 млн инвестиций',
-                description: 'Российская компания в сфере финтеха успешно закрыла раунд Series B.',
-                link: 'https://vc.ru/finance/demo-4',
-                publishedAt: new Date(Date.now() - 8 * 60 * 60 * 1000),
-                source: { name: 'VC.ru', category: 'startup' },
-                category: 'startup',
-                readingTime: 4,
-                likes: 89,
-                isFallback: true
-            },
-            {
-                id: 'demo-5',
-                title: 'Тренды веб-дизайна 2024: минимализм и интерактивность',
-                description: 'Какие дизайн-тренды будут доминировать в веб-разработке в следующем году.',
-                link: 'https://tproger.ru/articles/demo-5',
-                publishedAt: new Date(Date.now() - 12 * 60 * 60 * 1000),
-                source: { name: 'Tproger', category: 'design' },
-                category: 'design',
-                readingTime: 6,
-                likes: 73,
-                isFallback: true
-            }
-        ];
-        
-        return demoArticles;
-    }
-    
-    generateFallbackArticles(source) {
-        const fallbackTitles = {
-            'habr': [
-                'Новые возможности React 19: что изменится для разработчиков',
-                'TypeScript 5.3: обзор ключевых нововведений',
-                'Микрофронтенды в 2024: лучшие практики и инструменты',
-                'WebAssembly и JavaScript: будущее веб-разработки',
-                'Оптимизация производительности Next.js приложений'
-            ],
-            'rbc': [
-                'Российский IT-рынок показал рост на 15% в 2024 году',
-                'Новые меры поддержки технологических стартапов',
-                'Цифровизация госуслуг: итоги и планы на 2025 год',
-                'Инвестиции в искусственный интеллект выросли в 2 раза',
-                'Развитие отечественного ПО: новые инициативы'
-            ],
-            'vc-tech': [
-                'Стартап недели: новая платформа для разработчиков',
-                'Венчурные инвестиции в российские IT-проекты',
-                'Обзор трендов в области машинного обучения',
-                'Как создать успешный продукт в 2024 году',
-                'Интервью с основателем технологического единорога'
-            ]
-        };
-        
-        const titles = fallbackTitles[source.id] || [
-            `Актуальные новости от ${source.name}`,
-            `Важные события в мире технологий`,
-            `Обзор последних тенденций в IT`,
-            `Новости и аналитика от экспертов`,
-            `Свежие материалы для профессионалов`
-        ];
-        
-        return titles.map((title, index) => ({
-            id: this.generateArticleId(`${source.id}-fallback-${index}`),
-            title: title,
-            description: `Это демонстрационная статья от ${source.name}. В реальном приложении здесь будет актуальный контент из RSS ленты.`,
-            link: `https://${source.name.toLowerCase().replace(/\s+/g, '')}.com/article/${index}`,
-            source: {
-                id: source.id,
-                name: source.name,
-                category: source.category
-            },
-            category: source.category,
-            publishedAt: new Date(Date.now() - Math.random() * 86400000 * 7), // Случайная дата за последнюю неделю
-            timestamp: Date.now(),
-            readingTime: Math.ceil(Math.random() * 10) + 2,
-            isRead: false,
-            isSaved: false,
-            isFallback: true // Помечаем как fallback данные
-        }));
-    }
     
     // Парсинг RSS XML
     parseRSS(xmlText, source) {
@@ -845,84 +720,6 @@ class RSSAggregator {
         this.selectedProfessions = this.selectedProfessions.filter(id => id !== professionId);
     }
     
-    // Улучшенная генерация демо-контента с учетом профессий
-    generatePersonalizedDemoArticles() {
-        // Генерация персонализированных демо-статей
-        
-        const baseArticles = [
-            {
-                id: 'demo-1',
-                title: 'React 19: Революционные изменения в разработке',
-                description: 'Новая версия React приносит Server Components, улучшенную производительность и новые хуки. Разбираем ключевые нововведения.',
-                link: 'https://habr.com/ru/articles/demo-1',
-                publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
-                source: { name: 'Habr', category: 'tech', priority: 1 },
-                category: 'tech',
-                readingTime: 5,
-                likes: 42,
-                relevantProfessions: [1, 3], // Frontend, Fullstack
-                keywords: ['react', 'javascript', 'frontend']
-            },
-            {
-                id: 'demo-2',
-                title: 'Python в 2024: Тренды и перспективы развития',
-                description: 'Анализ популярности Python, новые фреймворки и библиотеки. Что ждет Python-разработчиков в ближайшем будущем.',
-                link: 'https://tproger.ru/articles/demo-2',
-                publishedAt: new Date(Date.now() - 4 * 60 * 60 * 1000),
-                source: { name: 'Tproger', category: 'tech', priority: 3 },
-                category: 'tech',
-                readingTime: 7,
-                likes: 89,
-                relevantProfessions: [2, 3], // Backend, Fullstack
-                keywords: ['python', 'backend', 'development']
-            },
-            {
-                id: 'demo-3',
-                title: 'ЦБ РФ повысил ключевую ставку: влияние на IT-сектор',
-                description: 'Центральный банк принял решение о повышении ключевой ставки. Анализируем влияние на технологические компании.',
-                link: 'https://rbc.ru/economics/demo-3',
-                publishedAt: new Date(Date.now() - 6 * 60 * 60 * 1000),
-                source: { name: 'РБК', category: 'business', priority: 2 },
-                category: 'business',
-                readingTime: 4,
-                likes: 156,
-                relevantProfessions: [],
-                keywords: ['экономика', 'финансы', 'бизнес']
-            },
-            {
-                id: 'demo-4',
-                title: 'Fullstack разработка: современный стек технологий 2024',
-                description: 'Обзор актуальных технологий для fullstack разработчиков. React, Node.js, TypeScript и современные инструменты.',
-                link: 'https://vc.ru/dev/demo-4',
-                publishedAt: new Date(Date.now() - 8 * 60 * 60 * 1000),
-                source: { name: 'VC.ru', category: 'tech', priority: 2 },
-                category: 'tech',
-                readingTime: 8,
-                likes: 234,
-                relevantProfessions: [1, 2, 3], // Frontend, Backend, Fullstack
-                keywords: ['fullstack', 'javascript', 'nodejs', 'typescript']
-            },
-            {
-                id: 'demo-5',
-                title: 'Искусственный интеллект в веб-разработке: практические применения',
-                description: 'Как ИИ меняет подходы к разработке. Автоматизация кода, AI-ассистенты и новые инструменты для разработчиков.',
-                link: 'https://habr.com/ru/articles/demo-5',
-                publishedAt: new Date(Date.now() - 12 * 60 * 60 * 1000),
-                source: { name: 'Habr', category: 'tech', priority: 1 },
-                category: 'tech',
-                readingTime: 6,
-                likes: 178,
-                relevantProfessions: [1, 2, 3],
-                keywords: ['ai', 'artificial intelligence', 'development', 'automation']
-            }
-        ];
-        
-        // Добавляем оценку релевантности к каждой статье
-        return baseArticles.map(article => ({
-            ...article,
-            relevanceScore: this.calculateRelevanceScore(article)
-        }));
-    }
     
     // Проверка доступности источников
     async checkSourcesHealth() {
