@@ -25,7 +25,7 @@ class VKApiClient {
         this.isLoading = false;
         
         // Service Token для VK API
-        this.serviceToken = localStorage.getItem('vk_service_token') || '';
+        this.serviceToken = localStorage.getItem('vk_service_token') || 'b497266db497266db497266d25b7ac2746bb497b497266ddc4a0f620a0b8b417e9dc4aa';
     }
     
     /**

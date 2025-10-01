@@ -2251,8 +2251,8 @@
             const VKID = window.VKIDSDK;
 
             VKID.Config.init({
-                app: 54197475,
-                redirectUrl: 'https://localhost.com',
+                app: 54198571,
+                redirectUrl: 'https://newshubforever.netlify.app/',
                 responseMode: VKID.ConfigResponseMode.Callback,
                 source: VKID.ConfigSource.LOWCODE,
                 scope: '',
@@ -2279,14 +2279,26 @@
 
             function vkidOnSuccess(data) {
                 console.log('VK Auth Success:', data);
-                // Сохраняем токен
+                
+                // Сохраняем данные пользователя и токен
                 if (data.access_token) {
-                    localStorage.setItem('vk_service_token', data.access_token);
-                    window.vkApi.serviceToken = data.access_token;
+                    localStorage.setItem('vk_access_token', data.access_token);
+                    localStorage.setItem('vk_user_id', data.user_id);
+                    
+                    // Используем сервисный ключ для VK API
+                    const serviceToken = 'b497266db497266db497266d25b7ac2746bb497b497266ddc4a0f620a0b8b417e9dc4aa';
+                    localStorage.setItem('vk_service_token', serviceToken);
+                    
+                    if (window.vkApi) {
+                        window.vkApi.serviceToken = serviceToken;
+                        window.vkApi.accessToken = data.access_token;
+                    }
+                    
                     if (typeof showToast === 'function') {
                         showToast('✅ VK подключен успешно!', 'success');
                     }
-                    // Скрываем кнопку входа
+                    
+                    // Обновляем UI
                     container.innerHTML = '<span style="color: var(--success-color); font-size: 0.875rem; margin-left: 0.5rem;">✅ VK подключен</span>';
                 }
             }
