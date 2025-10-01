@@ -1,0 +1,2730 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>NewsHub - Персональный агрегатор новостей с AI</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/dock.css">
+    <meta name="description" content="Персональный агрегатор новостей и вакансий с AI суммаризацией для 100 профессий России">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4A90E2">
+</head>
+<body>
+    <!-- Welcome Setup Modal -->
+    <div class="modal hidden" id="welcomeModal">
+        <div class="modal-content welcome-setup">
+            <div class="modal-body">
+                <div class="welcome-header">
+                    <h2>🚀 Добро пожаловать в NewsHub!</h2>
+                    <p>Персональный агрегатор новостей и вакансий с AI суммаризацией</p>
+                </div>
+
+                <!-- OpenAI API Setup -->
+                <div class="api-setup">
+                    <h3>🤖 Настройка AI (опционально)</h3>
+                    <div class="api-input-group">
+                        <input type="password" id="openaiKey" class="form-control" placeholder="sk-proj-... (ваш OpenAI API ключ)">
+                        <button type="button" class="btn btn--outline" id="testApiKey">Проверить</button>
+                    </div>
+                    <p class="help-text">Введите ваш OpenAI API ключ для автоматической суммаризации новостей. Без ключа будут использоваться базовые сводки.</p>
+                </div>
+
+                <!-- Profession Selection -->
+                <div class="profession-setup">
+                    <h3>👔 Выберите вашу профессию (1 из 100):</h3>
+
+                    <!-- Top 20 Popular -->
+                    <div class="popular-jobs">
+                        <h4>Популярные профессии России:</h4>
+                        <div class="job-buttons" id="popularJobsGrid">
+                            <!-- Заполняется JS -->
+                        </div>
+                    </div>
+
+                    <!-- Search All 100 -->
+                    <div class="job-search">
+                        <h4>Или найдите среди всех 100 профессий:</h4>
+                        <div class="search-input-wrapper">
+                            <input type="text" id="jobSearchInput" class="form-control" placeholder="Поиск профессии...">
+                            <button class="search-clear hidden" id="jobSearchClear">×</button>
+                        </div>
+                        <div class="job-categories" id="jobCategories">
+                            <!-- Categories will be populated by JS -->
+                        </div>
+                        <div class="job-search-results hidden" id="jobSearchResults">
+                            <!-- Search results will be populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn--primary btn--full-width" id="setupComplete" disabled>
+                    <span>Настроить ленту с AI персонализацией</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="app" id="mainApp">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1 class="site-title">NewsHub</h1>
+                    <nav class="breadcrumb" id="breadcrumb">
+                        <span class="breadcrumb-item active">Лента</span>
+                        <span class="breadcrumb-item">Избранное</span>
+                        <span class="breadcrumb-item">Профиль</span>
+                    </nav>
+                </div>
+                <div class="header-actions">
+                    <div style="position: relative;">
+                        <button class="btn btn--icon" id="settingsToggle" title="Настройки">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12A3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97 0-.33-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1 0 .33.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66Z"/>
+                            </svg>
+                        </button>
+                        <div class="settings-dropdown" id="settingsDropdown">
+                            <h3>⚙️ Настройки</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-title">RSS источники</div>
+                                    <div class="setting-desc">Управление новостными лентами</div>
+                                </div>
+                                <button class="btn btn--secondary btn--sm" id="manageSourcesBtn">Настроить</button>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-title">OpenAI API</div>
+                                    <div class="setting-desc">Ключ для AI суммаризации</div>
+                                </div>
+                                <button class="btn btn--secondary btn--sm" id="setupOpenAIBtn">Настроить</button>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <div class="setting-title">Частота обновлений</div>
+                                    <div class="setting-desc">Автоматическое обновление ленты</div>
+                                </div>
+                                <select class="setting-select" id="updateFrequency">
+                                    <option value="900000">15 минут</option>
+                                    <option value="3600000" selected>1 час</option>
+                                    <option value="7200000">2 часа</option>
+                                </select>
+                            </div>
+                            <div class="setting-item" style="border-top: 1px solid var(--border-light); padding-top: 1rem; margin-top: 1rem;">
+                                <div class="setting-info">
+                                    <div class="setting-title" style="color: var(--error-color);">🗑️ Очистить все данные</div>
+                                    <div class="setting-desc">Удалить все настройки, фильтры и кэш</div>
+                                </div>
+                                <button class="btn btn--danger btn--sm" id="clearAllDataBtn">Очистить</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn--icon" id="searchToggle" title="Поиск">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                    </button>
+                    <!-- VK Login Container -->
+                    <div id="vkLoginContainer" style="display: flex; align-items: center;"></div>
+                </div>
+                </div>
+            </div>
+
+            <!-- Expandable Search -->
+            <div class="search-bar hidden" id="searchBar">
+                <div class="search-input-wrapper">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Глобальный поиск по всем новостям и вакансиям..." autocomplete="off">
+                    <button class="search-clear hidden" id="searchClear">×</button>
+                </div>
+                <div class="search-suggestions" id="searchSuggestions"></div>
+            </div>
+        </header>
+
+        <!-- RSS Sources Management Modal -->
+        <div class="modal hidden" id="rssSourcesModal">
+            <div class="modal-content" style="max-width: 700px;">
+                <div class="modal-header">
+                    <h2>📡 Управление RSS источниками</h2>
+                    <button class="modal-close" data-modal="rssSourcesModal">×</button>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-desc">Добавляйте и управляйте источниками новостей для персонализированной ленты</p>
+                    
+                    <!-- Add New Source -->
+                    <div class="rss-add-section">
+                        <h3>➕ Добавить новый источник</h3>
+                        <div class="rss-add-form">
+                            <input type="text" id="rssSourceName" class="form-control" placeholder="Название источника" style="margin-bottom: 0.5rem;">
+                            <input type="url" id="rssSourceUrl" class="form-control" placeholder="URL RSS ленты" style="margin-bottom: 0.5rem;">
+                            <div style="display: flex; gap: 0.5rem;">
+                                <select id="rssSourceCategory" class="form-control">
+                                    <option value="tech">Технологии</option>
+                                    <option value="news">Новости</option>
+                                    <option value="business">Бизнес</option>
+                                    <option value="design">Дизайн</option>
+                                    <option value="other">Другое</option>
+                                </select>
+                                <button class="btn btn--primary" id="addRssSourceBtn">Добавить</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Current Sources List -->
+                    <div class="rss-sources-list">
+                        <h3>📋 Активные источники</h3>
+                        <div id="rssSourcesList" class="sources-grid">
+                            <!-- Sources will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- OpenAI API Management Modal -->
+        <div class="modal hidden" id="openaiModal">
+            <div class="modal-content" style="max-width: 600px;">
+                <div class="modal-header">
+                    <h2>🤖 Настройка OpenAI API</h2>
+                    <button class="modal-close" data-modal="openaiModal">×</button>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-desc">Настройте OpenAI API ключ для AI суммаризации новостей и генерации кратких описаний</p>
+                    
+                    <!-- API Key Status -->
+                    <div class="api-status-section">
+                        <div class="status-card" id="apiStatusCard">
+                            <div class="status-icon" id="apiStatusIcon">❌</div>
+                            <div class="status-info">
+                                <div class="status-title" id="apiStatusTitle">API ключ не настроен</div>
+                                <div class="status-desc" id="apiStatusDesc">Добавьте ключ для использования AI функций</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- API Key Input -->
+                    <div class="api-input-section">
+                        <h3>🔑 API Ключ</h3>
+                        <div class="api-input-form">
+                            <input type="password" id="openaiApiKeyInput" class="form-control" placeholder="sk-proj-xxxxxxxxxxxxxxxx" style="margin-bottom: 0.5rem;">
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn btn--primary" id="saveApiKeyBtn" style="flex: 1;">Сохранить</button>
+                                <button class="btn btn--secondary" id="testApiKeyBtn" style="flex: 1;">Проверить</button>
+                                <button class="btn btn--ghost" id="removeApiKeyBtn">Удалить</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Info Section -->
+                    <div class="api-info-section">
+                        <h3>ℹ️ Информация</h3>
+                        <ul class="info-list">
+                            <li>AI суммаризация использует модель GPT-3.5-turbo</li>
+                            <li>Ключ хранится локально в вашем браузере</li>
+                            <li>Получите API ключ на <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a></li>
+                            <li>Средняя стоимость: ~$0.002 за одну суммаризацию</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Feed Page -->
+            <div class="page active" id="feedPage">
+                <!-- Quick Filters -->
+                <div class="quick-filters" id="quickFilters">
+                    <div class="filter-chips">
+                        <button class="filter-chip active" data-filter="all">Все</button>
+                        <button class="filter-chip" data-filter="news">Новости</button>
+                        <button class="filter-chip" data-filter="jobs">Вакансии</button>
+                    </div>
+                    <button class="btn btn--icon" id="filtersToggle" title="Расширенные фильтры">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/>
+                        </svg>
+                        <span class="filter-indicator hidden" id="filterIndicator"></span>
+                    </button>
+                </div>
+
+                <!-- Content Feed -->
+                <div class="feed-container" id="feedContainer">
+                    <!-- Content cards will be loaded here -->
+                </div>
+
+                <!-- Loading Spinner -->
+                <div class="loading-spinner" id="loadingSpinner">
+                    <div class="spinner"></div>
+                    <p>Загрузка новостей и вакансий...</p>
+                </div>
+
+                <!-- Skeleton Loading -->
+                <div class="skeleton-container hidden" id="skeletonContainer">
+                    <!-- Skeleton cards for infinite scroll -->
+                </div>
+
+                <!-- End of Feed -->
+                <div class="end-of-feed hidden" id="endOfFeed">
+                    <div class="end-icon">🎉</div>
+                    <h3>Вы прочитали всё!</h3>
+                    <p>Обновите страницу чтобы получить свежие новости и вакансии</p>
+                    <button class="btn btn--primary" onclick="location.reload()">Обновить</button>
+                </div>
+            </div>
+
+            <!-- Favorites Page -->
+            <div class="page" id="favoritesPage">
+                <div class="page-header">
+                    <h2>Избранное</h2>
+                    <p class="page-subtitle">Сохраненные новости и вакансии</p>
+                </div>
+                <div class="favorites-feed" id="favoritesFeed">
+                    <!-- Saved items will be loaded here -->
+                </div>
+                <div class="empty-state hidden" id="emptyFavorites">
+                    <div class="empty-icon">⭐</div>
+                    <h3>Нет сохраненного контента</h3>
+                    <p>Начните сохранять интересные новости и вакансии</p>
+                </div>
+            </div>
+
+            <!-- Profile Page -->
+            <div class="page" id="profilePage">
+                <div class="profile-container">
+                    <!-- Profile Header -->
+                    <div class="profile-header">
+                        <div class="profile-avatar-container">
+                            <img class="profile-avatar" id="profileAvatar" src="https://i.pravatar.cc/150?img=12" alt="Профиль">
+                            <button class="avatar-edit-btn" id="editAvatarBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="profile-info">
+                            <h2 class="profile-name" id="profileName">Имя Пользователя</h2>
+                            <p class="profile-profession" id="profileProfession">Frontend Developer</p>
+                            <p class="profile-location" id="profileLocation">Москва, Россия</p>
+                        </div>
+                        <button class="btn btn--primary btn--sm" id="editProfileBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                            </svg>
+                            Редактировать
+                        </button>
+                    </div>
+
+                    <!-- Statistics -->
+                    <div class="stats-section">
+                        <h3 class="section-title">📊 Статистика активности</h3>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-number" id="articlesReadStat">0</div>
+                                <div class="stat-label">Прочитано</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="articlesSavedStat">0</div>
+                                <div class="stat-label">Сохранено</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="sourcesCountStat">10</div>
+                                <div class="stat-label">Источников</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="readingTimeStat">0ч</div>
+                                <div class="stat-label">Время чтения</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Skills Section -->
+                    <div class="profile-section">
+                        <div class="section-header">
+                            <h3 class="section-title">💼 Навыки и технологии</h3>
+                            <button class="btn btn--ghost btn--sm" id="editSkillsBtn">Редактировать</button>
+                        </div>
+                        <div class="skills-list" id="skillsList">
+                            <!-- Skills will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Portfolio Section -->
+                    <div class="profile-section">
+                        <div class="section-header">
+                            <h3 class="section-title">📂 Портфолио</h3>
+                            <button class="btn btn--ghost btn--sm" id="editPortfolioBtn">Редактировать</button>
+                        </div>
+                        <div class="portfolio-grid" id="portfolioGrid">
+                            <!-- Portfolio items will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Statistics Section -->
+                    <div class="profile-section">
+                        <h3 class="section-title">📊 Статистика</h3>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-number">0</div>
+                                <div class="stat-label">Прочитано статей</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">0</div>
+                                <div class="stat-label">В избранном</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">0</div>
+                                <div class="stat-label">Дней активности</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- NewsHub Dock - React Bits Style -->
+        <div class="dock-container" id="newsHubDock">
+            <!-- Dock will be dynamically created by newsHubDock.js -->
+        </div>
+    </div>
+
+    <!-- Filters Modal -->
+    <div class="modal hidden" id="filtersModal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content filters-modal-content">
+            <div class="modal-header">
+                <div class="modal-header-content">
+                    <div class="modal-icon">🎯</div>
+                    <div>
+                        <h2>Расширенные фильтры</h2>
+                        <p class="modal-subtitle">Настройте персональную ленту новостей</p>
+                    </div>
+                </div>
+                <button class="modal-close" id="closeFiltersModal">×</button>
+            </div>
+            <div class="modal-body filters-modal-body">
+                <!-- RSS Sources Filter -->
+                <div class="filter-section">
+                    <div class="filter-section-header">
+                        <div class="filter-icon">📰</div>
+                        <div>
+                            <h3>Источники новостей</h3>
+                            <p class="filter-desc">Выберите источники для вашей ленты</p>
+                        </div>
+                    </div>
+                    <div class="sources-grid" id="sourcesFilter">
+                        <!-- Populated by JS -->
+                    </div>
+                    <button class="btn btn--ghost btn--full-width add-source-btn" id="addSourceBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </svg>
+                        Добавить RSS источник
+                    </button>
+                </div>
+
+                <!-- Professions Filter -->
+                <div class="filter-section">
+                    <div class="filter-section-header">
+                        <div class="filter-icon">👔</div>
+                        <div>
+                            <h3>Профессии</h3>
+                            <p class="filter-desc">Выберите до 5 профессий для релевантного контента</p>
+                        </div>
+                    </div>
+                    <div class="selected-professions" id="selectedProfessions">
+                        <!-- Selected profession chips -->
+                    </div>
+                    <div class="search-wrapper">
+                        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                        <input type="text" id="professionFilterSearch" class="form-control search-input" placeholder="Поиск среди 100 профессий...">
+                    </div>
+                    <div class="profession-suggestions" id="professionSuggestions" style="display: none;">
+                        <!-- Suggestion list -->
+                    </div>
+                </div>
+
+                <!-- Keywords Filter -->
+                <div class="filter-section">
+                    <div class="filter-section-header">
+                        <div class="filter-icon">🔍</div>
+                        <div>
+                            <h3>Ключевые слова</h3>
+                            <p class="filter-desc">Фильтруйте контент по ключевым словам</p>
+                        </div>
+                    </div>
+                    <div class="keywords-grid">
+                        <div class="keyword-input-group">
+                            <label>✅ Включать слова</label>
+                            <input type="text" id="includeKeywords" class="form-control" placeholder="React, JavaScript, Python">
+                            <span class="input-hint">Разделяйте запятой</span>
+                        </div>
+                        <div class="keyword-input-group">
+                            <label>❌ Исключать слова</label>
+                            <input type="text" id="excludeKeywords" class="form-control" placeholder="политика, спорт">
+                            <span class="input-hint">Разделяйте запятой</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Date Range Filter -->
+                <div class="filter-section">
+                    <div class="filter-section-header">
+                        <div class="filter-icon">📅</div>
+                        <div>
+                            <h3>Период публикации</h3>
+                            <p class="filter-desc">Выберите временной диапазон</p>
+                        </div>
+                    </div>
+                    <div class="date-filter-pills">
+                        <label class="pill-option">
+                            <input type="radio" name="dateFilter" value="all" checked>
+                            <span class="pill-label">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                                </svg>
+                                Все время
+                            </span>
+                        </label>
+                        <label class="pill-option">
+                            <input type="radio" name="dateFilter" value="today">
+                            <span class="pill-label">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+                                </svg>
+                                Сегодня
+                            </span>
+                        </label>
+                        <label class="pill-option">
+                            <input type="radio" name="dateFilter" value="week">
+                            <span class="pill-label">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/>
+                                </svg>
+                                Неделя
+                            </span>
+                        </label>
+                        <label class="pill-option">
+                            <input type="radio" name="dateFilter" value="month">
+                            <span class="pill-label">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V9h14v10z"/>
+                                </svg>
+                                Месяц
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- AI Settings -->
+                <div class="filter-section">
+                    <div class="filter-section-header">
+                        <div class="filter-icon">🤖</div>
+                        <div>
+                            <h3>AI функции</h3>
+                            <p class="filter-desc">Умные функции для лучшего опыта</p>
+                        </div>
+                    </div>
+                    <div class="ai-toggles">
+                        <label class="toggle-option">
+                            <input type="checkbox" id="enableAISummary" checked>
+                            <span class="toggle-content">
+                                <span class="toggle-title">AI Суммаризация</span>
+                                <span class="toggle-desc">Краткое содержание статей с помощью GPT</span>
+                            </span>
+                            <div class="toggle-switch"></div>
+                        </label>
+                        <label class="toggle-option">
+                            <input type="checkbox" id="enablePersonalization">
+                            <span class="toggle-content">
+                                <span class="toggle-title">Персонализация</span>
+                                <span class="toggle-desc">Умная подстройка контента под ваш профиль</span>
+                            </span>
+                            <div class="toggle-switch"></div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Job Filters (HH.ru) -->
+                <div class="filter-section">
+                    <div class="filter-section-header">
+                        <div class="filter-icon">💼</div>
+                        <div>
+                            <h3>Фильтры вакансий (HH.ru)</h3>
+                            <p class="filter-desc">Настройте поиск вакансий</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Компактная сетка 2 колонки -->
+                    <div class="job-filters-grid">
+                        <div class="job-filter-group">
+                            <label for="jobCity">🌍 Город</label>
+                            <select id="jobCity" class="form-control">
+                                <option value="1">Москва</option>
+                                <option value="2">Санкт-Петербург</option>
+                                <option value="4">Новосибирск</option>
+                                <option value="88">Казань</option>
+                                <option value="66">Нижний Новгород</option>
+                                <option value="78">Самара</option>
+                                <option value="54">Екатеринбург</option>
+                                <option value="1146">Краснодар</option>
+                                <option value="113">Вся Россия</option>
+                            </select>
+                        </div>
+
+                        <div class="job-filter-group">
+                            <label for="jobExperience">💼 Опыт</label>
+                            <select id="jobExperience" class="form-control">
+                                <option value="">Любой</option>
+                                <option value="noExperience">Нет опыта</option>
+                                <option value="between1And3">1-3 года</option>
+                                <option value="between3And6">3-6 лет</option>
+                                <option value="moreThan6">Более 6 лет</option>
+                            </select>
+                        </div>
+
+                        <div class="job-filter-group">
+                            <label for="jobSchedule">📅 График</label>
+                            <select id="jobSchedule" class="form-control">
+                                <option value="">Любой</option>
+                                <option value="remote">🏠 Удаленная работа</option>
+                                <option value="fullDay">🕐 Полный день</option>
+                                <option value="shift">🔄 Сменный</option>
+                                <option value="flexible">⏰ Гибкий</option>
+                                <option value="flyInFlyOut">🛫 Вахта</option>
+                            </select>
+                        </div>
+
+                        <div class="job-filter-group">
+                            <label for="jobEmployment">🏢 Занятость</label>
+                            <select id="jobEmployment" class="form-control">
+                                <option value="">Любая</option>
+                                <option value="full">Полная</option>
+                                <option value="part">Частичная</option>
+                                <option value="project">Проект</option>
+                                <option value="volunteer">Волонтерство</option>
+                                <option value="probation">Стажировка</option>
+                            </select>
+                        </div>
+
+                        <div class="job-filter-group" style="grid-column: span 2;">
+                            <label for="jobSalary">💰 Минимальная зарплата</label>
+                            <input type="number" id="jobSalary" class="form-control" placeholder="Например: 100 000 ₽" min="0" step="10000">
+                        </div>
+                    </div>
+
+                    <!-- Чекбокс отдельно -->
+                    <label class="toggle-option" style="margin-top: 1rem;">
+                        <input type="checkbox" id="jobOnlyWithSalary">
+                        <span class="toggle-content">
+                            <span class="toggle-title">✓ Только с указанием зарплаты</span>
+                        </span>
+                        <div class="toggle-switch"></div>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer filters-modal-footer">
+                <button class="btn btn--ghost" id="resetFiltersBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                    </svg>
+                    Сбросить
+                </button>
+                <button class="btn btn--primary" id="applyFiltersBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Применить фильтры
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Article Modal -->
+    <div class="modal hidden" id="articleModal">
+        <div class="modal-backdrop" onclick="closeArticleModal()"></div>
+        <div class="modal-content article-modal-content">
+            <div class="modal-header">
+                <h3 id="articleModalTitle">Заголовок статьи</h3>
+                <button class="modal-close" onclick="closeArticleModal()">×</button>
+            </div>
+            <div class="modal-body article-modal-body">
+                <div class="article-meta">
+                    <div class="source-info">
+                        <span class="source-icon" id="articleModalIcon">📰</span>
+                        <span class="source-name" id="articleModalSource">Источник</span>
+                        <span class="publish-time" id="articleModalTime">время</span>
+                    </div>
+                    <div class="article-actions">
+                        <button class="action-btn like-btn" id="articleModalLike">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                            <span class="like-count">0</span>
+                        </button>
+                        <button class="action-btn save-btn" id="articleModalSave">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="article-content" id="articleModalContent">
+                    <p>Содержимое статьи будет загружено здесь...</p>
+                </div>
+                <div class="comments-section">
+                    <h4>💬 Комментарии</h4>
+                    <div class="comment-form">
+                        <textarea placeholder="Добавить комментарий..." id="commentText"></textarea>
+                        <button class="btn btn--primary" onclick="addComment()">Отправить</button>
+                    </div>
+                    <div class="comments-list" id="commentsList">
+                        <!-- Комментарии будут добавлены здесь -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#" target="_blank" class="btn btn--primary" id="articleModalLink">
+                    Читать на сайте источника
+                </a>
+                <button class="btn btn--secondary" onclick="window.summarizeArticle()" id="summarizeArticleBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                    </svg>
+                    Суммаризировать
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Details Modal -->
+    <div class="modal hidden" id="jobModal">
+        <div class="modal-backdrop" onclick="window.closeJobModal()"></div>
+        <div class="modal-content job-modal-content">
+            <div class="modal-header">
+                <div>
+                    <h3 id="jobModalTitle">Вакансия</h3>
+                    <p class="job-modal-company" id="jobModalCompany">Компания</p>
+                </div>
+                <button class="modal-close" onclick="window.closeJobModal()">×</button>
+            </div>
+            <div class="modal-body job-modal-body">
+                <div class="job-modal-header">
+                    <img id="jobModalLogo" src="" alt="" class="job-modal-logo" style="display: none;">
+                    <div class="job-modal-info">
+                        <div class="job-modal-salary" id="jobModalSalary">💰 Зарплата</div>
+                        <div class="job-modal-meta">
+                            <span id="jobModalLocation">📍 Локация</span>
+                            <span id="jobModalExperience">📅 Опыт</span>
+                            <span id="jobModalSchedule">⏰ График</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="job-modal-section">
+                    <h4>📋 Описание вакансии</h4>
+                    <div id="jobModalDescription"></div>
+                </div>
+                
+                <div class="job-modal-section">
+                    <h4>✅ Требования</h4>
+                    <div id="jobModalRequirements"></div>
+                </div>
+                
+                <div class="job-modal-section">
+                    <h4>🎯 Обязанности</h4>
+                    <div id="jobModalResponsibility"></div>
+                </div>
+                
+                <div id="jobAIAssessment" class="job-ai-assessment" style="display: none;">
+                    <h4>🤖 AI Оценка вакансии</h4>
+                    <div id="jobAIAssessmentContent"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--secondary" onclick="window.assessJob()" id="assessJobBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    Оценить вакансию (AI)
+                </button>
+                <a href="#" target="_blank" class="btn btn--primary" id="jobModalLink">
+                    Открыть на HH.ru
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal hidden" id="editProfileModal">
+        <div class="modal-backdrop" onclick="window.closeEditProfileModal()"></div>
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <div>
+                    <h3>✏️ Редактировать профиль</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.875rem; margin: 0.5rem 0 0 0;">
+                        Заполните профиль для более точной оценки вакансий
+                    </p>
+                </div>
+                <button class="modal-close" onclick="window.closeEditProfileModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="profileNameInput">👤 Имя</label>
+                    <input type="text" id="profileNameInput" class="form-control" placeholder="Иван Иванов">
+                </div>
+                
+                <div class="form-group">
+                    <label for="profileProfessionInput">💼 Профессия</label>
+                    <input type="text" id="profileProfessionInput" class="form-control" placeholder="Frontend разработчик">
+                </div>
+                
+                <div class="form-group">
+                    <label for="profileLocationInput">📍 Локация</label>
+                    <input type="text" id="profileLocationInput" class="form-control" placeholder="Москва, Россия">
+                </div>
+                
+                <div class="form-group">
+                    <label for="profileExperienceInput">📅 Опыт работы</label>
+                    <select id="profileExperienceInput" class="form-control">
+                        <option value="">Не указан</option>
+                        <option value="Нет опыта">Нет опыта</option>
+                        <option value="Менее 1 года">Менее 1 года</option>
+                        <option value="1-3 года">1-3 года</option>
+                        <option value="3-6 лет">3-6 лет</option>
+                        <option value="Более 6 лет">Более 6 лет</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="profileSkillsInput">🎯 Навыки (через запятую)</label>
+                    <textarea id="profileSkillsInput" class="form-control" rows="3" placeholder="JavaScript, React, TypeScript, HTML, CSS"></textarea>
+                    <small style="color: var(--text-secondary); font-size: 0.75rem;">
+                        Укажите ваши навыки через запятую для лучшей оценки вакансий
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="profileBioInput">📝 О себе</label>
+                    <textarea id="profileBioInput" class="form-control" rows="4" placeholder="Расскажите о себе, опыте и целях"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--ghost" onclick="window.closeEditProfileModal()">Отмена</button>
+                <button class="btn btn--primary" onclick="window.saveProfile()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+                    </svg>
+                    Сохранить
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="js/filterSystem.js?v=1.3.0"></script>
+    <script src="js/rssAggregator.js?v=1.3.0"></script>
+    <script src="js/newsCardRenderer.js?v=1.3.0"></script>
+    <script src="js/newsHubDock.js?v=1.3.0"></script>
+    <script src="js/pixelBlastInit.js?v=1.1.0"></script>
+    
+    <!-- VK ID SDK для авторизации -->
+    <script src="https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js"></script>
+    
+    <!-- Theme initialization - must be first -->
+    <script>
+        // Инициализация темы до загрузки DOM для избежания мерцания
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            const theme = savedTheme || systemTheme;
+            
+            document.documentElement.setAttribute('data-theme', theme);
+            document.body.className = (document.body.className || '') + ` theme-${theme}`;
+        })();
+    </script>
+    
+    
+    <!-- Initialization script -->
+    <script>
+        // Очистка старых кэшей при необходимости
+        // if ('serviceWorker' in navigator && 'caches' in window) {
+        //     caches.keys().then(function(cacheNames) {
+        //         return Promise.all(
+        //             cacheNames.map(function(cacheName) {
+        //                 if (cacheName.startsWith('newshub-old')) {
+        //                     return caches.delete(cacheName);
+        //                 }
+        //             })
+        //         );
+        //     });
+        // }
+        
+        // Очистка localStorage для тестирования первого визита (раскомментируйте при необходимости)
+        // localStorage.clear();
+        
+        // Простая инициализация приветственного окна
+        document.addEventListener('DOMContentLoaded', function() {
+            // Проверяем док-бар
+            const dockBar = document.querySelector('.dock-bar');
+            const dockButtons = document.querySelectorAll('.dock-btn');
+            
+            if (dockBar) {
+                // Убеждаемся что док-бар visible
+                dockBar.style.display = 'flex';
+                dockBar.style.visibility = 'visible';
+                dockBar.style.opacity = '1';
+                
+                // Настраиваем кнопки
+                dockButtons.forEach((btn, index) => {
+                    const icon = btn.querySelector('.dock-icon');
+                    const label = btn.querySelector('.dock-label');
+                    const svg = btn.querySelector('svg');
+                    
+                    // Принудительно показываем элементы кнопки
+                    btn.style.display = 'inline-flex';
+                    btn.style.visibility = 'visible';
+                    btn.style.opacity = '1';
+                    if (icon) {
+                        icon.style.display = 'flex';
+                        icon.style.visibility = 'visible';
+                        icon.style.opacity = '1';
+                    }
+                    if (label) {
+                        label.style.display = 'block';
+                        label.style.visibility = 'visible';
+                        label.style.opacity = '1';
+                    }
+                    if (svg) {
+                        svg.style.display = 'block';
+                        svg.style.visibility = 'visible';
+                        svg.style.opacity = '1';
+                    }
+                    
+                    // Добавляем обработчики событий для кнопок
+                    btn.addEventListener('click', function() {
+                        // Убираем активный класс у всех кнопок
+                        dockButtons.forEach(b => b.classList.remove('active'));
+                        // Добавляем активный класс к текущей
+                        this.classList.add('active');
+                    });
+                });
+            }
+            
+            const isFirstVisit = !localStorage.getItem('newshub_setup_completed');
+            const welcomeModal = document.getElementById('welcomeModal');
+            const mainApp = document.getElementById('mainApp');
+            
+            if (isFirstVisit && welcomeModal && mainApp) {
+                welcomeModal.classList.remove('hidden');
+                welcomeModal.style.display = 'flex';
+                mainApp.classList.add('hidden');
+                
+                // Заполнить популярные профессии
+                const popularJobs = [
+                    'Frontend Developer', 'Backend Developer', 'Full-stack Developer',
+                    'Product Manager', 'UX/UI Designer', 'Data Scientist',
+                    'DevOps Engineer', 'QA Engineer', 'Marketing Manager',
+                    'Sales Manager', 'Project Manager', 'Business Analyst',
+                    'Mobile Developer', 'Python Developer', 'Java Developer',
+                    'React Developer', 'Node.js Developer', 'PHP Developer',
+                    'Data Analyst', 'Scrum Master'
+                ];
+                
+                const container = document.getElementById('popularJobsGrid');
+                if (container) {
+                    const buttonsHTML = popularJobs.map(job => 
+                        `<button class="job-btn" onclick="selectProfession('${job}')">${job}</button>`
+                    ).join('');
+                    container.innerHTML = buttonsHTML;
+                }
+            } else if (mainApp) {
+                mainApp.classList.remove('hidden');
+                if (welcomeModal) {
+                    welcomeModal.classList.add('hidden');
+                    welcomeModal.style.display = 'none';
+                }
+            }
+        });
+        
+        let selectedProfessions = [];
+        
+        function selectProfession(profession) {
+            if (selectedProfessions.includes(profession)) return;
+            
+            selectedProfessions = [profession]; // Выбираем только одну профессию
+            
+            // Обновляем UI
+            document.querySelectorAll('.job-btn').forEach(btn => {
+                btn.classList.toggle('selected', btn.textContent === profession);
+            });
+            
+            // Активируем кнопку завершения
+            const setupBtn = document.getElementById('setupComplete');
+            if (setupBtn) {
+                setupBtn.disabled = false;
+                setupBtn.onclick = completeSetup;
+            }
+        }
+        
+        function completeSetup() {
+            if (selectedProfessions.length === 0) {
+                alert('Выберите профессию для продолжения');
+                return;
+            }
+            
+            // Сохраняем настройки
+            localStorage.setItem('newshub_setup_completed', 'true');
+            localStorage.setItem('selected_profession', selectedProfessions[0]);
+            
+            // Переходим к главному приложению
+            const welcomeModal = document.getElementById('welcomeModal');
+            const mainApp = document.getElementById('mainApp');
+            
+            if (welcomeModal && mainApp) {
+                welcomeModal.classList.add('hidden');
+                welcomeModal.style.display = 'none';
+                mainApp.classList.remove('hidden');
+            }
+            
+            // Показываем уведомление
+            if (window.filterSystem) {
+                window.filterSystem.showToast('Настройка завершена! Добро пожаловать в NewsHub!', 'success');
+            }
+        }
+        
+        // Тестирование OpenAI API ключа
+        function testOpenAIKey() {
+            const keyInput = document.getElementById('openaiKey');
+            const testBtn = document.getElementById('testApiKey');
+            
+            if (!keyInput || !testBtn) return;
+            
+            const apiKey = keyInput.value.trim();
+            
+            if (!apiKey) {
+                alert('Введите API ключ для тестирования');
+                return;
+            }
+            
+            if (!apiKey.startsWith('sk-')) {
+                alert('API ключ должен начинаться с "sk-"');
+                return;
+            }
+            
+            testBtn.textContent = 'Проверяем...';
+            testBtn.disabled = true;
+            
+            // Симуляция проверки API ключа
+            setTimeout(() => {
+                // Сохраняем ключ
+                localStorage.setItem('openai_api_key', apiKey);
+                
+                testBtn.textContent = '✅ Работает';
+                testBtn.style.background = 'var(--success)';
+                testBtn.style.color = 'white';
+                
+                if (window.filterSystem) {
+                    window.filterSystem.showToast('OpenAI API ключ сохранен', 'success');
+                }
+                
+                setTimeout(() => {
+                    testBtn.textContent = 'Проверить';
+                    testBtn.disabled = false;
+                    testBtn.style.background = '';
+                    testBtn.style.color = '';
+                }, 2000);
+            }, 1500);
+        }
+        
+        // Поиск профессий в приветственном окне
+        function setupJobSearch() {
+            const jobSearchInput = document.getElementById('jobSearchInput');
+            const jobSearchResults = document.getElementById('jobSearchResults');
+            const jobSearchClear = document.getElementById('jobSearchClear');
+            
+            if (!jobSearchInput || !jobSearchResults) return;
+            
+            const allProfessions = [
+                'Frontend Developer', 'Backend Developer', 'Full-stack Developer',
+                'Product Manager', 'UX/UI Designer', 'Data Scientist',
+                'DevOps Engineer', 'QA Engineer', 'Marketing Manager',
+                'Sales Manager', 'Project Manager', 'Business Analyst',
+                'Mobile Developer', 'Python Developer', 'Java Developer',
+                'React Developer', 'Node.js Developer', 'PHP Developer',
+                'Data Analyst', 'Scrum Master', 'System Administrator',
+                'Network Engineer', 'Cybersecurity Specialist', 'Database Administrator',
+                'Cloud Architect', 'Software Architect', 'Technical Writer',
+                'Game Developer', 'Blockchain Developer', 'AI Engineer',
+                'ML Engineer', 'Web Designer', 'Graphic Designer',
+                'Motion Designer', 'Brand Designer', 'Content Manager',
+                'SMM Specialist', 'SEO Specialist', 'Performance маркетолог',
+                'Digital маркетолог', 'Customer Success Manager', 'Account Manager',
+                'HR Manager', 'Recruiter', 'Financial Analyst',
+                'Business Intelligence Analyst', 'Operations Manager', 'Supply Chain Manager',
+                'Logistics Coordinator', 'Quality Assurance Manager', 'Compliance Officer',
+                'Risk Manager', 'Investment Banker', 'Financial Advisor',
+                'Insurance Agent', 'Real Estate Agent', 'Property Manager',
+                'Construction Manager', 'Architect', 'Civil Engineer',
+                'Mechanical Engineer', 'Electrical Engineer', 'Chemical Engineer',
+                'Biomedical Engineer', 'Aerospace Engineer', 'Environmental Engineer',
+                'Industrial Designer', 'Interior Designer', 'Fashion Designer',
+                'Photographer', 'Video Editor', 'Sound Engineer',
+                'Music Producer', 'Artist', 'Musician', 'Actor',
+                'Director', 'Producer', 'Screenwriter', 'Cinematographer',
+                'Photo Editor', 'Illustrator', 'Art Director', 'Creative Director',
+                'Package Designer', 'Environmental Designer', 'Landscape Architect',
+                'Urban Planner', 'Teacher', 'Professor', 'Researcher',
+                'Scientist', 'Doctor', 'Nurse', 'Pharmacist',
+                'Veterinarian', 'Psychologist', 'Therapist', 'Social Worker',
+                'Lawyer', 'Legal Assistant', 'Paralegal', 'Judge',
+                'Journalist', 'Editor', 'Copywriter', 'Translator',
+                'Interpreter', 'Librarian', 'Museum Curator', 'Archivist',
+                'Chef', 'Barista', 'Waiter', 'Restaurant Manager',
+                'Hotel Manager', 'Travel Agent', 'Tour Guide',
+                'Event Coordinator', 'Wedding Planner', 'Personal Trainer',
+                'Fitness Instructor', 'Yoga Instructor', 'Massage Therapist',
+                'Beautician', 'Hair Stylist', 'Makeup Artist', 'Fashion Stylist'
+            ];
+            
+            jobSearchInput.addEventListener('input', function(e) {
+                const query = e.target.value.trim().toLowerCase();
+                
+                if (query.length === 0) {
+                    jobSearchResults.classList.add('hidden');
+                    jobSearchClear.classList.add('hidden');
+                    return;
+                }
+                
+                jobSearchClear.classList.remove('hidden');
+                
+                const filtered = allProfessions.filter(profession => 
+                    profession.toLowerCase().includes(query)
+                ).slice(0, 10);
+                
+                if (filtered.length === 0) {
+                    jobSearchResults.innerHTML = '<div class="no-results">Профессии не найдены</div>';
+                } else {
+                    jobSearchResults.innerHTML = filtered.map(profession => 
+                        `<button class="job-search-result" onclick="selectProfession('${profession}')">${profession}</button>`
+                    ).join('');
+                }
+                
+                jobSearchResults.classList.remove('hidden');
+            });
+            
+            if (jobSearchClear) {
+                jobSearchClear.addEventListener('click', function() {
+                    jobSearchInput.value = '';
+                    jobSearchResults.classList.add('hidden');
+                    jobSearchClear.classList.add('hidden');
+                });
+            }
+        }
+        
+        // Добавляем обработчики при загрузке DOM
+        document.addEventListener('DOMContentLoaded', function() {
+            const testApiBtn = document.getElementById('testApiKey');
+            if (testApiBtn) {
+                testApiBtn.onclick = testOpenAIKey;
+            }
+            
+            // Настраиваем поиск профессий
+            setupJobSearch();
+            
+            // Инициализируем основные системы приложения
+            initializeApp();
+        });
+        
+        // Инициализация основных систем приложения
+        function initializeApp() {
+            // Инициализируем цветовую систему
+            if (window.colorTokens) {
+                // Цветовая система загружена
+            }
+            
+            // Инициализируем React Bits интеграцию
+            if (window.ReactBitsIntegration) {
+                window.reactBits = new ReactBitsIntegration();
+            }
+            
+            // Инициализация RSS Aggregator
+            if (typeof RSSAggregator !== 'undefined') {
+                window.rssAggregator = new RSSAggregator();
+                
+                // Устанавливаем базовые профессии для демонстрации
+                window.rssAggregator.setSelectedProfessions([1, 3]); // Frontend и Fullstack Developer
+                
+                // Загружаем персонализированные демо-данные
+                window.rssAggregator.aggregateNews().then(articles => {
+                    // Рендерим статьи если есть рендерер
+                    if (window.newsRenderer) {
+                        const feedContainer = document.getElementById('feedContainer');
+                        if (feedContainer && articles.length > 0) {
+                            window.newsRenderer.renderCards(articles, feedContainer);
+                        }
+                    }
+                }).catch(error => {
+                    // Ошибка загрузки контента
+                });
+            }
+            
+            // Инициализация NewsCardRenderer
+            if (window.NewsCardRenderer) {
+                window.newsRenderer = new NewsCardRenderer();
+            }
+            
+            // Настраиваем навигацию док-бара
+            setupDockNavigation();
+            
+            // Настраиваем поиск и фильтры
+            setupSearchAndFilters();
+            
+            // Настраиваем breadcrumb навигацию
+            setupBreadcrumbNavigation();
+            
+            // Загружаем начальный контент
+            loadInitialContent();
+        }
+        
+        // RSS Sources Management Functions
+        function loadRssSources() {
+            const sourcesList = document.getElementById('rssSourcesList');
+            if (!sourcesList || !window.rssAggregator) return;
+            
+            const sources = window.rssAggregator.sources || [];
+            
+            if (sources.length === 0) {
+                sourcesList.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">Нет активных источников</p>';
+                return;
+            }
+            
+            sourcesList.innerHTML = sources.map(source => `
+                <div class="source-card" data-source-id="${source.id}">
+                    <div class="source-header">
+                        <h4>${source.name}</h4>
+                        <span class="source-badge ${source.category}">${getCategoryName(source.category)}</span>
+                    </div>
+                    <div class="source-url">${source.url}</div>
+                    <div class="source-actions">
+                        <button class="btn btn--ghost btn--sm toggle-source-btn" data-source-id="${source.id}">
+                            ${source.enabled !== false ? '✓ Активен' : '✗ Отключен'}
+                        </button>
+                        <button class="btn btn--ghost btn--sm delete-source-btn" data-source-id="${source.id}">Удалить</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Attach event listeners
+            sourcesList.querySelectorAll('.toggle-source-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const sourceId = parseInt(this.dataset.sourceId);
+                    toggleRssSource(sourceId);
+                });
+            });
+            
+            sourcesList.querySelectorAll('.delete-source-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const sourceId = parseInt(this.dataset.sourceId);
+                    deleteRssSource(sourceId);
+                });
+            });
+        }
+        
+        function getCategoryName(category) {
+            const names = {
+                tech: 'Технологии',
+                news: 'Новости',
+                business: 'Бизнес',
+                design: 'Дизайн',
+                other: 'Другое'
+            };
+            return names[category] || 'Другое';
+        }
+        
+        function toggleRssSource(sourceId) {
+            if (!window.rssAggregator) return;
+            
+            const source = window.rssAggregator.sources.find(s => s.id === sourceId);
+            if (source) {
+                source.enabled = source.enabled === false ? true : false;
+                if (typeof window.showToast === 'function') {
+                    window.showToast(
+                        `Источник ${source.enabled ? 'включен' : 'отключен'}`,
+                        source.enabled ? 'success' : 'info'
+                    );
+                }
+                loadRssSources();
+            }
+        }
+        
+        function deleteRssSource(sourceId) {
+            if (!window.rssAggregator) return;
+            
+            if (confirm('Вы уверены, что хотите удалить этот источник?')) {
+                const index = window.rssAggregator.sources.findIndex(s => s.id === sourceId);
+                if (index !== -1) {
+                    const sourceName = window.rssAggregator.sources[index].name;
+                    window.rssAggregator.sources.splice(index, 1);
+                    if (typeof window.showToast === 'function') {
+                        window.showToast(`Источник "${sourceName}" удален`, 'success');
+                    }
+                    loadRssSources();
+                }
+            }
+        }
+        
+        // Add new RSS source
+        document.addEventListener('DOMContentLoaded', function() {
+            const addBtn = document.getElementById('addRssSourceBtn');
+            if (addBtn) {
+                addBtn.addEventListener('click', function() {
+                    const name = document.getElementById('rssSourceName').value.trim();
+                    const url = document.getElementById('rssSourceUrl').value.trim();
+                    const category = document.getElementById('rssSourceCategory').value;
+                    
+                    if (!name || !url) {
+                        if (typeof window.showToast === 'function') {
+                            window.showToast('Заполните все поля', 'error');
+                        }
+                        return;
+                    }
+                    
+                    if (!window.rssAggregator) {
+                        if (typeof window.showToast === 'function') {
+                            window.showToast('RSS Aggregator не инициализирован', 'error');
+                        }
+                        return;
+                    }
+                    
+                    const newSource = {
+                        id: Date.now(),
+                        name: name,
+                        url: url,
+                        category: category,
+                        enabled: true,
+                        professions: []
+                    };
+                    
+                    window.rssAggregator.sources.push(newSource);
+                    
+                    if (typeof window.showToast === 'function') {
+                        window.showToast(`Источник "${name}" добавлен`, 'success');
+                    }
+                    
+                    // Clear inputs
+                    document.getElementById('rssSourceName').value = '';
+                    document.getElementById('rssSourceUrl').value = '';
+                    
+                    loadRssSources();
+                });
+            }
+            
+            // OpenAI API Management
+            setupOpenAIManagement();
+        });
+        
+        // OpenAI API Management Functions
+        function loadApiKeyStatus() {
+            const apiKey = localStorage.getItem('openai_api_key');
+            const statusIcon = document.getElementById('apiStatusIcon');
+            const statusTitle = document.getElementById('apiStatusTitle');
+            const statusDesc = document.getElementById('apiStatusDesc');
+            const statusCard = document.getElementById('apiStatusCard');
+            const apiInput = document.getElementById('openaiApiKeyInput');
+            
+            if (apiKey) {
+                statusIcon.textContent = '✅';
+                statusTitle.textContent = 'API ключ настроен';
+                statusDesc.textContent = `Ключ: ${apiKey.substring(0, 10)}...${apiKey.substring(apiKey.length - 4)}`;
+                statusCard.style.borderColor = 'var(--success)';
+                statusCard.style.background = 'rgba(79, 209, 199, 0.05)';
+                apiInput.value = apiKey;
+            } else {
+                statusIcon.textContent = '❌';
+                statusTitle.textContent = 'API ключ не настроен';
+                statusDesc.textContent = 'Добавьте ключ для использования AI функций';
+                statusCard.style.borderColor = 'var(--border-medium)';
+                statusCard.style.background = 'var(--bg-secondary)';
+                apiInput.value = '';
+            }
+        }
+        
+        function setupOpenAIManagement() {
+            const saveBtn = document.getElementById('saveApiKeyBtn');
+            const testBtn = document.getElementById('testApiKeyBtn');
+            const removeBtn = document.getElementById('removeApiKeyBtn');
+            const apiInput = document.getElementById('openaiApiKeyInput');
+            
+            if (saveBtn) {
+                saveBtn.addEventListener('click', function() {
+                    const apiKey = apiInput.value.trim();
+                    
+                    if (!apiKey) {
+                        if (typeof window.showToast === 'function') {
+                            window.showToast('Введите API ключ', 'error');
+                        }
+                        return;
+                    }
+                    
+                    if (!apiKey.startsWith('sk-')) {
+                        if (typeof window.showToast === 'function') {
+                            window.showToast('Некорректный формат ключа', 'error');
+                        }
+                        return;
+                    }
+                    
+                    localStorage.setItem('openai_api_key', apiKey);
+                    if (typeof window.showToast === 'function') {
+                        window.showToast('OpenAI API ключ сохранен', 'success');
+                    }
+                    loadApiKeyStatus();
+                });
+            }
+            
+            if (testBtn) {
+                testBtn.addEventListener('click', async function() {
+                    const apiKey = apiInput.value.trim() || localStorage.getItem('openai_api_key');
+                    
+                    if (!apiKey) {
+                        if (typeof window.showToast === 'function') {
+                            window.showToast('Сначала добавьте API ключ', 'error');
+                        }
+                        return;
+                    }
+                    
+                    testBtn.disabled = true;
+                    testBtn.textContent = 'Проверка...';
+                    
+                    try {
+                        const response = await fetch('https://api.openai.com/v1/models', {
+                            headers: {
+                                'Authorization': `Bearer ${apiKey}`
+                            }
+                        });
+                        
+                        if (response.ok) {
+                            if (typeof window.showToast === 'function') {
+                                window.showToast('✅ API ключ работает!', 'success');
+                            }
+                        } else {
+                            if (typeof window.showToast === 'function') {
+                                window.showToast('❌ Неверный API ключ', 'error');
+                            }
+                        }
+                    } catch (error) {
+                        if (typeof window.showToast === 'function') {
+                            window.showToast('Ошибка проверки ключа', 'error');
+                        }
+                    } finally {
+                        testBtn.disabled = false;
+                        testBtn.textContent = 'Проверить';
+                    }
+                });
+            }
+            
+            if (removeBtn) {
+                removeBtn.addEventListener('click', function() {
+                    if (confirm('Вы уверены, что хотите удалить API ключ?')) {
+                        localStorage.removeItem('openai_api_key');
+                        if (typeof window.showToast === 'function') {
+                            window.showToast('API ключ удален', 'success');
+                        }
+                        loadApiKeyStatus();
+                    }
+                });
+            }
+        }
+        
+        // Настройка breadcrumb навигации
+        function setupBreadcrumbNavigation() {
+            const breadcrumbItems = document.querySelectorAll('.breadcrumb-item');
+            const pages = ['Лента', 'Избранное', 'Профиль'];
+            
+            function updateBreadcrumb(activePageName) {
+                breadcrumbItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.textContent.trim() === activePageName) {
+                        item.classList.add('active');
+                    }
+                });
+            }
+            
+            // Изначально показываем "Лента"
+            updateBreadcrumb('Лента');
+            
+            // Сохраняем функцию глобально для использования в навигации
+            window.updateBreadcrumb = updateBreadcrumb;
+        }
+        
+        // Загрузка начального контента
+        async function loadInitialContent() {
+            const feedContainer = document.getElementById('feedContainer');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            
+            if (!feedContainer || !window.rssAggregator || !window.newsRenderer) {
+                return;
+            }
+            
+            try {
+                // Показываем skeleton loading
+                feedContainer.innerHTML = window.newsRenderer.renderSkeleton(5);
+                if (loadingSpinner) loadingSpinner.classList.remove('hidden');
+                
+                // Загружаем новости
+                const articles = await window.rssAggregator.aggregateNews(20);
+                
+                if (articles && articles.length > 0) {
+                    window.newsRenderer.renderCards(articles, feedContainer);
+                    
+                    // Проверяем, есть ли fallback данные
+                    const hasFallbackData = articles.some(article => article.isFallback);
+                    if (hasFallbackData) {
+                        showDemoDataNotification();
+                    }
+                } else {
+                    feedContainer.innerHTML = window.newsRenderer.renderEmptyState();
+                }
+                
+            } catch (error) {
+                feedContainer.innerHTML = `
+                    <div class="error-state">
+                        <div class="error-icon">⚠️</div>
+                        <h3>Ошибка загрузки новостей</h3>
+                        <p>Попробуйте обновить страницу</p>
+                        <button class="btn btn--primary" onclick="loadInitialContent()">
+                            Повторить
+                        </button>
+                    </div>
+                `;
+            } finally {
+                if (loadingSpinner) loadingSpinner.classList.add('hidden');
+            }
+        }
+        
+        // Показать уведомление о демо-данных
+        function showDemoDataNotification() {
+            const notification = document.createElement('div');
+            notification.className = 'demo-notification';
+            notification.innerHTML = `
+                <div class="demo-notification-content">
+                    <div class="demo-icon">🚀</div>
+                    <div class="demo-text">
+                        <h4>Демо-режим NewsHub</h4>
+                        <p>Некоторые RSS источники недоступны из-за CORS ограничений. Показываем демо-данные для демонстрации функциональности.</p>
+                    </div>
+                    <button class="demo-close" onclick="this.parentElement.parentElement.remove()">×</button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Автоматически скрыть через 10 секунд
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 10000);
+        }
+        
+        // Настройка навигации док-бара
+        function setupDockNavigation() {
+            const dockButtons = document.querySelectorAll('.dock-btn');
+            const pages = document.querySelectorAll('.page');
+            
+            // Маппинг страниц к названиям breadcrumb
+            const pageToTitle = {
+                'feedPage': 'Лента',
+                'favoritesPage': 'Избранное', 
+                'profilePage': 'Профиль'
+            };
+            
+            dockButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetPage = this.getAttribute('data-page');
+                    
+                    if (targetPage) {
+                        // Скрываем все страницы
+                        pages.forEach(page => page.classList.remove('active'));
+                        
+                        // Показываем целевую страницу
+                        const targetPageElement = document.getElementById(targetPage);
+                        if (targetPageElement) {
+                            targetPageElement.classList.add('active');
+                        }
+                        
+                        // Обновляем активную кнопку
+                        dockButtons.forEach(btn => btn.classList.remove('active'));
+                        this.classList.add('active');
+                        
+                        // Обновляем breadcrumb
+                        if (window.updateBreadcrumb && pageToTitle[targetPage]) {
+                            window.updateBreadcrumb(pageToTitle[targetPage]);
+                        }
+                    }
+                });
+            });
+        }
+        
+        // Настройка поиска и фильтров
+        function setupSearchAndFilters() {
+            // Кнопка поиска
+            const searchToggle = document.getElementById('searchToggle');
+            const searchBar = document.getElementById('searchBar');
+            
+            if (searchToggle && searchBar) {
+                searchToggle.addEventListener('click', function() {
+                    searchBar.classList.toggle('hidden');
+                    if (!searchBar.classList.contains('hidden')) {
+                        const searchInput = document.getElementById('searchInput');
+                        if (searchInput) {
+                            searchInput.focus();
+                        }
+                    }
+                });
+                
+                // Обработка ввода в поиске
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput) {
+                    searchInput.addEventListener('input', function(e) {
+                        const query = e.target.value.trim();
+                        if (query.length > 2) {
+                            performSearch(query);
+                        } else if (query.length === 0) {
+                            clearSearchResults();
+                        }
+                    });
+                    
+                    searchInput.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const query = e.target.value.trim();
+                            if (query.length > 0) {
+                                performSearch(query);
+                            }
+                        }
+                        if (e.key === 'Escape') {
+                            searchBar.classList.add('hidden');
+                            e.target.value = '';
+                            clearSearchResults();
+                        }
+                    });
+                }
+            }
+            
+            // Функция поиска
+            function performSearch(query) {
+                if (window.rssAggregator) {
+                    const results = window.rssAggregator.searchArticles(query);
+                    
+                    if (results.length > 0) {
+                        displaySearchResults(results, query);
+                        showToast(`Найдено ${results.length} результатов`, 'success');
+                    } else {
+                        showToast('Ничего не найдено', 'warning');
+                    }
+                } else {
+                    showToast('Поиск временно недоступен', 'error');
+                }
+            }
+            
+            // Отображение результатов поиска
+            function displaySearchResults(results, query) {
+                const feedContainer = document.getElementById('feedContainer');
+                if (!feedContainer) return;
+                
+                feedContainer.innerHTML = `
+                    <div class="search-results-header">
+                        <h3>Результаты поиска: "${query}" (${results.length})</h3>
+                        <button class="btn btn--outline btn--sm" onclick="clearSearchResults()">
+                            Вернуться к ленте
+                        </button>
+                    </div>
+                `;
+                
+                if (window.newsRenderer) {
+                    window.newsRenderer.renderCards(results.slice(0, 20), feedContainer);
+                }
+            }
+            
+            // Очистка результатов поиска
+            function clearSearchResults() {
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput) {
+                    searchInput.value = '';
+                }
+                
+                // Перезагружаем основную ленту
+                if (window.rssAggregator && window.newsRenderer) {
+                    const feedContainer = document.getElementById('feedContainer');
+                    if (feedContainer) {
+                        feedContainer.innerHTML = '';
+                        window.newsRenderer.renderCards(window.rssAggregator.articles, feedContainer);
+                    }
+                }
+            }
+            
+            // Кнопка настроек
+            const settingsToggle = document.getElementById('settingsToggle');
+            const settingsDropdown = document.getElementById('settingsDropdown');
+            
+            if (settingsToggle && settingsDropdown) {
+                settingsToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    settingsDropdown.classList.toggle('show');
+                });
+                
+                // Закрытие при клике вне
+                document.addEventListener('click', function(e) {
+                    if (!settingsDropdown.contains(e.target) && !settingsToggle.contains(e.target)) {
+                        settingsDropdown.classList.remove('show');
+                    }
+                });
+                
+                // Обработчики кнопок в настройках
+                const manageSourcesBtn = document.getElementById('manageSourcesBtn');
+                if (manageSourcesBtn) {
+                    manageSourcesBtn.addEventListener('click', function() {
+                        const rssModal = document.getElementById('rssSourcesModal');
+                        if (rssModal) {
+                            rssModal.classList.remove('hidden');
+                            loadRssSources();
+                        }
+                        settingsDropdown.classList.remove('show');
+                    });
+                }
+                
+                const setupOpenAIBtn = document.getElementById('setupOpenAIBtn');
+                if (setupOpenAIBtn) {
+                    setupOpenAIBtn.addEventListener('click', function() {
+                        const currentKey = localStorage.getItem('openai_api_key') || '';
+                        const apiKey = prompt('Введите OpenAI API ключ:\n(Необходим для AI суммаризации и оценки вакансий)', currentKey);
+                        
+                        if (apiKey !== null && apiKey.trim()) {
+                            localStorage.setItem('openai_api_key', apiKey.trim());
+                            if (typeof window.showToast === 'function') {
+                                window.showToast('✅ OpenAI API ключ сохранен!', 'success');
+                            }
+                        } else if (apiKey !== null) {
+                            localStorage.removeItem('openai_api_key');
+                            if (typeof window.showToast === 'function') {
+                                window.showToast('OpenAI API ключ удален', 'info');
+                            }
+                        }
+                        
+                        settingsDropdown.classList.remove('show');
+                    });
+                }
+                
+                const updateFrequency = document.getElementById('updateFrequency');
+                if (updateFrequency) {
+                    updateFrequency.addEventListener('change', function() {
+                        const frequency = this.value;
+                        localStorage.setItem('update_frequency', frequency);
+                        if (typeof window.showToast === 'function') {
+                            window.showToast('Частота обновлений сохранена', 'success');
+                        }
+                    });
+                }
+            }
+            
+            // Кнопка фильтров
+            const filtersToggle = document.getElementById('filtersToggle');
+            const filtersModal = document.getElementById('filtersModal');
+            
+            if (filtersToggle && filtersModal) {
+                filtersToggle.addEventListener('click', function() {
+                    filtersModal.classList.remove('hidden');
+                });
+            }
+            
+            // Кнопка редактирования профиля
+            const editProfileBtn = document.getElementById('editProfileBtn');
+            if (editProfileBtn) {
+                editProfileBtn.addEventListener('click', function() {
+                    window.openEditProfile();
+                });
+            }
+            
+            // Быстрые фильтры
+            const quickFilters = document.querySelectorAll('.filter-chip');
+            quickFilters.forEach(chip => {
+                chip.addEventListener('click', function() {
+                    // Убираем активный класс у всех
+                    quickFilters.forEach(c => c.classList.remove('active'));
+                    // Добавляем активный класс к текущему
+                    this.classList.add('active');
+                    
+                    const filter = this.getAttribute('data-filter');
+                    
+                    // Здесь можно добавить логику фильтрации контента
+                    applyQuickFilter(filter);
+                });
+            });
+            
+            // Добавляем обработчики для кнопок действий в статьях
+            document.addEventListener('click', function(e) {
+                // Закрытие модальных окон
+                if (e.target.classList.contains('modal-backdrop') || e.target.classList.contains('modal-close')) {
+                    const modal = e.target.closest('.modal');
+                    if (modal) {
+                        modal.classList.add('hidden');
+                        // Показываем док-бар обратно
+                        document.body.classList.remove('modal-open');
+                    }
+                }
+            });
+            
+            // Скрытие док-бара при открытии модальных окон
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                        const modal = mutation.target;
+                        if (modal.classList.contains('modal')) {
+                            if (!modal.classList.contains('hidden')) {
+                                // Модальное окно открыто - скрываем док-бар
+                                document.body.classList.add('modal-open');
+                            } else {
+                                // Проверяем, есть ли другие открытые модальные окна
+                                const openModals = document.querySelectorAll('.modal:not(.hidden)');
+                                if (openModals.length === 0) {
+                                    // Все модальные окна закрыты - показываем док-бар
+                                    document.body.classList.remove('modal-open');
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+            
+            // Наблюдаем за всеми модальными окнами
+            document.querySelectorAll('.modal').forEach(modal => {
+                observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
+            });
+            
+            document.addEventListener('click', function(e) {
+                // Обработка кнопки "читать полностью"
+                if (e.target.closest('.read-more-btn')) {
+                    const btn = e.target.closest('.read-more-btn');
+                    const articleId = btn.getAttribute('data-article-id');
+                    if (articleId) {
+                        openArticleModal(articleId);
+                    }
+                }
+                
+                // Обработка клика по карточке новости (теперь обрабатывается в newsCardRenderer)
+                // Этот код оставлен для совместимости с существующими модальными окнами
+            });
+        }
+        
+        // Сохраняем оригинальный HTML с новостями
+        window.cachedNewsHTML = '';
+        
+        // Применение быстрого фильтра
+        function applyQuickFilter(filter) {
+            const feedContainer = document.getElementById('feedContainer');
+            
+            // Для вакансий - загружаем через API
+            if (filter === 'jobs') {
+                // Сохраняем текущие новости перед загрузкой вакансий
+                if (!window.cachedNewsHTML) {
+                    window.cachedNewsHTML = feedContainer.innerHTML;
+                }
+                
+                if (window.loadJobsWithFilters && window.hhApi) {
+                    window.loadJobsWithFilters();
+                } else {
+                    // API еще не загружен
+                    feedContainer.innerHTML = `
+                        <div style="text-align: center; padding: 3rem;">
+                            <div class="spinner"></div>
+                            <h3>Загрузка вакансий...</h3>
+                            <p>Ожидание инициализации API</p>
+                        </div>
+                    `;
+                    // Повторяем попытку через секунду
+                    setTimeout(() => {
+                        if (window.loadJobsWithFilters) {
+                            window.loadJobsWithFilters();
+                        }
+                    }, 1000);
+                }
+                return;
+            }
+            
+            // Для "Новости" - восстанавливаем сохраненные новости
+            if (filter === 'news') {
+                if (window.cachedNewsHTML) {
+                    feedContainer.innerHTML = window.cachedNewsHTML;
+                }
+                // Показываем только новости
+                const articles = feedContainer.querySelectorAll('.news-card');
+                articles.forEach(article => {
+                    if (!article.classList.contains('job-card')) {
+                        article.style.display = 'block';
+                        article.style.animation = 'fadeInUp 0.3s ease';
+                    } else {
+                        article.style.display = 'none';
+                    }
+                });
+                return;
+            }
+            
+            // Для "Все" - восстанавливаем новости и показываем всё
+            if (filter === 'all') {
+                if (window.cachedNewsHTML) {
+                    feedContainer.innerHTML = window.cachedNewsHTML;
+                }
+                const articles = feedContainer.querySelectorAll('.news-card');
+                articles.forEach(article => {
+                    article.style.display = 'block';
+                    article.style.animation = 'fadeInUp 0.3s ease';
+                });
+            }
+        }
+        
+        // Демо-вакансии и старые карточки удалены - используется только реальный HH.ru API с сеткой
+        
+        // Функции для модального окна статьи
+        function openArticleModal(articleId) {
+            const modal = document.getElementById('articleModal');
+            const article = findArticleById(articleId);
+            
+            if (!article) {
+                return;
+            }
+            
+            // Сохраняем ID текущей статьи
+            modal.dataset.currentArticleId = articleId;
+            
+            // Заполняем модальное окно данными
+            document.getElementById('articleModalTitle').textContent = article.title;
+            document.getElementById('articleModalIcon').textContent = getSourceIcon(article.source.category);
+            document.getElementById('articleModalSource').textContent = article.source.name;
+            document.getElementById('articleModalTime').textContent = formatTimeAgo(article.publishedAt);
+            document.getElementById('articleModalContent').innerHTML = `
+                <p>${article.description || 'Полное содержимое статьи будет загружено с сайта источника.'}</p>
+                <p><strong>Категория:</strong> ${article.category}</p>
+                <p><strong>Время чтения:</strong> ${article.readingTime} мин</p>
+            `;
+            document.getElementById('articleModalLink').href = article.link;
+            
+            // Обновляем кнопки действий
+            const likeBtn = document.getElementById('articleModalLike');
+            const saveBtn = document.getElementById('articleModalSave');
+            
+            likeBtn.querySelector('.like-count').textContent = article.likes || 0;
+            likeBtn.onclick = () => toggleLike(articleId);
+            saveBtn.onclick = () => toggleSave(articleId);
+            
+            // Загружаем комментарии
+            loadComments(articleId);
+            
+            modal.classList.remove('hidden');
+        }
+        
+        function closeArticleModal() {
+            document.getElementById('articleModal').classList.add('hidden');
+        }
+        
+        function findArticleById(articleId) {
+            // Ищем статью в загруженных данных
+            if (window.rssAggregator && window.rssAggregator.articles) {
+                return window.rssAggregator.articles.find(article => article.id === articleId);
+            }
+            return null;
+        }
+        
+        function toggleLike(articleId) {
+            const article = findArticleById(articleId);
+            if (!article) return;
+            
+            // Получаем лайки из localStorage
+            const likes = JSON.parse(localStorage.getItem('article_likes') || '{}');
+            const isLiked = likes[articleId];
+            
+            if (isLiked) {
+                delete likes[articleId];
+                article.likes = Math.max(0, (article.likes || 0) - 1);
+            } else {
+                likes[articleId] = true;
+                article.likes = (article.likes || 0) + 1;
+            }
+            
+            localStorage.setItem('article_likes', JSON.stringify(likes));
+            
+            // Обновляем UI
+            updateLikeButtons(articleId, article.likes, !isLiked);
+        }
+        
+        function updateLikeButtons(articleId, likesCount, isLiked) {
+            // Обновляем все кнопки лайк для этой статьи
+            const likeButtons = document.querySelectorAll(`[data-article-id="${articleId}"] .like-btn, #articleModalLike`);
+            
+            likeButtons.forEach(btn => {
+                const countSpan = btn.querySelector('.like-count');
+                if (countSpan) {
+                    countSpan.textContent = likesCount;
+                }
+                
+                if (isLiked) {
+                    btn.classList.add('liked');
+                } else {
+                    btn.classList.remove('liked');
+                }
+            });
+        }
+        
+        function toggleSave(articleId) {
+            // Переключение сохранения для статьи
+        }
+        
+        function loadComments(articleId) {
+            const commentsList = document.getElementById('commentsList');
+            const comments = JSON.parse(localStorage.getItem(`comments_${articleId}`) || '[]');
+            
+            if (comments.length === 0) {
+                commentsList.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 2rem;">Пока нет комментариев. Будьте первым!</p>';
+                return;
+            }
+            
+            commentsList.innerHTML = comments.map(comment => `
+                <div class="comment-item">
+                    <div class="comment-author">${comment.author}</div>
+                    <div class="comment-text">${comment.text}</div>
+                    <div class="comment-time">${formatTimeAgo(new Date(comment.timestamp))}</div>
+                </div>
+            `).join('');
+        }
+        
+        function addComment() {
+            const commentText = document.getElementById('commentText');
+            const text = commentText.value.trim();
+            
+            if (!text) {
+                alert('Введите текст комментария');
+                return;
+            }
+            
+            const articleId = getCurrentArticleId();
+            if (!articleId) return;
+            
+            const comments = JSON.parse(localStorage.getItem(`comments_${articleId}`) || '[]');
+            const newComment = {
+                id: Date.now(),
+                author: 'Пользователь',
+                text: text,
+                timestamp: new Date().toISOString()
+            };
+            
+            comments.unshift(newComment);
+            localStorage.setItem(`comments_${articleId}`, JSON.stringify(comments));
+            
+            commentText.value = '';
+            loadComments(articleId);
+        }
+        
+        function getCurrentArticleId() {
+            const modal = document.getElementById('articleModal');
+            return modal.dataset.currentArticleId;
+        }
+        
+        // Вспомогательные функции
+        function getSourceIcon(category) {
+            const icons = {
+                'technology': '💻',
+                'business': '💰', 
+                'general': '📰',
+                'science': '🔬',
+                'health': '🏥'
+            };
+            return icons[category] || '📰';
+        }
+        
+        function formatTimeAgo(date) {
+            const now = new Date();
+            const diff = now - new Date(date);
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 1) return 'только что';
+            if (minutes < 60) return `${minutes} мин назад`;
+            if (hours < 24) return `${hours} ч назад`;
+            return `${days} дн назад`;
+        }
+    </script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('/sw.js');
+                    
+                    // Обновление Service Worker
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                // Показываем уведомление об обновлении
+                                showUpdateNotification();
+                            }
+                        });
+                    });
+                } catch (error) {
+                    // Ошибка регистрации Service Worker
+                }
+            });
+        }
+        
+        function showUpdateNotification() {
+            const notification = document.createElement('div');
+            notification.className = 'update-notification';
+            notification.innerHTML = `
+                <div class="update-content">
+                    <span>🚀 Доступно обновление приложения</span>
+                    <button onclick="updateApp()" class="btn btn--primary btn--sm">Обновить</button>
+                    <button onclick="dismissUpdate()" class="btn btn--ghost btn--sm">Позже</button>
+                </div>
+            `;
+            document.body.appendChild(notification);
+        }
+        
+        function updateApp() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistration().then(registration => {
+                    if (registration && registration.waiting) {
+                        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                        window.location.reload();
+                    }
+                });
+            }
+        }
+        
+        function dismissUpdate() {
+            const notification = document.querySelector('.update-notification');
+            if (notification) {
+                notification.remove();
+            }
+        }
+    </script>
+
+    <!-- API Integration Script -->
+    <script type="module">
+        import HHApiClient from './js/hhApi.js';
+        import VKApiClient from './js/vkApi.js';
+
+        // Инициализация API клиентов
+        window.hhApi = new HHApiClient();
+        window.vkApi = new VKApiClient();
+
+        console.log('✅ HH.ru API initialized');
+        console.log('✅ VK API initialized');
+
+        // VK ID SDK Initialization
+        if ('VKIDSDK' in window) {
+            const VKID = window.VKIDSDK;
+
+            VKID.Config.init({
+                app: 54197475,
+                redirectUrl: 'https://localhost.com',
+                responseMode: VKID.ConfigResponseMode.Callback,
+                source: VKID.ConfigSource.LOWCODE,
+                scope: '',
+            });
+
+            const oneTap = new VKID.OneTap();
+            const container = document.getElementById('vkLoginContainer');
+
+            if (container) {
+                oneTap.render({
+                    container: container,
+                    showAlternativeLogin: true
+                })
+                .on(VKID.WidgetEvents.ERROR, vkidOnError)
+                .on(VKID.OneTapInternalEvents.LOGIN_SUCCESS, function (payload) {
+                    const code = payload.code;
+                    const deviceId = payload.device_id;
+
+                    VKID.Auth.exchangeCode(code, deviceId)
+                        .then(vkidOnSuccess)
+                        .catch(vkidOnError);
+                });
+            }
+
+            function vkidOnSuccess(data) {
+                console.log('VK Auth Success:', data);
+                // Сохраняем токен
+                if (data.access_token) {
+                    localStorage.setItem('vk_service_token', data.access_token);
+                    window.vkApi.serviceToken = data.access_token;
+                    if (typeof showToast === 'function') {
+                        showToast('✅ VK подключен успешно!', 'success');
+                    }
+                    // Скрываем кнопку входа
+                    container.innerHTML = '<span style="color: var(--success-color); font-size: 0.875rem; margin-left: 0.5rem;">✅ VK подключен</span>';
+                }
+            }
+
+            function vkidOnError(error) {
+                console.error('VK Auth Error:', error);
+                if (typeof showToast === 'function') {
+                    showToast('❌ Ошибка авторизации VK', 'error');
+                }
+            }
+        }
+
+        // Обработка фильтров вакансий
+        function setupJobFilters() {
+            const applyBtn = document.getElementById('applyFiltersBtn');
+            
+            if (applyBtn) {
+                applyBtn.addEventListener('click', async function() {
+                    const city = document.getElementById('jobCity')?.value || '1';
+                    const experience = document.getElementById('jobExperience')?.value || '';
+                    const schedule = document.getElementById('jobSchedule')?.value || '';
+                    const employment = document.getElementById('jobEmployment')?.value || '';
+                    const salary = document.getElementById('jobSalary')?.value || '';
+                    const onlyWithSalary = document.getElementById('jobOnlyWithSalary')?.checked;
+
+                    // Сохраняем фильтры
+                    localStorage.setItem('job_filters', JSON.stringify({
+                        city, experience, schedule, employment, salary, onlyWithSalary
+                    }));
+
+                    showToast('Фильтры применены', 'success');
+                    
+                    // Закрываем модалку
+                    document.getElementById('filtersModal')?.classList.add('hidden');
+
+                    // Если активен фильтр "Вакансии", перезагружаем
+                    const activeFilter = document.querySelector('.filter-chip.active')?.dataset.filter;
+                    if (activeFilter === 'jobs') {
+                        loadJobsWithFilters();
+                    }
+                });
+            }
+        }
+
+        // Загрузка вакансий с фильтрами
+        window.loadJobsWithFilters = async function() {
+            const filters = JSON.parse(localStorage.getItem('job_filters') || '{}');
+            
+            try {
+                showLoadingSpinner();
+                
+                const searchParams = {
+                    text: '', // Можно добавить поиск
+                    area: parseInt(filters.city) || 1,
+                    per_page: 50  // Увеличиваем до 50 вакансий
+                };
+
+                if (filters.experience) searchParams.experience = filters.experience;
+                if (filters.schedule) searchParams.schedule = filters.schedule;
+                if (filters.employment) searchParams.employment = filters.employment;
+
+                const results = await window.hhApi.searchVacancies(searchParams);
+                console.log('HH API результат:', results);
+                console.log('Найдено вакансий:', results.items?.length || 0);
+                
+                let jobs = window.hhApi.transformVacancies(results.items || []);
+                console.log('Трансформировано вакансий:', jobs.length);
+
+                // Фильтруем по зарплате
+                if (filters.salary) {
+                    const minSalary = parseInt(filters.salary);
+                    jobs = jobs.filter(job => 
+                        job.salaryFrom && job.salaryFrom >= minSalary
+                    );
+                }
+
+                if (filters.onlyWithSalary) {
+                    jobs = jobs.filter(job => job.salaryFrom || job.salaryTo);
+                }
+
+                console.log('После фильтрации осталось вакансий:', jobs.length);
+                displayJobs(jobs);
+                hideLoadingSpinner();
+
+            } catch (error) {
+                console.error('Ошибка загрузки вакансий:', error);
+                showToast('Ошибка загрузки вакансий', 'error');
+                hideLoadingSpinner();
+            }
+        };
+
+        // Отображение вакансий (3 в ряд)
+        function displayJobs(jobs) {
+            const feedContainer = document.getElementById('feedContainer');
+            if (!feedContainer) return;
+
+            if (jobs.length === 0) {
+                feedContainer.innerHTML = `
+                    <div style="text-align: center; padding: 3rem;">
+                        <h3>Вакансии не найдены</h3>
+                        <p>Попробуйте изменить фильтры поиска</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Группируем по 3 вакансии
+            let html = '<div class="jobs-grid">';
+            
+            jobs.forEach((job, index) => {
+                html += `
+                    <div class="job-card-compact" data-job-id="${job.id}" onclick="window.openJobDetails('${job.id}')">
+                        ${job.companyLogo ? 
+                            `<img src="${job.companyLogo}" alt="${job.company}" class="job-logo">` 
+                            : '<div class="job-logo-placeholder">💼</div>'}
+                        <h4 class="job-title">${job.title}</h4>
+                        <p class="job-company">${job.company}</p>
+                        <div class="job-salary">${job.salary}</div>
+                        <div class="job-location">📍 ${job.location}</div>
+                        <div class="job-badge">${job.schedule === 'remote' ? '🏠 Удаленка' : job.experience}</div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            feedContainer.innerHTML = html;
+            
+            // Сохраняем вакансии глобально для модалки
+            window.currentJobs = jobs;
+        }
+
+        function showLoadingSpinner() {
+            const spinner = document.getElementById('loadingSpinner');
+            if (spinner) spinner.classList.remove('hidden');
+        }
+
+        function hideLoadingSpinner() {
+            const spinner = document.getElementById('loadingSpinner');
+            if (spinner) spinner.classList.add('hidden');
+        }
+
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            setupJobFilters();
+            
+            // Загружаем сохраненные фильтры в UI
+            const savedFilters = JSON.parse(localStorage.getItem('job_filters') || '{}');
+            if (savedFilters.city) document.getElementById('jobCity').value = savedFilters.city;
+            if (savedFilters.experience) document.getElementById('jobExperience').value = savedFilters.experience;
+            if (savedFilters.schedule) document.getElementById('jobSchedule').value = savedFilters.schedule;
+            if (savedFilters.employment) document.getElementById('jobEmployment').value = savedFilters.employment;
+            if (savedFilters.salary) document.getElementById('jobSalary').value = savedFilters.salary;
+            if (savedFilters.onlyWithSalary) document.getElementById('jobOnlyWithSalary').checked = savedFilters.onlyWithSalary;
+
+            // Обработчик очистки данных
+            document.getElementById('clearAllDataBtn')?.addEventListener('click', clearAllData);
+            
+            // Загрузка профиля при инициализации
+            loadProfile();
+            
+            console.log('🚀 NewsHub API Integration ready!');
+        });
+
+        // ======= Функции для вакансий =======
+        
+        window.openJobDetails = function(jobId) {
+            const job = window.currentJobs?.find(j => j.id === jobId);
+            if (!job) return;
+            
+            // Заполняем модалку
+            document.getElementById('jobModalTitle').textContent = job.title;
+            document.getElementById('jobModalCompany').textContent = job.company;
+            document.getElementById('jobModalSalary').textContent = `💰 ${job.salary}`;
+            document.getElementById('jobModalLocation').textContent = `📍 ${job.location}`;
+            document.getElementById('jobModalExperience').textContent = `📅 ${job.experience}`;
+            document.getElementById('jobModalSchedule').textContent = `⏰ ${job.schedule}`;
+            document.getElementById('jobModalDescription').innerHTML = job.description || 'Описание отсутствует';
+            document.getElementById('jobModalRequirements').innerHTML = job.requirements || 'Не указаны';
+            document.getElementById('jobModalResponsibility').innerHTML = job.responsibility || 'Не указаны';
+            document.getElementById('jobModalLink').href = job.url;
+            
+            // Лого
+            const logo = document.getElementById('jobModalLogo');
+            if (job.companyLogo) {
+                logo.src = job.companyLogo;
+                logo.style.display = 'block';
+            } else {
+                logo.style.display = 'none';
+            }
+            
+            // Скрываем оценку
+            document.getElementById('jobAIAssessment').style.display = 'none';
+            
+            // Сохраняем текущую вакансию
+            window.currentJob = job;
+            
+            // Открываем модалку
+            document.getElementById('jobModal').classList.remove('hidden');
+        };
+        
+        window.closeJobModal = function() {
+            document.getElementById('jobModal').classList.add('hidden');
+        };
+        
+        // ======= AI Функции =======
+        
+        window.summarizeArticle = async function() {
+            const btn = document.getElementById('summarizeArticleBtn');
+            const originalText = btn.innerHTML;
+            
+            // Проверяем наличие API ключа
+            const apiKey = localStorage.getItem('openai_api_key');
+            if (!apiKey) {
+                if (typeof showToast === 'function') {
+                    showToast('⚠️ Введите OpenAI API ключ в настройках', 'error');
+                }
+                return;
+            }
+            
+            btn.innerHTML = '<span class="spinner"></span> Суммаризация...';
+            btn.disabled = true;
+            
+            try {
+                // Получаем контент статьи
+                const content = document.getElementById('articleModalContent').textContent;
+                const title = document.getElementById('articleModalTitle').textContent;
+                
+                // Вызываем OpenAI API
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-3.5-turbo',
+                        messages: [{
+                            role: 'system',
+                            content: 'Ты помощник, который делает краткие саммари статей на русском языке. Отвечай только кратким содержанием, без вступлений.'
+                        }, {
+                            role: 'user',
+                            content: `Сделай краткое содержание этой статьи (2-3 предложения):\n\nЗаголовок: ${title}\n\nТекст: ${content.substring(0, 3000)}`
+                        }],
+                        max_tokens: 300,
+                        temperature: 0.7
+                    })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error?.message || 'Ошибка API');
+                }
+                
+                const data = await response.json();
+                const summary = data.choices[0].message.content;
+                
+                // Отображаем
+                const summaryDiv = document.createElement('div');
+                summaryDiv.className = 'ai-summary';
+                summaryDiv.innerHTML = `
+                    <h4>📝 Краткое содержание (AI)</h4>
+                    <p>${summary}</p>
+                    <small style="color: var(--text-secondary); font-size: 0.75rem;">
+                        Сгенерировано с помощью OpenAI GPT-3.5
+                    </small>
+                `;
+                
+                const modalBody = document.querySelector('.article-modal-body');
+                const existingSummary = modalBody.querySelector('.ai-summary');
+                if (existingSummary) {
+                    existingSummary.remove();
+                }
+                modalBody.insertBefore(summaryDiv, modalBody.firstChild);
+                
+                if (typeof showToast === 'function') {
+                    showToast('✅ Суммаризация готова!', 'success');
+                }
+                
+            } catch (error) {
+                console.error('Ошибка суммаризации:', error);
+                if (typeof showToast === 'function') {
+                    showToast(`❌ Ошибка: ${error.message}`, 'error');
+                }
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        };
+        
+        window.assessJob = async function() {
+            const btn = document.getElementById('assessJobBtn');
+            const originalText = btn.innerHTML;
+            
+            // Проверяем наличие API ключа
+            const apiKey = localStorage.getItem('openai_api_key');
+            if (!apiKey) {
+                if (typeof showToast === 'function') {
+                    showToast('⚠️ Введите OpenAI API ключ в настройках', 'error');
+                }
+                return;
+            }
+            
+            btn.innerHTML = '<span class="spinner"></span> Оценка...';
+            btn.disabled = true;
+            
+            try {
+                const job = window.currentJob;
+                if (!job) return;
+                
+                // Получаем профиль пользователя
+                const userProfile = JSON.parse(localStorage.getItem('user_profile') || '{}');
+                const userSkills = userProfile.skills || [];
+                const userExperience = userProfile.experience || 'Не указан';
+                const userProfession = userProfile.profession || 'Не указана';
+                const userBio = userProfile.bio || 'Не указано';
+                
+                // Формируем промпт для OpenAI
+                const prompt = `Оцени вакансию для кандидата и дай рекомендацию.
+
+ВАКАНСИЯ:
+Позиция: ${job.title}
+Компания: ${job.company}
+Зарплата: ${job.salary}
+Локация: ${job.location}
+Опыт: ${job.experience}
+График: ${job.schedule}
+Требования: ${job.requirements}
+Обязанности: ${job.responsibility}
+
+ПРОФИЛЬ КАНДИДАТА:
+Профессия: ${userProfession}
+Опыт работы: ${userExperience}
+Навыки: ${userSkills.join(', ') || 'Не указаны'}
+О себе: ${userBio}
+
+ЗАДАЧА:
+1. Оцени вакансию по шкале от 0 до 100
+2. Укажи плюсы вакансии (список)
+3. Укажи минусы вакансии (список)
+4. Укажи чего не хватает кандидату для этой вакансии (список)
+5. Дай короткую рекомендацию (одно предложение с эмодзи в начале)
+
+Ответ дай СТРОГО в формате JSON:
+{
+  "score": число от 0 до 100,
+  "recommendation": "текст с эмодзи",
+  "pros": ["пункт1", "пункт2"],
+  "cons": ["пункт1", "пункт2"],
+  "missing": ["пункт1", "пункт2"]
+}`;
+
+                // Вызываем OpenAI API
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-3.5-turbo',
+                        messages: [{
+                            role: 'system',
+                            content: 'Ты эксперт по подбору персонала. Оцениваешь вакансии для кандидатов. Отвечаешь только в формате JSON.'
+                        }, {
+                            role: 'user',
+                            content: prompt
+                        }],
+                        max_tokens: 800,
+                        temperature: 0.7,
+                        response_format: { type: "json_object" }
+                    })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error?.message || 'Ошибка API');
+                }
+                
+                const data = await response.json();
+                const assessmentText = data.choices[0].message.content;
+                const assessment = JSON.parse(assessmentText);
+                
+                // Отображаем оценку
+                const assessmentDiv = document.getElementById('jobAIAssessment');
+                const assessmentContent = document.getElementById('jobAIAssessmentContent');
+                
+                assessmentContent.innerHTML = `
+                    <div class="ai-assessment-score">
+                        <div class="score-badge">${assessment.score}/100</div>
+                        <p class="recommendation">${assessment.recommendation}</p>
+                    </div>
+                    
+                    ${assessment.pros && assessment.pros.length > 0 ? `
+                        <div class="assessment-section pros">
+                            <h5>✅ Плюсы:</h5>
+                            <ul>${assessment.pros.map(p => `<li>${p}</li>`).join('')}</ul>
+                        </div>
+                    ` : ''}
+                    
+                    ${assessment.cons && assessment.cons.length > 0 ? `
+                        <div class="assessment-section cons">
+                            <h5>❌ Минусы:</h5>
+                            <ul>${assessment.cons.map(c => `<li>${c}</li>`).join('')}</ul>
+                        </div>
+                    ` : ''}
+                    
+                    ${assessment.missing && assessment.missing.length > 0 ? `
+                        <div class="assessment-section missing">
+                            <h5>📝 Чего не хватает:</h5>
+                            <ul>${assessment.missing.map(m => `<li>${m}</li>`).join('')}</ul>
+                        </div>
+                    ` : ''}
+                    
+                    <small style="color: var(--text-secondary); font-size: 0.75rem; display: block; margin-top: 1rem;">
+                        Оценка сгенерирована с помощью OpenAI GPT-3.5 на основе вашего профиля.
+                    </small>
+                `;
+                
+                assessmentDiv.style.display = 'block';
+                
+                if (typeof showToast === 'function') {
+                    showToast('✅ Оценка готова!', 'success');
+                }
+                
+            } catch (error) {
+                console.error('Ошибка оценки вакансии:', error);
+                if (typeof showToast === 'function') {
+                    showToast(`❌ Ошибка: ${error.message}`, 'error');
+                }
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        };
+        
+        // ======= Профиль пользователя =======
+        
+        function loadProfile() {
+            const profile = JSON.parse(localStorage.getItem('user_profile') || '{}');
+            
+            // Загружаем данные в UI профиля
+            if (profile.name) document.getElementById('profileName').textContent = profile.name;
+            if (profile.profession) document.getElementById('profileProfession').textContent = profile.profession;
+            if (profile.location) document.getElementById('profileLocation').textContent = profile.location;
+            
+            // Загружаем навыки
+            if (profile.skills && profile.skills.length > 0) {
+                const skillsList = document.getElementById('skillsList');
+                if (skillsList) {
+                    skillsList.innerHTML = profile.skills.map(skill => 
+                        `<span class="skill-tag">${skill}</span>`
+                    ).join('');
+                }
+            }
+        }
+        
+        window.openEditProfile = function() {
+            const profile = JSON.parse(localStorage.getItem('user_profile') || '{}');
+            
+            // Заполняем форму текущими данными
+            document.getElementById('profileNameInput').value = profile.name || '';
+            document.getElementById('profileProfessionInput').value = profile.profession || '';
+            document.getElementById('profileLocationInput').value = profile.location || '';
+            document.getElementById('profileExperienceInput').value = profile.experience || '';
+            document.getElementById('profileSkillsInput').value = profile.skills ? profile.skills.join(', ') : '';
+            document.getElementById('profileBioInput').value = profile.bio || '';
+            
+            // Открываем модалку
+            document.getElementById('editProfileModal').classList.remove('hidden');
+        };
+        
+        window.closeEditProfileModal = function() {
+            document.getElementById('editProfileModal').classList.add('hidden');
+        };
+        
+        window.saveProfile = function() {
+            // Собираем данные из формы
+            const name = document.getElementById('profileNameInput').value.trim();
+            const profession = document.getElementById('profileProfessionInput').value.trim();
+            const location = document.getElementById('profileLocationInput').value.trim();
+            const experience = document.getElementById('profileExperienceInput').value;
+            const skillsText = document.getElementById('profileSkillsInput').value.trim();
+            const bio = document.getElementById('profileBioInput').value.trim();
+            
+            // Парсим навыки
+            const skills = skillsText 
+                ? skillsText.split(',').map(s => s.trim()).filter(s => s.length > 0)
+                : [];
+            
+            // Создаем объект профиля
+            const profile = {
+                name: name || 'Имя Пользователя',
+                profession: profession || 'Профессия не указана',
+                location: location || 'Локация не указана',
+                experience: experience || 'Не указан',
+                skills: skills,
+                bio: bio || '',
+                updatedAt: new Date().toISOString()
+            };
+            
+            // Сохраняем в localStorage
+            localStorage.setItem('user_profile', JSON.stringify(profile));
+            
+            // Обновляем UI
+            loadProfile();
+            
+            // Закрываем модалку
+            closeEditProfileModal();
+            
+            if (typeof showToast === 'function') {
+                showToast('✅ Профиль сохранен!', 'success');
+            }
+            
+            console.log('Профиль сохранен:', profile);
+        };
+        
+        // ======= Очистка данных =======
+        
+        function clearAllData() {
+            if (!confirm('Вы уверены? Все данные будут удалены без возможности восстановления.')) {
+                return;
+            }
+            
+            // Очищаем все localStorage
+            const keysToKeep = ['theme']; // Сохраняем только тему
+            const allKeys = Object.keys(localStorage);
+            
+            allKeys.forEach(key => {
+                if (!keysToKeep.includes(key)) {
+                    localStorage.removeItem(key);
+                }
+            });
+            
+            // Очищаем API кэш
+            if (window.hhApi) window.hhApi.clearCache();
+            if (window.vkApi) window.vkApi.cache?.clear();
+            
+            if (typeof showToast === 'function') {
+                showToast('✅ Все данные очищены!', 'success');
+            }
+            
+            // Закрываем настройки
+            document.getElementById('settingsDropdown')?.classList.remove('active');
+            
+            // Перезагружаем через 1 секунду
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
