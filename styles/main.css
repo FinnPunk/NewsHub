@@ -477,9 +477,7 @@
 
 /* Settings dropdown */
 .settings-dropdown {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
+  position: fixed;
   min-width: 320px;
   background: rgba(30, 30, 30, 0.95);
   border: 1px solid var(--border-medium);
@@ -494,13 +492,15 @@
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  z-index: 1000;
+  z-index: 10000;
+  visibility: hidden;
 }
 
 .settings-dropdown.show {
   opacity: 1;
   transform: translateY(0);
   pointer-events: all;
+  visibility: visible;
 }
 
 .settings-dropdown h3 {
