@@ -129,23 +129,22 @@ class VKApiClient {
             }
             
             // Получаем ссылку на пост
-            const postUrl = `https://vk.com/wall${post.owner_id}_${post.id}`;
+            const postUrl = `https://vk.com/${group.id}?w=wall${post.owner_id}_${post.id}`;
             
             return {
-                id: `vk_${post.owner_id}_${post.id}`,
-                title: this.extractTitle(text),
-                description: this.cleanText(text),
-                content: text,
-                source: group.name,
-                sourceType: 'vk',
-                category: group.category,
-                url: postUrl,
+                id: `vk_${group.id}_${post.id}`,
+                title: text.substring(0, 100) + (text.length > 100 ? '...' : ''),
+                description: text.substring(0, 300) + (text.length > 300 ? '...' : ''),
+                link: postUrl,
                 image: image,
-                publishedAt: new Date(post.date * 1000).toISOString(),
+                publishedAt: new Date(post.date * 1000),
+                source: { name: group.name, category: group.category, priority: 99, type: 'vk' },
+                category: group.category,
+                readingTime: Math.ceil(text.length / 1000), // примерное время чтения
                 likes: post.likes?.count || 0,
-                reposts: post.reposts?.count || 0,
                 views: post.views?.count || 0,
-                comments: post.comments?.count || 0
+                comments: post.comments?.count || 0,
+                isVKPost: true // Флаг для стилизации
             };
         });
     }

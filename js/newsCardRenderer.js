@@ -50,15 +50,15 @@ class NewsCardRenderer {
             }
         });
     }
-    
     // Рендеринг одной карточки новости
     renderCard(article) {
         const isRead = this.readItems.has(article.id);
         const isSaved = this.savedItems.has(article.id);
         const timeAgo = this.formatTimeAgo(article.publishedAt);
+        const sourceType = article.source.type || (article.isVKPost ? 'vk' : 'rss');
         
         return `
-            <article class="news-card ${isRead ? 'read' : ''}" data-article-id="${article.id}">
+            <article class="news-card ${isRead ? 'read' : ''}" data-article-id="${article.id}" data-source-type="${sourceType}">
                 <div class="news-card-header">
                     <div class="source-info">
                         <div class="source-avatar">
