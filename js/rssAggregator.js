@@ -3,10 +3,13 @@
 
 class RSSAggregator {
     constructor() {
+        // Ссылка на VK API
+        this.vkApi = null;
+        
         this.sources = [
-            // Технологические источники (проверенные)
-            { id: 'habr', name: 'Habr', url: 'https://habr.com/ru/rss/hub/programming/', category: 'tech', enabled: true, priority: 1 },
-            { id: 'vc-tech', name: 'VC.ru', url: 'https://vc.ru/rss', category: 'tech', enabled: true, priority: 2 },
+            // Технологические источники (проверенные, прямые RSS)
+            { id: 'habr', name: 'Habr', url: 'https://habr.com/ru/rss/hub/programming/', category: 'tech', enabled: true, priority: 1, direct: true },
+            { id: 'vc-tech', name: 'VC.ru', url: 'https://vc.ru/rss', category: 'tech', enabled: true, priority: 2, direct: true },
             
             // Международные IT источники (проверенные форматы)
             { id: 'dev-to', name: 'Dev.to', url: 'https://dev.to/feed', category: 'tech', enabled: true, priority: 3 },
@@ -156,6 +159,20 @@ class RSSAggregator {
                 }
             });
             
+            // Если недостаточно статей, пробуем VK
+            if (allArticles.length < 5 && this.vkApi) {
+                console.log('📱 Мало статей из RSS, пробуем загрузить из VK...');
+                try {
+                    const vkArticles = await this.fetchFromVK();
+                    if (vkArticles && vkArticles.length > 0) {
+                        console.log(`✅ Загружено ${vkArticles.length} постов из VK`);
+                        allArticles = [...allArticles, ...vkArticles];
+                    }
+                } catch (error) {
+                    console.warn('⚠️ Ошибка загрузки VK постов:', error);
+                }
+            }
+            
             // Если ни один источник не сработал, используем демо-данные
             if (allArticles.length === 0) {
                 // RSS источники недоступны, используем демо-данные
@@ -232,6 +249,38 @@ class RSSAggregator {
             
             let articles = [];
             let lastError = null;
+            
+            // Если источник поддерживает прямой доступ, пробуем сначала без прокси
+            if (source.direct) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 8000);
+                    
+                    const response = await fetch(source.url, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/xml, text/xml, application/rss+xml',
+                        },
+                        signal: controller.signal,
+                        mode: 'cors'
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    
+                    if (response.ok) {
+                        const xmlText = await response.text();
+                        articles = this.parseRSS(xmlText, source);
+                        
+                        if (articles.length > 0) {
+                            console.log(`✅ Прямая загрузка ${source.name}: ${articles.length} статей`);
+                            this.cache.set(cacheKey, { articles, timestamp: Date.now() });
+                            return articles;
+                        }
+                    }
+                } catch (error) {
+                    console.log(`⚠️ Прямая загрузка ${source.name} не удалась, пробуем прокси`);
+                }
+            }
             
             // Пробуем все доступные прокси
             for (let i = 0; i < this.corsProxies.length; i++) {
@@ -926,6 +975,37 @@ class RSSAggregator {
         
         if (typeof window.showToast === 'function') {
             window.showToast('Кэш очищен, источники сброшены', 'info');
+        }
+    }
+
+    // Загрузка постов из VK как fallback
+    async fetchFromVK() {
+        if (!this.vkApi) {
+            console.warn('VK API не инициализирован');
+            return [];
+        }
+        
+        try {
+            // Группы ВКонтакте для новостей
+            const groups = ['habr', 'techrush', 'proglib'];
+            const allPosts = [];
+            
+            for (const groupId of groups) {
+                try {
+                    const posts = await this.vkApi.getGroupPosts(groupId, 10);
+                    if (posts && posts.length > 0) {
+                        const transformed = this.vkApi.transformPosts(posts, groupId);
+                        allPosts.push(...transformed);
+                    }
+                } catch (error) {
+                    console.warn(`Ошибка загрузки VK группы ${groupId}:`, error);
+                }
+            }
+            
+            return allPosts;
+        } catch (error) {
+            console.error('Ошибка загрузки из VK:', error);
+            return [];
         }
     }
 

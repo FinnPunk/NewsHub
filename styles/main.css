@@ -1301,12 +1301,25 @@
   
   /* Settings dropdown на мобильной версии */
   .settings-dropdown {
+    position: fixed !important;
+    top: 70px !important;
+    right: 1rem !important;
+    left: 1rem !important;
+    min-width: auto !important;
+    max-width: none !important;
+    z-index: 9999 !important;
+  }
+  
+  /* Backdrop для dropdown на мобильных */
+  .settings-dropdown.show::before {
+    content: '';
     position: fixed;
-    top: 60px;
-    right: 1rem;
-    left: 1rem;
-    min-width: auto;
-    max-width: none;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: -1;
   }
 }
 
