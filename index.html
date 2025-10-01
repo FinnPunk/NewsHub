@@ -1914,16 +1914,22 @@
         function applyQuickFilter(filter) {
             const feedContainer = document.getElementById('feedContainer');
             
+            console.log('🔄 Применение фильтра:', filter);
+            
             // Для вакансий - загружаем через API
             if (filter === 'jobs') {
+                console.log('💼 Загрузка вакансий...');
+                
                 // Сохраняем текущие новости перед загрузкой вакансий
                 if (!window.cachedNewsHTML) {
                     window.cachedNewsHTML = feedContainer.innerHTML;
                 }
                 
                 if (window.loadJobsWithFilters && window.hhApi) {
+                    console.log('✅ API готов, вызываем loadJobsWithFilters');
                     window.loadJobsWithFilters();
                 } else {
+                    console.warn('⚠️ API не готов, показываем загрузку');
                     // API еще не загружен
                     feedContainer.innerHTML = `
                         <div style="text-align: center; padding: 3rem;">
@@ -1935,6 +1941,7 @@
                     // Повторяем попытку через секунду
                     setTimeout(() => {
                         if (window.loadJobsWithFilters) {
+                            console.log('🔁 Повторная попытка загрузки вакансий');
                             window.loadJobsWithFilters();
                         }
                     }, 1000);
@@ -2353,9 +2360,12 @@
         window.loadJobsWithFilters = async function(forceRefresh = false) {
             const filters = JSON.parse(localStorage.getItem('job_filters') || '{}');
             
+            // Создаем уникальный ключ кеша на основе фильтров
+            const cacheKey = `jobs_cache_${filters.searchText || 'all'}_${filters.city || '1'}`;
+            
             // Проверяем кеш если не принудительное обновление
             if (!forceRefresh) {
-                const cachedJobs = getCachedData('jobs_cache');
+                const cachedJobs = getCachedData(cacheKey);
                 if (cachedJobs && cachedJobs.length > 0) {
                     displayJobs(cachedJobs);
                     showToast('💼 Вакансии загружены из кеша', 'success');
@@ -2397,8 +2407,8 @@
 
                 console.log('После фильтрации осталось вакансий:', jobs.length);
                 
-                // Сохраняем в кеш
-                setCachedData('jobs_cache', jobs);
+                // Сохраняем в кеш с уникальным ключом
+                setCachedData(cacheKey, jobs);
                 
                 displayJobs(jobs);
                 hideLoadingSpinner();
@@ -2412,10 +2422,16 @@
 
         // Отображение вакансий (3 в ряд)
         function displayJobs(jobs) {
+            console.log('📋 displayJobs вызван с', jobs.length, 'вакансиями');
+            
             const feedContainer = document.getElementById('feedContainer');
-            if (!feedContainer) return;
+            if (!feedContainer) {
+                console.error('❌ feedContainer не найден!');
+                return;
+            }
 
             if (jobs.length === 0) {
+                console.warn('⚠️ Нет вакансий для отображения');
                 feedContainer.innerHTML = `
                     <div style="text-align: center; padding: 3rem;">
                         <h3>Вакансии не найдены</h3>
@@ -2445,6 +2461,8 @@
             
             html += '</div>';
             feedContainer.innerHTML = html;
+            
+            console.log('✅ Вакансии отображены. HTML длина:', html.length);
             
             // Сохраняем вакансии глобально для модалки
             window.currentJobs = jobs;

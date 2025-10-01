@@ -457,22 +457,21 @@
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  background: var(--bg-elevated);
+  min-width: 320px;
+  background: rgba(30, 30, 30, 0.95);
   border: 1px solid var(--border-medium);
   border-radius: 12px;
-  box-shadow: 
-    0 12px 48px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(0, 0, 0, 0.05);
-  min-width: 300px;
-  max-width: 320px;
-  z-index: 1001;
   padding: 16px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(0, 0, 0, 0.2);
   opacity: 0;
   transform: translateY(-10px);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  z-index: 1000;
 }
 
 .settings-dropdown.show {
@@ -1231,8 +1230,25 @@
 
 /* Mobile responsive fixes */
 @media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .header-left {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
   .header-actions {
     gap: 8px;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
   }
   
   .header-actions .btn--icon {
@@ -1240,23 +1256,34 @@
     height: 36px;
   }
   
-  .dock-item {
-    min-width: 44px;
-    min-height: 44px;
+  .site-title {
+    font-size: 1.25rem;
   }
   
-  .job-details {
-    gap: 4px;
+  .breadcrumb {
+    gap: 0.5rem;
+    width: 100%;
   }
   
-  .job-info {
-    font-size: 0.8rem;
+  .breadcrumb-item {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
   }
   
   /* Reduce blur on mobile for performance */
   .header {
     backdrop-filter: blur(20px) saturate(150%);
     -webkit-backdrop-filter: blur(20px) saturate(150%);
+  }
+  
+  /* Settings dropdown на мобильной версии */
+  .settings-dropdown {
+    position: fixed;
+    top: 60px;
+    right: 1rem;
+    left: 1rem;
+    min-width: auto;
+    max-width: none;
   }
 }
 
