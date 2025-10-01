@@ -159,14 +159,15 @@ class RSSAggregator {
                 }
             });
             
-            // Если недостаточно статей, пробуем VK
-            if (allArticles.length < 5 && this.vkApi) {
-                console.log('📱 Мало статей из RSS, пробуем загрузить из VK...');
+            // Загружаем посты из VK как дополнительный источник
+            if (this.vkApi) {
+                console.log('📱 Загружаем посты из VK групп как дополнительный источник...');
                 try {
                     const vkArticles = await this.fetchFromVK();
                     if (vkArticles && vkArticles.length > 0) {
                         console.log(`✅ Загружено ${vkArticles.length} постов из VK`);
                         allArticles = [...allArticles, ...vkArticles];
+                        successfulSources += vkArticles.length > 0 ? 1 : 0;
                     }
                 } catch (error) {
                     console.warn('⚠️ Ошибка загрузки VK постов:', error);
@@ -986,25 +987,30 @@ class RSSAggregator {
         }
         
         try {
-            // Группы ВКонтакте для новостей
-            const groups = ['habr', 'techrush', 'proglib'];
+            console.log('📱 Загружаем посты из VK групп...');
+            
+            // Получаем все группы из VK API
+            const vkGroups = this.vkApi.groups.map(g => g.id);
             const allPosts = [];
             
-            for (const groupId of groups) {
+            // Загружаем по 5 постов из каждой группы
+            for (const groupId of vkGroups) {
                 try {
-                    const posts = await this.vkApi.getGroupPosts(groupId, 10);
+                    const posts = await this.vkApi.getGroupPosts(groupId, 5);
                     if (posts && posts.length > 0) {
                         const transformed = this.vkApi.transformPosts(posts, groupId);
                         allPosts.push(...transformed);
+                        console.log(`✅ VK ${groupId}: ${posts.length} постов`);
                     }
                 } catch (error) {
-                    console.warn(`Ошибка загрузки VK группы ${groupId}:`, error);
+                    console.warn(`⚠️ Ошибка загрузки VK группы ${groupId}:`, error);
                 }
             }
             
+            console.log(`📱 Всего загружено ${allPosts.length} постов из VK`);
             return allPosts;
         } catch (error) {
-            console.error('Ошибка загрузки из VK:', error);
+            console.error('❌ Ошибка загрузки из VK:', error);
             return [];
         }
     }

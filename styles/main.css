@@ -1268,15 +1268,28 @@
   }
   
   .header-actions {
-    gap: 8px;
+    gap: 6px;
     position: absolute;
     top: 1rem;
     right: 1rem;
+    flex-wrap: wrap;
   }
   
   .header-actions .btn--icon {
     width: 36px;
     height: 36px;
+  }
+  
+  /* VK Login на мобильных */
+  #vkLoginContainer {
+    display: flex !important;
+    width: 100%;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+  
+  #vkLoginContainer iframe {
+    max-width: 100%;
   }
   
   .site-title {
