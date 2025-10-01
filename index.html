@@ -142,7 +142,7 @@
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                     </svg>
-                    <input type="text" id="searchInput" class="form-control" placeholder="Глобальный поиск по всем новостям и вакансиям..." autocomplete="off">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Поиск вакансий и новостей (например: Frontend разработчик)" autocomplete="off">
                     <button class="search-clear hidden" id="searchClear">×</button>
                 </div>
                 <div class="search-suggestions" id="searchSuggestions"></div>
@@ -1625,38 +1625,115 @@
                 }
             }
             
-            // Функция поиска
-            function performSearch(query) {
+            // Функция поиска (новости + вакансии)
+            async function performSearch(query) {
+                const feedContainer = document.getElementById('feedContainer');
+                
+                // Показываем загрузку
+                feedContainer.innerHTML = `
+                    <div style="text-align: center; padding: 3rem;">
+                        <div class="spinner"></div>
+                        <h3>Поиск "${query}"...</h3>
+                        <p>Ищем в новостях и вакансиях</p>
+                    </div>
+                `;
+                
+                let newsResults = [];
+                let jobsResults = [];
+                
+                // Поиск в новостях
                 if (window.rssAggregator) {
-                    const results = window.rssAggregator.searchArticles(query);
-                    
-                    if (results.length > 0) {
-                        displaySearchResults(results, query);
-                        showToast(`Найдено ${results.length} результатов`, 'success');
-                    } else {
-                        showToast('Ничего не найдено', 'warning');
+                    newsResults = window.rssAggregator.searchArticles(query);
+                }
+                
+                // Поиск вакансий на HH.ru
+                if (window.hhApi) {
+                    try {
+                        const hhResults = await window.hhApi.searchVacancies({
+                            text: query,
+                            per_page: 20
+                        });
+                        jobsResults = window.hhApi.transformVacancies(hhResults.items || []);
+                    } catch (error) {
+                        console.error('Ошибка поиска вакансий:', error);
                     }
+                }
+                
+                const totalResults = newsResults.length + jobsResults.length;
+                
+                if (totalResults > 0) {
+                    displaySearchResults(newsResults, jobsResults, query);
+                    showToast(`Найдено: ${newsResults.length} новостей, ${jobsResults.length} вакансий`, 'success');
                 } else {
-                    showToast('Поиск временно недоступен', 'error');
+                    feedContainer.innerHTML = `
+                        <div style="text-align: center; padding: 3rem;">
+                            <h3>Ничего не найдено</h3>
+                            <p>По запросу "${query}" не найдено ни новостей, ни вакансий</p>
+                            <button class="btn btn--primary" onclick="clearSearchResults()">Вернуться к ленте</button>
+                        </div>
+                    `;
                 }
             }
             
-            // Отображение результатов поиска
-            function displaySearchResults(results, query) {
+            // Отображение результатов поиска (новости + вакансии)
+            function displaySearchResults(newsResults, jobsResults, query) {
                 const feedContainer = document.getElementById('feedContainer');
                 if (!feedContainer) return;
                 
-                feedContainer.innerHTML = `
+                const totalResults = newsResults.length + jobsResults.length;
+                
+                let html = `
                     <div class="search-results-header">
-                        <h3>Результаты поиска: "${query}" (${results.length})</h3>
+                        <h3>Результаты поиска: "${query}"</h3>
+                        <p style="color: var(--text-secondary); margin: 0.5rem 0;">
+                            Найдено: ${newsResults.length} новостей, ${jobsResults.length} вакансий
+                        </p>
                         <button class="btn btn--outline btn--sm" onclick="clearSearchResults()">
                             Вернуться к ленте
                         </button>
                     </div>
                 `;
                 
-                if (window.newsRenderer) {
-                    window.newsRenderer.renderCards(results.slice(0, 20), feedContainer);
+                feedContainer.innerHTML = html;
+                
+                // Показываем новости
+                if (newsResults.length > 0 && window.newsRenderer) {
+                    const newsSection = document.createElement('div');
+                    newsSection.innerHTML = '<h4 style="margin: 2rem 0 1rem 0; padding-left: 1rem;">📰 Новости</h4>';
+                    feedContainer.appendChild(newsSection);
+                    window.newsRenderer.renderCards(newsResults.slice(0, 20), feedContainer);
+                }
+                
+                // Показываем вакансии
+                if (jobsResults.length > 0) {
+                    const jobsSection = document.createElement('div');
+                    jobsSection.innerHTML = '<h4 style="margin: 2rem 0 1rem 0; padding-left: 1rem;">💼 Вакансии</h4>';
+                    feedContainer.appendChild(jobsSection);
+                    
+                    // Рендерим вакансии через displayJobs
+                    const jobsContainer = document.createElement('div');
+                    feedContainer.appendChild(jobsContainer);
+                    
+                    let jobsHTML = '<div class="jobs-grid">';
+                    jobsResults.forEach(job => {
+                        jobsHTML += `
+                            <div class="job-card-compact" data-job-id="${job.id}" onclick="window.openJobDetails('${job.id}')">
+                                ${job.companyLogo ? 
+                                    `<img src="${job.companyLogo}" alt="${job.company}" class="job-logo">` 
+                                    : '<div class="job-logo-placeholder">💼</div>'}
+                                <h4 class="job-title">${job.title}</h4>
+                                <p class="job-company">${job.company}</p>
+                                <div class="job-salary">${job.salary}</div>
+                                <div class="job-location">📍 ${job.location}</div>
+                                <div class="job-badge">${job.schedule === 'remote' ? '🏠 Удаленка' : job.experience}</div>
+                            </div>
+                        `;
+                    });
+                    jobsHTML += '</div>';
+                    jobsContainer.innerHTML = jobsHTML;
+                    
+                    // Сохраняем вакансии для модалки
+                    window.currentJobs = jobsResults;
                 }
             }
             
