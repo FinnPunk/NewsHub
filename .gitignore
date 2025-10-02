@@ -1,23 +1,2 @@
 ai
 examples
-
-# Большие файлы конфигурации
-jobs_groups_updated.js
-
-# Временные файлы оптимизации
-*OPTIMIZATION*.md
-*PERFORMANCE*.md
-*FIXES*.md
-
-# Кеш и логи
-*.log
-node_modules/
-.cache/
-
-# Временные файлы IDE
-.vscode/
-.idea/
-
-# Системные файлы
-.DS_Store
-Thumbs.db

@@ -789,9 +789,18 @@ class RSSAggregator {
             // Получаем группы с учетом фильтра по типу вакансии
             let vkGroups = this.vkApi.groups;
             
+            // Добавляем пользовательские VK группы
+            const customVkGroups = JSON.parse(localStorage.getItem('custom_vk_groups') || '[]');
+            const enabledCustomGroups = customVkGroups.filter(group => group.enabled);
+            
+            if (enabledCustomGroups.length > 0) {
+                vkGroups = [...vkGroups, ...enabledCustomGroups];
+                console.log(`📱 Добавлено ${enabledCustomGroups.length} пользовательских VK групп`);
+            }
+            
             if (jobType && window.CONFIG?.vkGroups) {
                 // Фильтруем группы по связанным вакансиям
-                const relevantGroups = window.CONFIG.vkGroups.filter(group => 
+                const relevantGroups = vkGroups.filter(group => 
                     group.relatedJobs && group.relatedJobs.includes(jobType)
                 );
                 

@@ -28,7 +28,7 @@
                     </nav>
                 </div>
                 <div class="header-actions">
-                    <div class="app-version" id="appVersion">v2.2.0</div>
+                    <div class="app-version" id="appVersion">v2.1.9</div>
                     <button class="btn btn--icon" id="settingsToggle" title="Настройки">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12A3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97 0-.33-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1 0 .33.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66Z"/>
@@ -1231,9 +1231,153 @@
                 });
             }
             
+            // VK Groups Management
+            setupVKGroupsManagement();
+            
             // OpenAI API Management
             setupOpenAIManagement();
         });
+        
+        // VK Groups Management Functions
+        function loadVKGroups() {
+            const groupsList = document.getElementById('vkGroupsList');
+            if (!groupsList) return;
+            
+            const vkGroups = JSON.parse(localStorage.getItem('custom_vk_groups') || '[]');
+            const configGroups = window.CONFIG?.vkGroups || [];
+            
+            groupsList.innerHTML = '';
+            
+            // Показываем группы из конфига
+            configGroups.forEach(group => {
+                const groupCard = document.createElement('div');
+                groupCard.className = 'source-card';
+                groupCard.innerHTML = `
+                    <div class="source-info">
+                        <div class="source-title">${group.name}</div>
+                        <div class="source-url">vk.com/${group.id}</div>
+                        <div class="source-category">${group.category}</div>
+                    </div>
+                    <div class="source-actions">
+                        <span class="source-status ${group.enabled ? 'enabled' : 'disabled'}">
+                            ${group.enabled ? '✅' : '❌'}
+                        </span>
+                    </div>
+                `;
+                groupsList.appendChild(groupCard);
+            });
+            
+            // Показываем пользовательские группы
+            vkGroups.forEach((group, index) => {
+                const groupCard = document.createElement('div');
+                groupCard.className = 'source-card custom-group';
+                groupCard.innerHTML = `
+                    <div class="source-info">
+                        <div class="source-title">${group.name}</div>
+                        <div class="source-url">vk.com/${group.id}</div>
+                        <div class="source-category">${group.category}</div>
+                    </div>
+                    <div class="source-actions">
+                        <button class="btn btn--ghost btn--sm" onclick="toggleVKGroup(${index})">
+                            ${group.enabled ? '❌ Отключить' : '✅ Включить'}
+                        </button>
+                        <button class="btn btn--ghost btn--sm btn--danger" onclick="removeVKGroup(${index})">
+                            🗑️ Удалить
+                        </button>
+                    </div>
+                `;
+                groupsList.appendChild(groupCard);
+            });
+        }
+        
+        function toggleVKGroup(index) {
+            const vkGroups = JSON.parse(localStorage.getItem('custom_vk_groups') || '[]');
+            if (vkGroups[index]) {
+                vkGroups[index].enabled = !vkGroups[index].enabled;
+                localStorage.setItem('custom_vk_groups', JSON.stringify(vkGroups));
+                
+                if (typeof window.showToast === 'function') {
+                    window.showToast(
+                        `Группа ${vkGroups[index].enabled ? 'включена' : 'отключена'}`,
+                        vkGroups[index].enabled ? 'success' : 'info'
+                    );
+                }
+                loadVKGroups();
+            }
+        }
+        
+        function removeVKGroup(index) {
+            const vkGroups = JSON.parse(localStorage.getItem('custom_vk_groups') || '[]');
+            if (vkGroups[index]) {
+                const groupName = vkGroups[index].name;
+                vkGroups.splice(index, 1);
+                localStorage.setItem('custom_vk_groups', JSON.stringify(vkGroups));
+                
+                if (typeof window.showToast === 'function') {
+                    window.showToast(`Группа "${groupName}" удалена`, 'success');
+                }
+                loadVKGroups();
+            }
+        }
+        
+        function setupVKGroupsManagement() {
+            // Загружаем VK группы при открытии вкладки
+            const vkTab = document.querySelector('[data-tab="vk"]');
+            if (vkTab) {
+                vkTab.addEventListener('click', function() {
+                    setTimeout(() => loadVKGroups(), 100);
+                });
+            }
+            
+            // Обработчик добавления VK группы
+            const addVkGroupBtn = document.getElementById('addVkGroupBtn');
+            if (addVkGroupBtn) {
+                addVkGroupBtn.addEventListener('click', function() {
+                    const name = document.getElementById('vkGroupName').value.trim();
+                    const id = document.getElementById('vkGroupId').value.trim();
+                    const category = document.getElementById('vkGroupCategory').value;
+                    
+                    if (!name || !id) {
+                        if (typeof window.showToast === 'function') {
+                            window.showToast('Заполните название и ID группы', 'error');
+                        }
+                        return;
+                    }
+                    
+                    const vkGroups = JSON.parse(localStorage.getItem('custom_vk_groups') || '[]');
+                    
+                    // Проверяем дубликаты
+                    if (vkGroups.some(group => group.id === id)) {
+                        if (typeof window.showToast === 'function') {
+                            window.showToast('Группа с таким ID уже добавлена', 'error');
+                        }
+                        return;
+                    }
+                    
+                    const newGroup = {
+                        id: id,
+                        name: name,
+                        category: category,
+                        enabled: true,
+                        url: `https://vk.com/${id}`,
+                        relatedJobs: [] // Пользователь может настроить позже
+                    };
+                    
+                    vkGroups.push(newGroup);
+                    localStorage.setItem('custom_vk_groups', JSON.stringify(vkGroups));
+                    
+                    if (typeof window.showToast === 'function') {
+                        window.showToast(`Группа "${name}" добавлена`, 'success');
+                    }
+                    
+                    // Очищаем поля
+                    document.getElementById('vkGroupName').value = '';
+                    document.getElementById('vkGroupId').value = '';
+                    
+                    loadVKGroups();
+                });
+            }
+        }
         
         // OpenAI API Management Functions
         function loadApiKeyStatus() {
@@ -1883,9 +2027,6 @@
             
             // Инициализируем кнопку фильтров
             initializeFiltersButton();
-            
-            // Инициализируем VK группы
-            initializeVKGroups();
             
             // Кнопка редактирования профиля
             const editProfileBtn = document.getElementById('editProfileBtn');
@@ -2584,184 +2725,6 @@
                         loadVKPostsForSelectedJobType(jobType);
                     }
                 });
-            }
-        }
-        
-        // Функция инициализации VK групп
-        function initializeVKGroups() {
-            // Инициализация вкладок
-            const tabButtons = document.querySelectorAll('.tab-btn');
-            const tabContents = document.querySelectorAll('.tab-content');
-            
-            tabButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const tabId = this.dataset.tab;
-                    
-                    // Убираем активный класс у всех кнопок и контента
-                    tabButtons.forEach(b => b.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.remove('active'));
-                    
-                    // Добавляем активный класс к текущей кнопке и контенту
-                    this.classList.add('active');
-                    const targetTab = document.getElementById(tabId + '-tab');
-                    if (targetTab) {
-                        targetTab.classList.add('active');
-                    }
-                    
-                    // Загружаем VK группы при переключении на вкладку VK
-                    if (tabId === 'vk') {
-                        loadVKGroups();
-                    }
-                });
-            });
-            
-            // Загружаем VK группы
-            loadVKGroups();
-            
-            // Обработчик добавления VK группы
-            const addVkGroupBtn = document.getElementById('addVkGroupBtn');
-            if (addVkGroupBtn) {
-                addVkGroupBtn.addEventListener('click', function() {
-                    const name = document.getElementById('vkGroupName').value.trim();
-                    const groupId = document.getElementById('vkGroupId').value.trim();
-                    const category = document.getElementById('vkGroupCategory').value;
-                    
-                    if (!name || !groupId) {
-                        alert('Заполните название и ID группы');
-                        return;
-                    }
-                    
-                    // Добавляем группу
-                    addVKGroup(name, groupId, category);
-                    
-                    // Очищаем поля
-                    document.getElementById('vkGroupName').value = '';
-                    document.getElementById('vkGroupId').value = '';
-                });
-            }
-        }
-        
-        // Функция загрузки VK групп
-        function loadVKGroups() {
-            const container = document.getElementById('vkGroupsList');
-            if (!container) return;
-            
-            // Получаем VK группы из CONFIG
-            const vkGroups = window.CONFIG?.vkGroups || [];
-            
-            if (vkGroups.length === 0) {
-                container.innerHTML = '<p class="empty-state">Нет VK групп для отображения</p>';
-                return;
-            }
-            
-            const html = vkGroups.map(group => `
-                <div class="source-item" data-group-id="${group.id}">
-                    <div class="source-info">
-                        <div class="source-name">${group.name}</div>
-                        <div class="source-url">vk.com/${group.id}</div>
-                        <div class="source-category">${group.category}</div>
-                    </div>
-                    <div class="source-actions">
-                        <button class="btn btn--small ${group.enabled ? 'btn--success' : 'btn--secondary'}" 
-                                onclick="toggleVKGroup('${group.id}')">
-                            ${group.enabled ? 'Включено' : 'Отключено'}
-                        </button>
-                        <button class="btn btn--small btn--danger" onclick="removeVKGroup('${group.id}')">
-                            Удалить
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-            
-            container.innerHTML = html;
-        }
-        
-        // Функция добавления VK группы
-        function addVKGroup(name, groupId, category) {
-            if (!window.CONFIG) {
-                window.CONFIG = { vkGroups: [] };
-            }
-            if (!window.CONFIG.vkGroups) {
-                window.CONFIG.vkGroups = [];
-            }
-            
-            // Проверяем, не существует ли уже такая группа
-            const exists = window.CONFIG.vkGroups.find(g => g.id === groupId);
-            if (exists) {
-                alert('Группа с таким ID уже существует');
-                return;
-            }
-            
-            // Добавляем новую группу
-            const newGroup = {
-                id: groupId,
-                name: name,
-                category: category,
-                url: `https://vk.com/${groupId}`,
-                enabled: true,
-                relatedJobs: [] // Можно расширить в будущем
-            };
-            
-            window.CONFIG.vkGroups.push(newGroup);
-            
-            // Сохраняем в localStorage
-            try {
-                localStorage.setItem('custom_vk_groups', JSON.stringify(window.CONFIG.vkGroups));
-                console.log('✅ VK группа добавлена:', newGroup);
-            } catch (error) {
-                console.error('Ошибка сохранения VK группы:', error);
-            }
-            
-            // Обновляем отображение
-            loadVKGroups();
-            
-            alert(`VK группа "${name}" успешно добавлена!`);
-        }
-        
-        // Функция переключения состояния VK группы
-        function toggleVKGroup(groupId) {
-            if (!window.CONFIG?.vkGroups) return;
-            
-            const group = window.CONFIG.vkGroups.find(g => g.id === groupId);
-            if (group) {
-                group.enabled = !group.enabled;
-                
-                // Сохраняем изменения
-                try {
-                    localStorage.setItem('custom_vk_groups', JSON.stringify(window.CONFIG.vkGroups));
-                    console.log(`✅ VK группа ${groupId} ${group.enabled ? 'включена' : 'отключена'}`);
-                } catch (error) {
-                    console.error('Ошибка сохранения изменений VK группы:', error);
-                }
-                
-                // Обновляем отображение
-                loadVKGroups();
-            }
-        }
-        
-        // Функция удаления VK группы
-        function removeVKGroup(groupId) {
-            if (!confirm('Вы уверены, что хотите удалить эту VK группу?')) return;
-            
-            if (!window.CONFIG?.vkGroups) return;
-            
-            const index = window.CONFIG.vkGroups.findIndex(g => g.id === groupId);
-            if (index !== -1) {
-                const groupName = window.CONFIG.vkGroups[index].name;
-                window.CONFIG.vkGroups.splice(index, 1);
-                
-                // Сохраняем изменения
-                try {
-                    localStorage.setItem('custom_vk_groups', JSON.stringify(window.CONFIG.vkGroups));
-                    console.log(`✅ VK группа ${groupId} удалена`);
-                } catch (error) {
-                    console.error('Ошибка сохранения изменений VK групп:', error);
-                }
-                
-                // Обновляем отображение
-                loadVKGroups();
-                
-                alert(`VK группа "${groupName}" удалена`);
             }
         }
         
@@ -3473,10 +3436,6 @@
                 window.location.reload();
             }, 1000);
         }
-        
-        // Экспорт функций для глобального доступа
-        window.toggleVKGroup = toggleVKGroup;
-        window.removeVKGroup = removeVKGroup;
     </script>
 </body>
 </html>
