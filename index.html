@@ -28,7 +28,7 @@
                     </nav>
                 </div>
                 <div class="header-actions">
-                    <div class="app-version" id="appVersion">v2.1.9</div>
+                    <div class="app-version" id="appVersion">v2.2.0</div>
                     <button class="btn btn--icon" id="settingsToggle" title="Настройки">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12A3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97 0-.33-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1 0 .33.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66Z"/>
@@ -2268,14 +2268,33 @@
                     }
                 });
                 
-                // Если нет VK постов, показываем сообщение
+                // Если нет VK постов, пытаемся загрузить их для выбранного типа вакансии
                 if (vkCount === 0) {
-                    feedContainer.innerHTML = `
-                        <div style="text-align: center; padding: 3rem;">
-                            <h3>📱 Новости из ВК загружаются...</h3>
-                            <p>Посты из VK групп появятся автоматически при загрузке новостей</p>
-                        </div>
-                    `;
+                    const savedFilters = JSON.parse(localStorage.getItem('job_filters') || '{}');
+                    const jobType = savedFilters.jobType;
+                    
+                    if (jobType) {
+                        console.log('📱 Загружаем VK посты для типа вакансии:', jobType);
+                        loadVKPostsForSelectedJobType(jobType);
+                        
+                        feedContainer.innerHTML = `
+                            <div style="text-align: center; padding: 3rem;">
+                                <div class="spinner"></div>
+                                <h3>📱 Загружаем новости из ВК...</h3>
+                                <p>Ищем посты для типа вакансии: <strong>${window.CONFIG?.jobTypes?.find(j => j.id === jobType)?.name || jobType}</strong></p>
+                            </div>
+                        `;
+                    } else {
+                        feedContainer.innerHTML = `
+                            <div style="text-align: center; padding: 3rem;">
+                                <h3>📱 Настройте тип вакансии</h3>
+                                <p>Выберите тип вакансии в фильтрах, чтобы увидеть релевантные VK посты</p>
+                                <button class="btn btn--primary" onclick="document.getElementById('filtersToggle').click()">
+                                    🔧 Открыть фильтры
+                                </button>
+                            </div>
+                        `;
+                    }
                 }
                 return;
             }
@@ -2714,15 +2733,35 @@
                     // Переинициализируем кнопку фильтров
                     initializeFiltersButton();
 
-                    // Если активен фильтр "Вакансии", перезагружаем
+                    // Определяем активный фильтр
                     const activeFilter = document.querySelector('.filter-chip.active')?.dataset.filter;
+                    
+                    // Обновляем контент в зависимости от активной вкладки и настроек
                     if (activeFilter === 'jobs') {
-                        loadJobsWithFilters(true); // Принудительно обновляем
+                        // Если активны вакансии - обновляем их с новыми фильтрами
+                        console.log('🔄 Обновляем вакансии с новыми фильтрами');
+                        loadJobsWithFilters(true);
+                    } else if (activeFilter === 'vk-news') {
+                        // Если активны VK новости - обновляем их для выбранного типа
+                        if (jobType) {
+                            console.log('🔄 Обновляем VK новости для типа:', jobType);
+                            loadVKPostsForSelectedJobType(jobType);
+                        }
+                    } else if (activeFilter === 'all') {
+                        // Если активна вкладка "Все" - перезагружаем весь контент
+                        console.log('🔄 Обновляем весь контент с новыми фильтрами');
+                        loadAllContent();
                     }
                     
-                    // Если выбран тип вакансии, загружаем VK посты для этого типа
+                    // Дополнительно: если выбран тип вакансии, всегда обновляем VK посты в фоне
                     if (jobType) {
+                        console.log('📱 Загружаем VK посты для типа вакансии:', jobType);
                         loadVKPostsForSelectedJobType(jobType);
+                    }
+                    
+                    // Показываем уведомление
+                    if (typeof window.showToast === 'function') {
+                        window.showToast('Фильтры применены! Контент обновляется...', 'success');
                     }
                 });
             }
@@ -2789,7 +2828,7 @@
             const filters = JSON.parse(localStorage.getItem('job_filters') || '{}');
             
             // Создаем уникальный ключ кеша на основе фильтров
-            const cacheKey = `jobs_cache_${filters.searchText || 'all'}_${filters.city || '1'}`;
+            const cacheKey = `jobs_cache_${filters.jobType || 'all'}_${filters.city || '1'}`;
             
             // Проверяем кеш если не принудительное обновление
             if (!forceRefresh) {
@@ -2804,8 +2843,15 @@
             try {
                 showLoadingSpinner();
                 
+                // Формируем текст поиска из типа вакансии
+                let searchText = '';
+                if (filters.jobType) {
+                    const jobTypeName = window.CONFIG?.jobTypes?.find(j => j.id === filters.jobType)?.name;
+                    searchText = jobTypeName || filters.jobType;
+                }
+                
                 const searchParams = {
-                    text: filters.searchText || '', // Поиск по названию
+                    text: searchText, // Поиск по типу вакансии
                     area: parseInt(filters.city) || 1,
                     per_page: 50  // Увеличиваем до 50 вакансий
                 };

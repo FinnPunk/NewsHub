@@ -460,7 +460,7 @@ export const CONFIG = {
     // Настройки приложения
     app: {
         name: 'NewsHub',
-        version: '2.1.9',
+        version: '2.2.0',
         maxArticles: 50,
         defaultUpdateFrequency: 3600000, // 1 час
     }
