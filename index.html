@@ -28,7 +28,7 @@
                     </nav>
                 </div>
                 <div class="header-actions">
-                    <div class="app-version" id="appVersion">v2.1.6</div>
+                    <div class="app-version" id="appVersion">v2.2.0</div>
                     <button class="btn btn--icon" id="settingsToggle" title="Настройки">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12A3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97 0-.33-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1 0 .33.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66Z"/>
@@ -403,27 +403,6 @@
                 <button class="modal-close" onclick="document.getElementById('filtersModal').classList.add('hidden')">×</button>
             </div>
             <div class="modal-body filters-modal-body">
-                <!-- RSS Sources Filter -->
-                <div class="filter-section">
-                    <div class="filter-section-header">
-                        <div class="filter-icon">📰</div>
-                        <div>
-                            <h3>Источники новостей</h3>
-                            <p class="filter-desc">Выберите источники для вашей ленты</p>
-                        </div>
-                    </div>
-                    <div class="sources-grid" id="sourcesFilter">
-                        <!-- Populated by JS -->
-                    </div>
-                    <button class="btn btn--ghost btn--full-width add-source-btn" id="addSourceBtn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                        </svg>
-                        Добавить RSS источник
-                    </button>
-                </div>
-
-
                 <!-- Date Range Filter -->
                 <div class="filter-section">
                     <div class="filter-section-header">
@@ -486,11 +465,6 @@
                     
                     <!-- Компактная сетка 2 колонки -->
                     <div class="job-filters-grid">
-                        <div class="job-filter-group" style="grid-column: span 2;">
-                            <label for="jobSearchText">🔍 Название вакансии / Профессия</label>
-                            <input type="text" id="jobSearchText" class="form-control" placeholder="Например: Frontend разработчик, Python developer">
-                            <span class="input-hint">Используется для поиска вакансий и релевантных новостей</span>
-                        </div>
                         
                         <div class="job-filter-group" style="grid-column: span 2;">
                             <label for="jobType">💼 Тип вакансии</label>
@@ -1488,32 +1462,32 @@
                 }
             }
             
+            // Устанавливаем состояние загрузки RSS
+            window.loadingState.setLoading('rss', true);
+            
             try {
                 // Показываем skeleton loading
                 feedContainer.innerHTML = window.newsRenderer.renderSkeleton(5);
                 if (loadingSpinner) loadingSpinner.classList.remove('hidden');
                 
                 // Загружаем новости
-                console.log('📰 Загружаем новости...');
+                console.log('📰 Загружаем RSS новости...');
                 let articles = await window.rssAggregator.aggregateNews(50);
                 console.log('✅ Получено статей:', articles.length);
                 
-                // Фильтруем новости по профессии из фильтров вакансий
+                // Фильтруем новости по типу вакансии из фильтров
                 const jobFilters = JSON.parse(localStorage.getItem('job_filters') || '{}');
-                if (jobFilters.searchText && forceRefresh) {
-                    const searchTerms = jobFilters.searchText.toLowerCase().split(' ');
-                    articles = articles.filter(article => {
-                        const content = (article.title + ' ' + article.description).toLowerCase();
-                        return searchTerms.some(term => content.includes(term));
-                    });
-                    
-                    if (articles.length > 0) {
-                        if (typeof window.showToast === 'function') {
-                            window.showToast(`📰 Найдено ${articles.length} новостей по теме "${jobFilters.searchText}"`, 'success');
-                        }
+                if (jobFilters.jobType && forceRefresh) {
+                    // Получаем название типа вакансии для фильтрации
+                    const jobTypeName = window.CONFIG?.jobTypes?.find(j => j.id === jobFilters.jobType)?.name;
+                    if (jobTypeName) {
+                        const searchTerms = jobTypeName.toLowerCase().split(' ');
+                        articles = articles.filter(article => {
+                            const content = (article.title + ' ' + article.description).toLowerCase();
+                            return searchTerms.some(term => content.includes(term));
+                        });
                     }
-                }
-                
+                }          
                 if (articles && articles.length > 0) {
                     window.newsRenderer.renderCards(articles, feedContainer);
                     window.cachedNewsHTML = feedContainer.innerHTML;
@@ -1543,6 +1517,7 @@
                 `;
             } finally {
                 if (loadingSpinner) loadingSpinner.classList.add('hidden');
+                window.loadingState.setLoading('rss', false);
             }
         }
         
@@ -1656,7 +1631,7 @@
                 }
             }
             
-            // Функция поиска (новости + вакансии)
+            // Функция поиска (RSS новости + VK посты + вакансии)
             async function performSearch(query) {
                 const feedContainer = document.getElementById('feedContainer');
                 
@@ -1665,16 +1640,35 @@
                     <div style="text-align: center; padding: 3rem;">
                         <div class="spinner"></div>
                         <h3>Поиск "${query}"...</h3>
-                        <p>Ищем в новостях и вакансиях</p>
+                        <p>Ищем в RSS новостях, VK постах и вакансиях</p>
                     </div>
                 `;
                 
-                let newsResults = [];
+                let rssResults = [];
+                let vkResults = [];
                 let jobsResults = [];
                 
-                // Поиск в новостях
+                // Поиск в RSS новостях
                 if (window.rssAggregator) {
-                    newsResults = window.rssAggregator.searchArticles(query);
+                    rssResults = window.rssAggregator.searchArticles(query);
+                }
+                
+                // Поиск в VK постах (определяем тип вакансии из запроса)
+                if (window.rssAggregator) {
+                    try {
+                        const jobType = window.rssAggregator.detectJobTypeFromQuery(query);
+                        if (jobType) {
+                            console.log(`🔍 Определен тип вакансии для поиска: ${jobType}`);
+                            const vkPosts = await window.rssAggregator.loadVKPostsForJobType(jobType);
+                            // Фильтруем VK посты по запросу
+                            vkResults = vkPosts.filter(post => 
+                                post.title.toLowerCase().includes(query.toLowerCase()) ||
+                                post.description.toLowerCase().includes(query.toLowerCase())
+                            );
+                        }
+                    } catch (error) {
+                        console.warn('Ошибка поиска в VK:', error);
+                    }
                 }
                 
                 // Поиск вакансий на HH.ru
@@ -1690,18 +1684,16 @@
                     }
                 }
                 
-                const totalResults = newsResults.length + jobsResults.length;
+                const totalResults = rssResults.length + vkResults.length + jobsResults.length;
                 
                 if (totalResults > 0) {
-                    displaySearchResults(newsResults, jobsResults, query);
-                    if (typeof window.showToast === 'function') {
-                        window.showToast(`Найдено: ${newsResults.length} новостей, ${jobsResults.length} вакансий`, 'success');
-                    }
+                    displaySearchResults([...rssResults, ...vkResults], jobsResults, query);
+                    console.log(`🔍 Найдено: ${rssResults.length} RSS, ${vkResults.length} VK, ${jobsResults.length} вакансий`);
                 } else {
                     feedContainer.innerHTML = `
                         <div style="text-align: center; padding: 3rem;">
                             <h3>Ничего не найдено</h3>
-                            <p>По запросу "${query}" не найдено ни новостей, ни вакансий</p>
+                            <p>По запросу "${query}" не найдено результатов</p>
                             <button class="btn btn--primary" onclick="clearSearchResults()">Вернуться к ленте</button>
                         </div>
                     `;
@@ -1870,15 +1862,30 @@
                 }
             }
             
-            // Кнопка фильтров
-            const filtersToggle = document.getElementById('filtersToggle');
-            const filtersModal = document.getElementById('filtersModal');
-            
-            if (filtersToggle && filtersModal) {
-                filtersToggle.addEventListener('click', function() {
-                    filtersModal.classList.remove('hidden');
-                });
+            // Кнопка фильтров - переинициализируем каждый раз
+            function initializeFiltersButton() {
+                const filtersToggle = document.getElementById('filtersToggle');
+                const filtersModal = document.getElementById('filtersModal');
+                
+                if (filtersToggle && filtersModal) {
+                    // Удаляем старые обработчики
+                    filtersToggle.replaceWith(filtersToggle.cloneNode(true));
+                    const newFiltersToggle = document.getElementById('filtersToggle');
+                    
+                    newFiltersToggle.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('🔧 Открываем фильтры');
+                        filtersModal.classList.remove('hidden');
+                    });
+                }
             }
+            
+            // Инициализируем кнопку фильтров
+            initializeFiltersButton();
+            
+            // Инициализируем VK группы
+            initializeVKGroups();
             
             // Кнопка редактирования профиля
             const editProfileBtn = document.getElementById('editProfileBtn');
@@ -1893,31 +1900,39 @@
             if (refreshBtn) {
                 refreshBtn.addEventListener('click', async function() {
                     console.log('🔄 Refresh button clicked');
-                    const activeFilter = document.querySelector('.filter-chip.active')?.dataset.filter;
-                    console.log('Active filter:', activeFilter);
                     
-                    if (activeFilter === 'jobs') {
-                        if (typeof window.showToast === 'function') {
-                            window.showToast('Обновление вакансий...', 'info');
-                        }
-                        if (typeof window.loadJobsWithFilters === 'function') {
+                    // Отключаем кнопку на время обновления
+                    refreshBtn.disabled = true;
+                    refreshBtn.style.opacity = '0.5';
+                    
+                    try {
+                        const activeFilter = document.querySelector('.filter-chip.active')?.dataset.filter;
+                        console.log('Active filter:', activeFilter);
+                        
+                        if (activeFilter === 'jobs') {
+                            console.log('🔄 Обновляем вакансии...');
                             await window.loadJobsWithFilters(true);
-                            if (typeof window.showToast === 'function') {
-                                window.showToast('Вакансии обновлены!', 'success');
+                        } else if (activeFilter === 'all') {
+                            console.log('🔄 Обновляем весь контент...');
+                            await loadAllContent();
+                        } else if (activeFilter === 'vk-news') {
+                            console.log('🔄 Обновляем VK посты...');
+                            const savedFilters = JSON.parse(localStorage.getItem('job_filters') || '{}');
+                            if (savedFilters.jobType) {
+                                await loadVKPostsForSelectedJobType(savedFilters.jobType);
                             }
                         } else {
-                            if (typeof window.showToast === 'function') {
-                                window.showToast('Ошибка: функция не готова', 'error');
-                            }
+                            console.log('🔄 Обновляем RSS новости...');
+                            await loadInitialContent(true);
                         }
-                    } else {
-                        if (typeof window.showToast === 'function') {
-                            window.showToast('Обновление новостей...', 'info');
-                        }
-                        await loadInitialContent(true);
-                        if (typeof window.showToast === 'function') {
-                            window.showToast('Новости обновлены!', 'success');
-                        }
+                        
+                        console.log('✅ Обновление завершено');
+                    } catch (error) {
+                        console.error('❌ Ошибка обновления:', error);
+                    } finally {
+                        // Включаем кнопку обратно
+                        refreshBtn.disabled = false;
+                        refreshBtn.style.opacity = '1';
                     }
                 });
             }
@@ -1990,8 +2005,53 @@
             });
         }
         
-        // Сохраняем оригинальный HTML с новостями
+        // Глобальные переменные для кеширования
         window.cachedNewsHTML = '';
+        
+        // Система управления состоянием загрузки
+        window.loadingState = {
+            rss: false,
+            vk: false,
+            jobs: false,
+            
+            setLoading(type, isLoading) {
+                this[type] = isLoading;
+                this.updateUI();
+            },
+            
+            isAnyLoading() {
+                return this.rss || this.vk || this.jobs;
+            },
+            
+            updateUI() {
+                const feedContainer = document.getElementById('feedContainer');
+                if (!feedContainer) return;
+                
+                // Показываем статус загрузки только если что-то загружается
+                if (this.isAnyLoading()) {
+                    const loadingTypes = [];
+                    if (this.rss) loadingTypes.push('RSS новости');
+                    if (this.vk) loadingTypes.push('VK посты');
+                    if (this.jobs) loadingTypes.push('Вакансии');
+                    
+                    const loadingText = loadingTypes.join(' + ');
+                    
+                    // Обновляем только если контент пустой или уже показывается загрузка
+                    if (feedContainer.innerHTML.includes('spinner') || feedContainer.children.length === 0) {
+                        feedContainer.innerHTML = `
+                            <div style="text-align: center; padding: 3rem;">
+                                <div class="spinner"></div>
+                                <h3>Загружаем ${loadingText}...</h3>
+                                <p>Пожалуйста, подождите</p>
+                            </div>
+                        `;
+                    }
+                } else {
+                    // Если загрузка закончилась, очищаем контент
+                    feedContainer.innerHTML = '';
+                }
+            }
+        };
         
         // Применение быстрого фильтра
         function applyQuickFilter(filter) {
@@ -2079,17 +2139,127 @@
                 return;
             }
             
-            // Для "Все" - восстанавливаем новости и показываем всё
+            // Для "Все" - показываем RSS, VK и вакансии поочередно
             if (filter === 'all') {
-                if (window.cachedNewsHTML) {
-                    feedContainer.innerHTML = window.cachedNewsHTML;
-                }
-                const articles = feedContainer.querySelectorAll('.news-card');
-                articles.forEach(article => {
-                    article.style.display = 'block';
-                    article.style.animation = 'fadeInUp 0.3s ease';
-                });
+                loadAllContent();
+                return;
             }
+        }
+        
+        // Оптимизированная функция загрузки всего контента
+        async function loadAllContent() {
+            const feedContainer = document.getElementById('feedContainer');
+            const savedFilters = JSON.parse(localStorage.getItem('job_filters') || '{}');
+            const jobType = savedFilters.jobType;
+            
+            let allContent = [];
+            let hasRSS = false, hasVK = false, hasJobs = false;
+            
+            // Определяем что нужно загружать
+            if (window.rssAggregator) hasRSS = true;
+            if (jobType && window.rssAggregator) hasVK = true;
+            if (window.hhApi) hasJobs = true;
+            
+            // Устанавливаем состояния загрузки
+            window.loadingState.setLoading('rss', hasRSS);
+            window.loadingState.setLoading('vk', hasVK);
+            window.loadingState.setLoading('jobs', hasJobs);
+            
+            try {
+                // 1. Загружаем RSS новости
+                if (hasRSS) {
+                    console.log('📰 Загружаем RSS новости...');
+                    const rssNews = await window.rssAggregator.aggregateNews();
+                    allContent = [...allContent, ...rssNews];
+                    console.log(`✅ Загружено ${rssNews.length} RSS новостей`);
+                    window.loadingState.setLoading('rss', false);
+                }
+                
+                // 2. Загружаем VK посты
+                if (hasVK) {
+                    console.log(`📱 Загружаем VK посты для типа: ${jobType}`);
+                    const vkPosts = await window.rssAggregator.loadVKPostsForJobType(jobType);
+                    allContent = [...allContent, ...vkPosts];
+                    console.log(`✅ Загружено ${vkPosts.length} VK постов`);
+                    window.loadingState.setLoading('vk', false);
+                }
+                
+                // 3. Загружаем вакансии
+                if (hasJobs) {
+                    console.log('💼 Загружаем вакансии...');
+                    const jobsData = await window.hhApi.searchVacancies({
+                        text: jobType ? window.CONFIG.jobTypes.find(j => j.id === jobType)?.name || '' : '',
+                        area: savedFilters.city || '1',
+                        per_page: 20
+                    });
+                    const jobs = window.hhApi.transformVacancies(jobsData.items || []);
+                    allContent = [...allContent, ...jobs];
+                    console.log(`✅ Загружено ${jobs.length} вакансий`);
+                    window.loadingState.setLoading('jobs', false);
+                }
+                
+                // Отображаем весь контент
+                if (allContent.length > 0) {
+                    displayMixedContent(allContent);
+                    console.log(`🎉 Всего загружено ${allContent.length} элементов`);
+                } else {
+                    feedContainer.innerHTML = `
+                        <div style="text-align: center; padding: 3rem;">
+                            <h3>😔 Нет контента</h3>
+                            <p>Не удалось загрузить новости и вакансии</p>
+                            <button class="btn btn--primary" onclick="loadAllContent()">Повторить</button>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('❌ Ошибка загрузки контента:', error);
+                window.loadingState.setLoading('rss', false);
+                window.loadingState.setLoading('vk', false);
+                window.loadingState.setLoading('jobs', false);
+                
+                feedContainer.innerHTML = `
+                    <div style="text-align: center; padding: 3rem;">
+                        <h3>⚠️ Ошибка загрузки</h3>
+                        <p>Попробуйте еще раз</p>
+                        <button class="btn btn--primary" onclick="loadAllContent()">Повторить</button>
+                    </div>
+                `;
+            }
+        }
+        
+        // Функция отображения смешанного контента
+        function displayMixedContent(items) {
+            const feedContainer = document.getElementById('feedContainer');
+            if (!feedContainer || !items.length) return;
+            
+            // Сортируем по дате (новые сначала)
+            const sortedItems = items.sort((a, b) => {
+                const dateA = new Date(a.publishedAt || a.published_at || 0);
+                const dateB = new Date(b.publishedAt || b.published_at || 0);
+                return dateB - dateA;
+            });
+            
+            const html = sortedItems.map(item => {
+                if (item.type === 'job') {
+                    return createJobCard(item);
+                } else {
+                    return createNewsCard(item);
+                }
+            }).join('');
+            
+            feedContainer.innerHTML = html;
+            
+            // Анимация появления
+            const cards = feedContainer.querySelectorAll('.news-card, .job-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.3s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
         }
         
         // Демо-вакансии и старые карточки удалены - используется только реальный HH.ru API с сеткой
@@ -2378,7 +2548,6 @@
             
             if (applyBtn) {
                 applyBtn.addEventListener('click', async function() {
-                    const searchText = document.getElementById('jobSearchText')?.value.trim() || '';
                     const jobType = document.getElementById('jobType')?.value || '';
                     const city = document.getElementById('jobCity')?.value || '1';
                     const experience = document.getElementById('jobExperience')?.value || '';
@@ -2389,13 +2558,20 @@
 
                     // Сохраняем фильтры
                     localStorage.setItem('job_filters', JSON.stringify({
-                        searchText, jobType, city, experience, schedule, employment, salary, onlyWithSalary
+                        jobType,
+                        city,
+                        experience,
+                        schedule,
+                        employment,
+                        salary,
+                        onlyWithSalary
                     }));
 
-                    showToast('Фильтры применены', 'success');
-                    
                     // Закрываем модалку
                     document.getElementById('filtersModal')?.classList.add('hidden');
+
+                    // Переинициализируем кнопку фильтров
+                    initializeFiltersButton();
 
                     // Если активен фильтр "Вакансии", перезагружаем
                     const activeFilter = document.querySelector('.filter-chip.active')?.dataset.filter;
@@ -2403,18 +2579,250 @@
                         loadJobsWithFilters(true); // Принудительно обновляем
                     }
                     
-                    // Если задан текст поиска, также обновляем новости
-                    if (searchText && activeFilter !== 'jobs') {
-                        loadInitialContent(true);
+                    // Если выбран тип вакансии, загружаем VK посты для этого типа
+                    if (jobType) {
+                        loadVKPostsForSelectedJobType(jobType);
                     }
                 });
             }
         }
-
-        // Загрузка вакансий с фильтрами
+        
+        // Функция инициализации VK групп
+        function initializeVKGroups() {
+            // Инициализация вкладок
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabId = this.dataset.tab;
+                    
+                    // Убираем активный класс у всех кнопок и контента
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Добавляем активный класс к текущей кнопке и контенту
+                    this.classList.add('active');
+                    const targetTab = document.getElementById(tabId + '-tab');
+                    if (targetTab) {
+                        targetTab.classList.add('active');
+                    }
+                    
+                    // Загружаем VK группы при переключении на вкладку VK
+                    if (tabId === 'vk') {
+                        loadVKGroups();
+                    }
+                });
+            });
+            
+            // Загружаем VK группы
+            loadVKGroups();
+            
+            // Обработчик добавления VK группы
+            const addVkGroupBtn = document.getElementById('addVkGroupBtn');
+            if (addVkGroupBtn) {
+                addVkGroupBtn.addEventListener('click', function() {
+                    const name = document.getElementById('vkGroupName').value.trim();
+                    const groupId = document.getElementById('vkGroupId').value.trim();
+                    const category = document.getElementById('vkGroupCategory').value;
+                    
+                    if (!name || !groupId) {
+                        alert('Заполните название и ID группы');
+                        return;
+                    }
+                    
+                    // Добавляем группу
+                    addVKGroup(name, groupId, category);
+                    
+                    // Очищаем поля
+                    document.getElementById('vkGroupName').value = '';
+                    document.getElementById('vkGroupId').value = '';
+                });
+            }
+        }
+        
+        // Функция загрузки VK групп
+        function loadVKGroups() {
+            const container = document.getElementById('vkGroupsList');
+            if (!container) return;
+            
+            // Получаем VK группы из CONFIG
+            const vkGroups = window.CONFIG?.vkGroups || [];
+            
+            if (vkGroups.length === 0) {
+                container.innerHTML = '<p class="empty-state">Нет VK групп для отображения</p>';
+                return;
+            }
+            
+            const html = vkGroups.map(group => `
+                <div class="source-item" data-group-id="${group.id}">
+                    <div class="source-info">
+                        <div class="source-name">${group.name}</div>
+                        <div class="source-url">vk.com/${group.id}</div>
+                        <div class="source-category">${group.category}</div>
+                    </div>
+                    <div class="source-actions">
+                        <button class="btn btn--small ${group.enabled ? 'btn--success' : 'btn--secondary'}" 
+                                onclick="toggleVKGroup('${group.id}')">
+                            ${group.enabled ? 'Включено' : 'Отключено'}
+                        </button>
+                        <button class="btn btn--small btn--danger" onclick="removeVKGroup('${group.id}')">
+                            Удалить
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            container.innerHTML = html;
+        }
+        
+        // Функция добавления VK группы
+        function addVKGroup(name, groupId, category) {
+            if (!window.CONFIG) {
+                window.CONFIG = { vkGroups: [] };
+            }
+            if (!window.CONFIG.vkGroups) {
+                window.CONFIG.vkGroups = [];
+            }
+            
+            // Проверяем, не существует ли уже такая группа
+            const exists = window.CONFIG.vkGroups.find(g => g.id === groupId);
+            if (exists) {
+                alert('Группа с таким ID уже существует');
+                return;
+            }
+            
+            // Добавляем новую группу
+            const newGroup = {
+                id: groupId,
+                name: name,
+                category: category,
+                url: `https://vk.com/${groupId}`,
+                enabled: true,
+                relatedJobs: [] // Можно расширить в будущем
+            };
+            
+            window.CONFIG.vkGroups.push(newGroup);
+            
+            // Сохраняем в localStorage
+            try {
+                localStorage.setItem('custom_vk_groups', JSON.stringify(window.CONFIG.vkGroups));
+                console.log('✅ VK группа добавлена:', newGroup);
+            } catch (error) {
+                console.error('Ошибка сохранения VK группы:', error);
+            }
+            
+            // Обновляем отображение
+            loadVKGroups();
+            
+            alert(`VK группа "${name}" успешно добавлена!`);
+        }
+        
+        // Функция переключения состояния VK группы
+        function toggleVKGroup(groupId) {
+            if (!window.CONFIG?.vkGroups) return;
+            
+            const group = window.CONFIG.vkGroups.find(g => g.id === groupId);
+            if (group) {
+                group.enabled = !group.enabled;
+                
+                // Сохраняем изменения
+                try {
+                    localStorage.setItem('custom_vk_groups', JSON.stringify(window.CONFIG.vkGroups));
+                    console.log(`✅ VK группа ${groupId} ${group.enabled ? 'включена' : 'отключена'}`);
+                } catch (error) {
+                    console.error('Ошибка сохранения изменений VK группы:', error);
+                }
+                
+                // Обновляем отображение
+                loadVKGroups();
+            }
+        }
+        
+        // Функция удаления VK группы
+        function removeVKGroup(groupId) {
+            if (!confirm('Вы уверены, что хотите удалить эту VK группу?')) return;
+            
+            if (!window.CONFIG?.vkGroups) return;
+            
+            const index = window.CONFIG.vkGroups.findIndex(g => g.id === groupId);
+            if (index !== -1) {
+                const groupName = window.CONFIG.vkGroups[index].name;
+                window.CONFIG.vkGroups.splice(index, 1);
+                
+                // Сохраняем изменения
+                try {
+                    localStorage.setItem('custom_vk_groups', JSON.stringify(window.CONFIG.vkGroups));
+                    console.log(`✅ VK группа ${groupId} удалена`);
+                } catch (error) {
+                    console.error('Ошибка сохранения изменений VK групп:', error);
+                }
+                
+                // Обновляем отображение
+                loadVKGroups();
+                
+                alert(`VK группа "${groupName}" удалена`);
+            }
+        }
+        
+        // Функция загрузки VK постов для выбранного типа вакансии
+        async function loadVKPostsForSelectedJobType(jobType) {
+            if (!window.rssAggregator || !jobType) return;
+            
+            console.log(`📱 Загружаем VK посты для выбранного типа: ${jobType}`);
+            
+            // Устанавливаем состояние загрузки VK
+            window.loadingState.setLoading('vk', true);
+            
+            try {
+                const vkPosts = await window.rssAggregator.loadVKPostsForJobType(jobType);
+                
+                if (vkPosts.length > 0) {
+                    console.log(`✅ Загружено ${vkPosts.length} VK постов для ${jobType}`);
+                    
+                    // Если активна вкладка "VK новости", обновляем её
+                    const activeFilter = document.querySelector('.filter-chip.active')?.dataset.filter;
+                    if (activeFilter === 'vk-news') {
+                        const feedContainer = document.getElementById('feedContainer');
+                        const vkHTML = vkPosts.map(post => createNewsCard(post)).join('');
+                        feedContainer.innerHTML = vkHTML;
+                        
+                        // Анимация появления
+                        const cards = feedContainer.querySelectorAll('.news-card');
+                        cards.forEach((card, index) => {
+                            card.style.opacity = '0';
+                            card.style.transform = 'translateY(20px)';
+                            setTimeout(() => {
+                                card.style.transition = 'all 0.3s ease';
+                                card.style.opacity = '1';
+                                card.style.transform = 'translateY(0)';
+                            }, index * 50);
+                        });
+                    }
+                    
+                    // Если активна вкладка "Всё", перезагружаем весь контент
+                    if (activeFilter === 'all') {
+                        loadAllContent();
+                    }
+                } else {
+                    console.log(`ℹ️ Нет VK постов для типа ${jobType}`);
+                }
+            } catch (error) {
+                console.warn('⚠️ Ошибка загрузки VK постов:', error);
+            } finally {
+                // Сбрасываем состояние загрузки VK
+                window.loadingState.setLoading('vk', false);
+            }
+        }
+        
+        // Оптимизированная загрузка вакансий с фильтрами
         window.loadJobsWithFilters = async function(forceRefresh = false) {
             console.log('🚀 loadJobsWithFilters вызвана');
-            window.jobsApiReady = true; // Устанавливаем флаг что функция готова
+            window.jobsApiReady = true;
+            
+            // Устанавливаем состояние загрузки
+            window.loadingState.setLoading('jobs', true);
+            
             const filters = JSON.parse(localStorage.getItem('job_filters') || '{}');
             
             // Создаем уникальный ключ кеша на основе фильтров
@@ -2469,11 +2877,13 @@
                 
                 displayJobs(jobs);
                 hideLoadingSpinner();
+                window.loadingState.setLoading('jobs', false);
 
             } catch (error) {
                 console.error('Ошибка загрузки вакансий:', error);
                 showToast('Ошибка загрузки вакансий', 'error');
                 hideLoadingSpinner();
+                window.loadingState.setLoading('jobs', false);
             }
         };
 
@@ -2547,7 +2957,6 @@
             
             // Загружаем сохраненные фильтры в UI
             const savedFilters = JSON.parse(localStorage.getItem('job_filters') || '{}');
-            if (savedFilters.searchText) document.getElementById('jobSearchText').value = savedFilters.searchText;
             if (savedFilters.jobType) document.getElementById('jobType').value = savedFilters.jobType;
             if (savedFilters.city) document.getElementById('jobCity').value = savedFilters.city;
             if (savedFilters.experience) document.getElementById('jobExperience').value = savedFilters.experience;
@@ -3064,6 +3473,10 @@
                 window.location.reload();
             }, 1000);
         }
+        
+        // Экспорт функций для глобального доступа
+        window.toggleVKGroup = toggleVKGroup;
+        window.removeVKGroup = removeVKGroup;
     </script>
 </body>
 </html>

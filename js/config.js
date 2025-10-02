@@ -8,24 +8,24 @@ export const CONFIG = {
         { id: 'habr', name: 'Habr', url: 'https://habr.com/ru/rss/hub/programming/', category: 'tech', enabled: true, priority: 1, direct: true },
         { id: 'vc-tech', name: 'VC.ru', url: 'https://vc.ru/rss', category: 'tech', enabled: true, priority: 2, direct: true },
         
-        // Международные IT источники
-        { id: 'dev-to', name: 'Dev.to', url: 'https://dev.to/feed', category: 'tech', enabled: true, priority: 3 },
-        { id: 'github-blog', name: 'GitHub Blog', url: 'https://github.blog/feed/', category: 'tech', enabled: true, priority: 4 },
+        // Международные IT источники (отключены из-за CORS)
+        { id: 'dev-to', name: 'Dev.to', url: 'https://dev.to/feed', category: 'tech', enabled: false, priority: 3 },
+        { id: 'github-blog', name: 'GitHub Blog', url: 'https://github.blog/feed/', category: 'tech', enabled: false, priority: 4 },
         
-        // Деловые новости
-        { id: 'kommersant', name: 'Коммерсантъ', url: 'https://www.kommersant.ru/RSS/news.xml', category: 'business', enabled: true, priority: 5 },
+        // Деловые новости (отключены из-за CORS)
+        { id: 'kommersant', name: 'Коммерсантъ', url: 'https://www.kommersant.ru/RSS/news.xml', category: 'business', enabled: false, priority: 5 },
         
-        // Общие новости
-        { id: 'lenta', name: 'Лента.ру', url: 'https://lenta.ru/rss', category: 'general', enabled: true, priority: 6 },
-        { id: 'ria', name: 'РИА Новости', url: 'https://ria.ru/export/rss2/archive/index.xml', category: 'general', enabled: true, priority: 7 },
+        // Общие новости (отключены из-за CORS)
+        { id: 'lenta', name: 'Лента.ру', url: 'https://lenta.ru/rss', category: 'general', enabled: false, priority: 6 },
+        { id: 'ria', name: 'РИА Новости', url: 'https://ria.ru/export/rss2/archive/index.xml', category: 'general', enabled: false, priority: 7 },
         
-        // Дизайн и UX
-        { id: 'smashing', name: 'Smashing Magazine', url: 'https://www.smashingmagazine.com/feed/', category: 'design', enabled: true, priority: 8 },
-        { id: 'css-tricks', name: 'CSS-Tricks', url: 'https://css-tricks.com/feed/', category: 'design', enabled: true, priority: 9 },
+        // Дизайн и UX (отключены из-за CORS)
+        { id: 'smashing', name: 'Smashing Magazine', url: 'https://www.smashingmagazine.com/feed/', category: 'design', enabled: false, priority: 8 },
+        { id: 'css-tricks', name: 'CSS-Tricks', url: 'https://css-tricks.com/feed/', category: 'design', enabled: false, priority: 9 },
         
-        // Дополнительные источники
-        { id: 'freecodecamp', name: 'freeCodeCamp', url: 'https://www.freecodecamp.org/news/rss/', category: 'tech', enabled: true, priority: 10 },
-        { id: 'hashnode', name: 'Hashnode', url: 'https://hashnode.com/rss', category: 'tech', enabled: true, priority: 11 },
+        // Дополнительные источники (отключены из-за CORS)
+        { id: 'freecodecamp', name: 'freeCodeCamp', url: 'https://www.freecodecamp.org/news/rss/', category: 'tech', enabled: false, priority: 10 },
+        { id: 'hashnode', name: 'Hashnode', url: 'https://hashnode.com/rss', category: 'tech', enabled: false, priority: 11 },
         
         // Отключенные проблемные источники
         { id: 'techcrunch', name: 'TechCrunch', url: 'https://techcrunch.com/feed/', category: 'tech', enabled: false },
@@ -149,13 +149,9 @@ export const CONFIG = {
         { id: 'itmozg', name: 'IT Мозг', category: 'tech', url: 'https://vk.com/itmozg', enabled: true, relatedJobs: ['it_manager', 'full_stack_developer'] },
     ],
     
-    // CORS прокси для обхода блокировок
+    // CORS прокси для обхода блокировок (только работающие)
     corsProxies: [
-        'https://api.allorigins.win/get?url=',
-        'https://corsproxy.io/?',
-        'https://cors-anywhere.herokuapp.com/',
-        'https://api.codetabs.com/v1/proxy?quest=',
-        'https://thingproxy.freeboard.io/fetch/'
+        // Отключаем проблемные прокси, используем только локальные источники
     ],
     
     // Города для поиска вакансий (HH.ru)
@@ -464,7 +460,7 @@ export const CONFIG = {
     // Настройки приложения
     app: {
         name: 'NewsHub',
-        version: '2.1.6',
+        version: '2.2.0',
         maxArticles: 50,
         defaultUpdateFrequency: 3600000, // 1 час
     }

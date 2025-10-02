@@ -159,33 +159,8 @@ class RSSAggregator {
                 }
             });
             
-            // Загружаем посты из VK как дополнительный источник
-            if (this.vkApi) {
-                console.log('📱 Загружаем посты из VK групп как дополнительный источник...');
-                try {
-                    // Определяем тип вакансии из сохраненных фильтров
-                    const jobFilters = JSON.parse(localStorage.getItem('job_filters') || '{}');
-                    
-                    // Приоритет: явно выбранный тип > автоопределение из текста
-                    let jobType = jobFilters.jobType || null;
-                    if (!jobType && jobFilters.searchText) {
-                        jobType = this.detectJobTypeFromQuery(jobFilters.searchText);
-                    }
-                    
-                    if (jobType) {
-                        console.log(`🎯 Используется тип вакансии: ${jobType}`);
-                    }
-                    
-                    const vkArticles = await this.fetchFromVK(jobType);
-                    if (vkArticles && vkArticles.length > 0) {
-                        console.log(`✅ Загружено ${vkArticles.length} постов из VK`);
-                        allArticles = [...allArticles, ...vkArticles];
-                        successfulSources += vkArticles.length > 0 ? 1 : 0;
-                    }
-                } catch (error) {
-                    console.warn('⚠️ Ошибка загрузки VK постов:', error);
-                }
-            }
+            // VK посты загружаются отдельно только при выборе типа вакансии
+            // Это ускоряет загрузку основных новостей
             
             // Если ни один источник не сработал, возвращаем пустой массив
             if (allArticles.length === 0) {
@@ -782,20 +757,32 @@ class RSSAggregator {
     clearCache() {
         this.cache.clear();
         this.failedSources.clear();
-        // Очистка кэша
-        
-        if (typeof window.showToast === 'function') {
-            window.showToast('Кэш очищен, источники сброшены', 'info');
-        }
+        console.log('🗑️ Кэш очищен, источники сброшены');
     }
 
-    // Загрузка постов из VK с фильтрацией по типу вакансии
+    // Функция для загрузки VK постов при выборе типа вакансии
+    async loadVKPostsForJobType(jobType) {
+        if (!this.vkApi || !jobType) return [];
+        
+        console.log('📱 Загружаем VK посты для типа вакансии:', jobType);
+        try {
+            const vkArticles = await this.fetchFromVK(jobType);
+            if (vkArticles && vkArticles.length > 0) {
+                console.log(`✅ Загружено ${vkArticles.length} VK постов для ${jobType}`);
+                return vkArticles;
+            }
+        } catch (error) {
+            console.warn('⚠️ Ошибка загрузки VK постов:', error);
+        }
+        return [];
+    }
+
+    // Функция для загрузки VK постов с фильтрацией по типу вакансии
     async fetchFromVK(jobType = null) {
         if (!this.vkApi) {
             console.warn('VK API не инициализирован');
             return [];
         }
-        
         try {
             console.log('📱 Загружаем посты из VK групп...');
             
