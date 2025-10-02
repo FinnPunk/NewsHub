@@ -163,7 +163,20 @@ class RSSAggregator {
             if (this.vkApi) {
                 console.log('📱 Загружаем посты из VK групп как дополнительный источник...');
                 try {
-                    const vkArticles = await this.fetchFromVK();
+                    // Определяем тип вакансии из сохраненных фильтров
+                    const jobFilters = JSON.parse(localStorage.getItem('job_filters') || '{}');
+                    
+                    // Приоритет: явно выбранный тип > автоопределение из текста
+                    let jobType = jobFilters.jobType || null;
+                    if (!jobType && jobFilters.searchText) {
+                        jobType = this.detectJobTypeFromQuery(jobFilters.searchText);
+                    }
+                    
+                    if (jobType) {
+                        console.log(`🎯 Используется тип вакансии: ${jobType}`);
+                    }
+                    
+                    const vkArticles = await this.fetchFromVK(jobType);
                     if (vkArticles && vkArticles.length > 0) {
                         console.log(`✅ Загружено ${vkArticles.length} постов из VK`);
                         allArticles = [...allArticles, ...vkArticles];
@@ -776,8 +789,8 @@ class RSSAggregator {
         }
     }
 
-    // Загрузка постов из VK как fallback
-    async fetchFromVK() {
+    // Загрузка постов из VK с фильтрацией по типу вакансии
+    async fetchFromVK(jobType = null) {
         if (!this.vkApi) {
             console.warn('VK API не инициализирован');
             return [];
@@ -786,12 +799,26 @@ class RSSAggregator {
         try {
             console.log('📱 Загружаем посты из VK групп...');
             
-            // Получаем все группы из VK API
-            const vkGroups = this.vkApi.groups.map(g => g.id);
+            // Получаем группы с учетом фильтра по типу вакансии
+            let vkGroups = this.vkApi.groups;
+            
+            if (jobType && window.CONFIG?.vkGroups) {
+                // Фильтруем группы по связанным вакансиям
+                const relevantGroups = window.CONFIG.vkGroups.filter(group => 
+                    group.relatedJobs && group.relatedJobs.includes(jobType)
+                );
+                
+                if (relevantGroups.length > 0) {
+                    vkGroups = relevantGroups;
+                    console.log(`🎯 Фильтрация по типу "${jobType}": ${vkGroups.length} групп`);
+                }
+            }
+            
             const allPosts = [];
             
             // Загружаем по 5 постов из каждой группы
-            for (const groupId of vkGroups) {
+            for (const group of vkGroups) {
+                const groupId = group.id || group;
                 try {
                     const posts = await this.vkApi.getGroupPosts(groupId, 5);
                     if (posts && posts.length > 0) {
@@ -810,6 +837,30 @@ class RSSAggregator {
             console.error('❌ Ошибка загрузки из VK:', error);
             return [];
         }
+    }
+    
+    // Определение типа вакансии из поискового запроса
+    detectJobTypeFromQuery(searchText) {
+        if (!searchText || !window.CONFIG?.jobTypes) return null;
+        
+        const query = searchText.toLowerCase();
+        
+        // Ищем совпадения с ключевыми словами типов вакансий
+        for (const jobType of window.CONFIG.jobTypes) {
+            // Проверяем название типа
+            if (query.includes(jobType.name.toLowerCase())) {
+                return jobType.id;
+            }
+            
+            // Проверяем ключевые слова
+            for (const keyword of jobType.keywords) {
+                if (query.includes(keyword.toLowerCase())) {
+                    return jobType.id;
+                }
+            }
+        }
+        
+        return null;
     }
 
     // Получение статистики

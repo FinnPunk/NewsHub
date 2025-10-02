@@ -9,17 +9,12 @@ class VKApiClient {
         // Базовый URL для API запросов
         this.baseUrl = 'https://api.vk.com/method';
         
-        // Список групп для мониторинга (публичные паблики ВК)
-        this.groups = [
+        // Список групп берется из CONFIG при инициализации
+        // Если CONFIG еще не загружен, используем базовый набор
+        this.groups = window.CONFIG?.vkGroups || [
             { id: 'habr', name: 'Habr', category: 'tech', url: 'https://vk.com/habr' },
-            { id: 'techrush', name: 'TechRush', category: 'tech', url: 'https://vk.com/techrush' },
-            { id: 'proglib', name: 'Библиотека программиста', category: 'tech', url: 'https://vk.com/proglib' },
-            { id: 'devby', name: 'Dev.by', category: 'tech', url: 'https://vk.com/devby' },
             { id: 'tproger', name: 'Типичный программист', category: 'tech', url: 'https://vk.com/tproger' },
-            { id: 'vcru', name: 'VC.ru', category: 'business', url: 'https://vk.com/vcru' },
-            { id: 'netology', name: 'Нетология', category: 'education', url: 'https://vk.com/netology' },
-            { id: 'designpub', name: 'Дизайн', category: 'design', url: 'https://vk.com/designpub' },
-            { id: 'yandex', name: 'Яндекс', category: 'tech', url: 'https://vk.com/yandex' },
+            { id: 'proglib', name: 'Библиотека программиста', category: 'tech', url: 'https://vk.com/proglib' },
         ];
         
         this.cache = new Map();
