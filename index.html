@@ -28,7 +28,7 @@
                     </nav>
                 </div>
                 <div class="header-actions">
-                    <div class="app-version" id="appVersion">v2.6.9</div>
+                    <div class="app-version" id="appVersion">v2.7.3</div>
                     
                     <!-- Переключатель темы -->
                     <button class="btn btn--icon theme-toggle" id="themeToggle" title="Переключить тему">
@@ -2565,8 +2565,10 @@
             ];
             
             // Генерируем посты с правильными заголовками и описаниями
+            // Используем стабильный timestamp для ID
+            const baseTimestamp = 1759488672920; // Фиксированный timestamp
             return postTemplates.map((template, index) => ({
-                id: `vk_post_${Date.now()}_${index}`,
+                id: `vk_post_${baseTimestamp}_${index}`,
                 title: template.title,
                 description: template.description,
                 source: template.source,
@@ -2985,11 +2987,15 @@
         // Демо-вакансии и старые карточки удалены - используется только реальный HH.ru API с сеткой
         
         // Функции для модального окна статьи
-        function openArticleModal(articleId) {
+        window.openArticleModal = function(articleId) {
+            console.log('🔍 Открываем модальное окно для статьи:', articleId);
             const modal = document.getElementById('articleModal');
             const article = window.findArticleById(articleId);
             
+            console.log('📄 Найденная статья:', article);
+            
             if (!article) {
+                console.error('❌ Статья не найдена:', articleId);
                 return;
             }
             
@@ -2997,16 +3003,35 @@
             modal.dataset.currentArticleId = articleId;
             
             // Заполняем модальное окно данными
-            document.getElementById('articleModalTitle').textContent = article.title;
-            document.getElementById('articleModalIcon').textContent = getSourceIcon(article.source.category);
-            document.getElementById('articleModalSource').textContent = article.source.name;
-            document.getElementById('articleModalTime').textContent = formatTimeAgo(article.publishedAt);
-            document.getElementById('articleModalContent').innerHTML = `
-                <p>${article.description || 'Полное содержимое статьи будет загружено с сайта источника.'}</p>
-                <p><strong>Категория:</strong> ${article.category}</p>
-                <p><strong>Время чтения:</strong> ${article.readingTime} мин</p>
-            `;
-            document.getElementById('articleModalLink').href = article.link;
+            document.getElementById('articleModalTitle').textContent = article.title || article.name;
+            
+            // Для вакансий используем другую структуру данных
+            if (article.type === 'job' || article.id?.startsWith('hh_')) {
+                document.getElementById('articleModalIcon').textContent = '💼';
+                document.getElementById('articleModalSource').textContent = article.employer?.name || 'HeadHunter';
+                document.getElementById('articleModalTime').textContent = formatTimeAgo(article.published_at || article.publishedAt);
+                document.getElementById('articleModalContent').innerHTML = `
+                    <p><strong>Компания:</strong> ${article.employer?.name || 'Не указана'}</p>
+                    <p><strong>Зарплата:</strong> ${article.salary?.from ? `от ${article.salary.from}` : 'Не указана'} ${article.salary?.currency || ''}</p>
+                    <p><strong>Опыт:</strong> ${article.experience?.name || 'Не указан'}</p>
+                    <p><strong>Занятость:</strong> ${article.employment?.name || 'Не указана'}</p>
+                    <p><strong>График:</strong> ${article.schedule?.name || 'Не указан'}</p>
+                    ${article.snippet?.requirement ? `<p><strong>Требования:</strong> ${article.snippet.requirement}</p>` : ''}
+                    ${article.snippet?.responsibility ? `<p><strong>Обязанности:</strong> ${article.snippet.responsibility}</p>` : ''}
+                `;
+                document.getElementById('articleModalLink').href = article.alternate_url || article.link;
+            } else {
+                // Для статей и постов
+                document.getElementById('articleModalIcon').textContent = getSourceIcon(article.source?.category || article.category);
+                document.getElementById('articleModalSource').textContent = article.source?.name || article.source;
+                document.getElementById('articleModalTime').textContent = formatTimeAgo(article.publishedAt);
+                document.getElementById('articleModalContent').innerHTML = `
+                    <p>${article.description || 'Полное содержимое статьи будет загружено с сайта источника.'}</p>
+                    <p><strong>Категория:</strong> ${article.category}</p>
+                    <p><strong>Время чтения:</strong> ${article.readingTime || 1} мин</p>
+                `;
+                document.getElementById('articleModalLink').href = article.link;
+            }
             
             // Обновляем кнопки действий
             const likeBtn = document.getElementById('articleModalLike');
@@ -3021,36 +3046,70 @@
             
             modal.classList.remove('hidden');
             document.body.classList.add('modal-open');
-        }
+        };
         
-        function closeArticleModal() {
+        window.closeArticleModal = function() {
             document.getElementById('articleModal').classList.add('hidden');
             document.body.classList.remove('modal-open');
-        }
+        };
         
         window.findArticleById = function(articleId) {
+            console.log('🔍 Ищем статью с ID:', articleId);
+            console.log('📊 Доступные источники данных:', {
+                rssAggregator: !!window.rssAggregator?.articles?.length,
+                cachedRSSNews: !!window.cachedRSSNews?.length,
+                cachedVKPosts: !!window.cachedVKPosts?.length,
+                currentJobs: !!window.currentJobs?.length,
+                savedArticles: JSON.parse(localStorage.getItem('saved_articles') || '[]').length
+            });
+            
             // Ищем статью в загруженных данных
             if (window.rssAggregator && window.rssAggregator.articles) {
-                return window.rssAggregator.articles.find(article => article.id === articleId);
+                const found = window.rssAggregator.articles.find(article => article.id === articleId);
+                if (found) {
+                    console.log('✅ Найдено в rssAggregator.articles');
+                    return found;
+                }
             }
             
             // Ищем в кешированных RSS новостях
             if (window.cachedRSSNews) {
                 const found = window.cachedRSSNews.find(article => article.id === articleId);
-                if (found) return found;
+                if (found) {
+                    console.log('✅ Найдено в cachedRSSNews');
+                    return found;
+                }
             }
             
             // Ищем в кешированных VK постах
             if (window.cachedVKPosts) {
+                console.log('🔍 Ищем в VK постах:', window.cachedVKPosts.map(p => p.id));
                 const found = window.cachedVKPosts.find(article => article.id === articleId);
-                if (found) return found;
+                if (found) {
+                    console.log('✅ Найдено в cachedVKPosts');
+                    return found;
+                }
+            }
+            
+            // Ищем в вакансиях HH
+            if (window.currentJobs) {
+                console.log('🔍 Ищем в HH вакансиях:', window.currentJobs.map(j => j.id));
+                const found = window.currentJobs.find(job => job.id === articleId);
+                if (found) {
+                    console.log('✅ Найдено в currentJobs');
+                    return found;
+                }
             }
             
             // Ищем в сохраненных статьях
             const savedArticles = JSON.parse(localStorage.getItem('saved_articles') || '[]');
             const found = savedArticles.find(article => article.id === articleId);
-            if (found) return found;
+            if (found) {
+                console.log('✅ Найдено в savedArticles');
+                return found;
+            }
             
+            console.log('❌ Статья не найдена нигде');
             return null;
         };
         
@@ -3528,7 +3587,7 @@
                     </div>
                     
                     <div class="news-card-content" data-article-url="${link}">
-                        <div class="news-card-clickable" role="button" tabindex="0">
+                        <div class="news-card-clickable" role="button" tabindex="0" onclick="openArticleModal('${articleId}')">
                             <h3 class="news-title">${title}</h3>
                             ${description ? `<p class="news-description">${description}</p>` : ''}
                             ${imageUrl ? `<img src="${imageUrl}" alt="${title}" class="news-image" loading="lazy" onerror="this.style.display='none'">` : ''}

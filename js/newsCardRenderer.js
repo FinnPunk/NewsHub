@@ -33,7 +33,7 @@ class NewsCardRenderer {
                 const card = e.target.closest('.news-card');
                 const articleId = card ? card.dataset.articleId : null;
                 if (articleId) {
-                    this.openArticleModal(articleId);
+                    window.openArticleModal(articleId);
                 }
             }
         });
@@ -45,7 +45,7 @@ class NewsCardRenderer {
                 const card = e.target.closest('.news-card');
                 const articleId = card ? card.dataset.articleId : null;
                 if (articleId) {
-                    this.openArticleModal(articleId);
+                    window.openArticleModal(articleId);
                 }
             }
         });
