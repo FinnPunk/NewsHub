@@ -28,7 +28,7 @@
                     </nav>
                 </div>
                 <div class="header-actions">
-                    <div class="app-version" id="appVersion">v2.6.8</div>
+                    <div class="app-version" id="appVersion">v2.6.9</div>
                     
                     <!-- Переключатель темы -->
                     <button class="btn btn--icon theme-toggle" id="themeToggle" title="Переключить тему">
@@ -2325,7 +2325,18 @@
                     }
                 });
             }
-
+            
+            // Функция загрузки сохраненной темы
+            function loadSavedTheme() {
+                const savedTheme = localStorage.getItem('theme');
+                const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                
+                const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+                
+                document.documentElement.setAttribute('data-theme', theme);
+                console.log(`🎨 Загружена тема: ${theme}`);
+            }
+            
             // Загружаем сохраненную тему
             loadSavedTheme();
             document.addEventListener('click', function(e) {
@@ -3462,7 +3473,7 @@
                     title: title,
                     description: description,
                     link: link,
-                    publishedAt: publishedDate.toISOString(),
+                    publishedAt: publishedDate, // Передаем объект Date, а не строку
                     source: {
                         name: sourceName,
                         type: sourceType,
@@ -4133,15 +4144,6 @@
             console.log(`🎨 Тема переключена на: ${newTheme}`);
         }
 
-        function loadSavedTheme() {
-            const savedTheme = localStorage.getItem('theme');
-            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
-            
-            document.documentElement.setAttribute('data-theme', theme);
-            console.log(`🎨 Загружена тема: ${theme}`);
-        }
 
         // Слушаем изменения системной темы
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
