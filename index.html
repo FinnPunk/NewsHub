@@ -28,7 +28,18 @@
                     </nav>
                 </div>
                 <div class="header-actions">
-                    <div class="app-version" id="appVersion">v2.2.3</div>
+                    <div class="app-version" id="appVersion">v2.6.8</div>
+                    
+                    <!-- Переключатель темы -->
+                    <button class="btn btn--icon theme-toggle" id="themeToggle" title="Переключить тему">
+                        <svg class="theme-icon theme-icon-light" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>
+                        </svg>
+                        <svg class="theme-icon theme-icon-dark" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                            <path d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z"/>
+                        </svg>
+                    </button>
+                    
                     <button class="btn btn--icon" id="settingsToggle" title="Настройки">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12A3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97 0-.33-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1 0 .33.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66Z"/>
@@ -227,13 +238,32 @@
             <div class="page active" id="feedPage">
                 <!-- Quick Filters -->
                 <div class="quick-filters" id="quickFilters">
-                    <div class="filter-chips">
-                        <button class="filter-chip active" data-filter="all">Все</button>
-                        <button class="filter-chip" data-filter="news">Новости</button>
-                        <button class="filter-chip" data-filter="vk-news">Новости из ВК</button>
-                        <button class="filter-chip" data-filter="jobs">Вакансии</button>
+                    <!-- Современный переключатель вкладок -->
+                    <div class="tab-switcher-modern">
+                        <div class="tab-indicator-modern" id="tabIndicator"></div>
+                        <button class="tab-button-modern active" data-filter="all">
+                            <span class="tab-icon-modern">🌟</span>
+                            <span class="tab-text-modern">Всё</span>
+                            <span class="tab-counter-modern" id="counter-all">0</span>
+                        </button>
+                        <button class="tab-button-modern" data-filter="news">
+                            <span class="tab-icon-modern">📰</span>
+                            <span class="tab-text-modern">Новости</span>
+                            <span class="tab-counter-modern" id="counter-news">0</span>
+                        </button>
+                        <button class="tab-button-modern" data-filter="vk-news">
+                            <span class="tab-icon-modern">📱</span>
+                            <span class="tab-text-modern">VK</span>
+                            <span class="tab-counter-modern" id="counter-vk-news">0</span>
+                        </button>
+                        <button class="tab-button-modern" data-filter="jobs">
+                            <span class="tab-icon-modern">💼</span>
+                            <span class="tab-text-modern">Вакансии</span>
+                            <span class="tab-counter-modern" id="counter-jobs">0</span>
+                        </button>
                     </div>
-                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    
+                    <div class="content-actions">
                         <button class="btn btn--icon" id="refreshBtn" title="Обновить контент">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
@@ -254,7 +284,7 @@
                 </div>
 
                 <!-- Loading Spinner -->
-                <div class="loading-spinner" id="loadingSpinner">
+                <div class="loading-spinner hidden" id="loadingSpinner">
                     <div class="spinner"></div>
                     <p>Загрузка новостей и вакансий...</p>
                 </div>
@@ -1094,6 +1124,15 @@
             // Настраиваем breadcrumb навигацию
             setupBreadcrumbNavigation();
             
+            // Инициализируем кеш новостей из localStorage при запуске
+            const cachedArticles = getCachedData('news_cache');
+            if (cachedArticles && cachedArticles.length > 0) {
+                window.cachedRSSNews = cachedArticles;
+                console.log('📰 Инициализирован кеш RSS новостей:', cachedArticles.length, 'статей');
+                // Обновляем счетчик новостей
+                window.updateTabCounter('news', cachedArticles.length);
+            }
+            
             // Загружаем начальный контент
             loadInitialContent();
         }
@@ -1506,18 +1545,26 @@
             }
             
             // Обработка клика на breadcrumb
-            breadcrumbItems.forEach((item, index) => {
-                item.addEventListener('click', () => {
-                    const pageName = item.textContent.trim();
-                    updateBreadcrumb(pageName);
-                    
-                    // Скрываем все страницы
-                    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-                    
-                    // Показываем нужную страницу
-                    if (pageName === 'Лента') {
-                        document.getElementById('feedPage').classList.add('active');
-                    } else if (pageName === 'Избранное') {
+                breadcrumbItems.forEach((item, index) => {
+                    item.addEventListener('click', function() {
+                        const pageName = pages[index];
+                        console.log(`🧭 Переход на страницу: ${pageName}`);
+                        updateBreadcrumb(pageName);
+                        
+                        // Дополнительная логика для избранного
+                        if (pageName === 'Избранное') {
+                            setTimeout(() => {
+                                loadFavorites();
+                            }, 100);
+                        }
+                        
+                        // Скрываем все страницы
+                        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+                        
+                        // Показываем нужную страницу
+                        if (pageName === 'Лента') {
+                            document.getElementById('feedPage').classList.add('active');
+                        } else if (pageName === 'Избранное') {
                         document.getElementById('favoritesPage').classList.add('active');
                         loadFavorites();
                     } else if (pageName === 'Профиль') {
@@ -1535,21 +1582,41 @@
         
         // Загрузка избранных статей
         function loadFavorites() {
+            console.log('⭐ Загружаем избранные статьи');
             const favoritesFeed = document.getElementById('favoritesFeed');
             const emptyFavorites = document.getElementById('emptyFavorites');
             const savedArticles = JSON.parse(localStorage.getItem('saved_articles') || '[]');
             
             if (savedArticles.length === 0) {
                 favoritesFeed.innerHTML = '';
-                emptyFavorites.classList.remove('hidden');
-            } else {
-                emptyFavorites.classList.add('hidden');
-                
-                if (window.newsRenderer) {
-                    window.newsRenderer.renderCards(savedArticles, favoritesFeed);
-                } else {
-                    favoritesFeed.innerHTML = '<p>Загрузка...</p>';
+                if (emptyFavorites) {
+                    emptyFavorites.classList.remove('hidden');
                 }
+                console.log('📭 Нет избранных статей');
+            } else {
+                if (emptyFavorites) {
+                    emptyFavorites.classList.add('hidden');
+                }
+                
+                console.log(`⭐ Найдено ${savedArticles.length} избранных статей`);
+                
+                // Генерируем HTML для избранных статей
+                const favoritesHTML = savedArticles.map(article => {
+                    // Убеждаемся что у статьи есть ID
+                    if (!article.id) {
+                        article.id = `favorite_${Date.now()}_${Math.random()}`;
+                    }
+                    return window.createNewsCard(article);
+                }).filter(html => html).join('');
+                
+                favoritesFeed.innerHTML = favoritesHTML;
+                
+                // Обновляем состояние кнопок избранного
+                savedArticles.forEach(article => {
+                    if (article.id) {
+                        updateAllSaveButtons(article.id, true);
+                    }
+                });
             }
         }
         
@@ -1597,8 +1664,15 @@
             if (!forceRefresh) {
                 const cachedArticles = getCachedData('news_cache');
                 if (cachedArticles && cachedArticles.length > 0) {
+                    // Сохраняем в глобальный кеш
+                    window.cachedRSSNews = cachedArticles;
+                    
                     window.newsRenderer.renderCards(cachedArticles, feedContainer);
                     window.cachedNewsHTML = feedContainer.innerHTML;
+                    
+                    // Обновляем счетчик новостей
+                    window.updateTabCounter('news', cachedArticles.length);
+                    
                     if (typeof window.showToast === 'function') {
                         window.showToast('📰 Новости загружены из кеша', 'success');
                     }
@@ -1633,11 +1707,17 @@
                     }
                 }          
                 if (articles && articles.length > 0) {
+                    // Сохраняем статьи в глобальный кеш для использования в applyQuickFilter
+                    window.cachedRSSNews = articles;
+                    
                     window.newsRenderer.renderCards(articles, feedContainer);
                     window.cachedNewsHTML = feedContainer.innerHTML;
                     
                     // Сохраняем в кеш
                     setCachedData('news_cache', articles);
+                    
+                    // Обновляем счетчик новостей
+                    window.updateTabCounter('news', articles.length);
                     
                     // Проверяем, есть ли fallback данные
                     const hasFallbackData = articles.some(article => article.isFallback);
@@ -1879,7 +1959,7 @@
                     jobsSection.innerHTML = '<h4 style="margin: 2rem 0 1rem 0; padding-left: 1rem;">💼 Вакансии</h4>';
                     feedContainer.appendChild(jobsSection);
                     
-                    // Рендерим вакансии через displayJobs
+                    // Рендерим вакансии через window.displayJobs
                     const jobsContainer = document.createElement('div');
                     feedContainer.appendChild(jobsContainer);
                     
@@ -1966,6 +2046,7 @@
                         const rssModal = document.getElementById('rssSourcesModal');
                         if (rssModal) {
                             rssModal.classList.remove('hidden');
+                            document.body.classList.add('modal-open');
                             loadRssSources();
                         }
                         settingsDropdown.classList.remove('show');
@@ -1975,22 +2056,27 @@
                 const setupOpenAIBtn = document.getElementById('setupOpenAIBtn');
                 if (setupOpenAIBtn) {
                     setupOpenAIBtn.addEventListener('click', function() {
-                        const currentKey = localStorage.getItem('openai_api_key') || '';
-                        const apiKey = prompt('Введите OpenAI API ключ:\n(Необходим для AI суммаризации и оценки вакансий)', currentKey);
+                        console.log('🤖 Открываем модальное окно OpenAI настроек');
                         
-                        if (apiKey !== null && apiKey.trim()) {
-                            localStorage.setItem('openai_api_key', apiKey.trim());
-                            if (typeof window.showToast === 'function') {
-                                window.showToast('✅ OpenAI API ключ сохранен!', 'success');
-                            }
-                        } else if (apiKey !== null) {
-                            localStorage.removeItem('openai_api_key');
-                            if (typeof window.showToast === 'function') {
-                                window.showToast('OpenAI API ключ удален', 'info');
-                            }
+                        // Закрываем dropdown настроек
+                        const settingsDropdown = document.getElementById('settingsDropdown');
+                        if (settingsDropdown) {
+                            settingsDropdown.classList.remove('active');
                         }
                         
-                        settingsDropdown.classList.remove('show');
+                        // Открываем модальное окно
+                        const openaiModal = document.getElementById('openaiModal');
+                        if (openaiModal) {
+                            openaiModal.classList.remove('hidden');
+                            document.body.classList.add('modal-open');
+                            
+                            // Загружаем текущий статус API ключа
+                            if (typeof loadApiKeyStatus === 'function') {
+                                loadApiKeyStatus();
+                            }
+                        } else {
+                            console.error('❌ Модальное окно openaiModal не найдено');
+                        }
                     });
                 }
                 
@@ -2011,10 +2097,15 @@
                 const filtersToggle = document.getElementById('filtersToggle');
                 const filtersModal = document.getElementById('filtersModal');
                 
+                console.log('🔧 Инициализация кнопки фильтров:', {
+                    filtersToggle: !!filtersToggle,
+                    filtersModal: !!filtersModal
+                });
+                
                 if (filtersToggle && filtersModal) {
                     // Удаляем старые обработчики
-                    filtersToggle.replaceWith(filtersToggle.cloneNode(true));
-                    const newFiltersToggle = document.getElementById('filtersToggle');
+                    const newFiltersToggle = filtersToggle.cloneNode(true);
+                    filtersToggle.parentNode.replaceChild(newFiltersToggle, filtersToggle);
                     
                     newFiltersToggle.addEventListener('click', function(e) {
                         e.preventDefault();
@@ -2022,6 +2113,10 @@
                         console.log('🔧 Открываем фильтры');
                         filtersModal.classList.remove('hidden');
                     });
+                    
+                    console.log('✅ Кнопка фильтров инициализирована');
+                } else {
+                    console.warn('⚠️ Не найдены элементы для инициализации фильтров');
                 }
             }
             
@@ -2040,63 +2135,217 @@
             const refreshBtn = document.getElementById('refreshBtn');
             if (refreshBtn) {
                 refreshBtn.addEventListener('click', async function() {
-                    console.log('🔄 Refresh button clicked');
+                    console.log('🔄 Refresh button clicked - принудительное обновление');
                     
-                    // Отключаем кнопку на время обновления
+                    // Сохраняем оригинальный текст кнопки
+                    const originalText = refreshBtn.innerHTML;
+                    
+                    // Отключаем кнопку и показываем спиннер
                     refreshBtn.disabled = true;
-                    refreshBtn.style.opacity = '0.5';
+                    refreshBtn.innerHTML = '<span class="spinner"></span> Обновление...';
                     
                     try {
-                        const activeFilter = document.querySelector('.filter-chip.active')?.dataset.filter;
-                        console.log('Active filter:', activeFilter);
+                        const activeFilter = document.querySelector('.tab-button-modern.active')?.dataset.filter;
+                        console.log('🎯 Принудительно обновляем вкладку:', activeFilter);
                         
+                        // Очищаем кеши для принудительного обновления
                         if (activeFilter === 'jobs') {
-                            console.log('🔄 Обновляем вакансии...');
+                            console.log('🔄 Принудительно обновляем вакансии...');
+                            window.currentJobs = null;
                             await window.loadJobsWithFilters(true);
                         } else if (activeFilter === 'all') {
-                            console.log('🔄 Обновляем весь контент...');
+                            console.log('🔄 Принудительно обновляем весь контент...');
+                            window.cachedRSSNews = null;
+                            window.cachedVKPosts = null;
+                            window.currentJobs = null;
                             await loadAllContent();
                         } else if (activeFilter === 'vk-news') {
-                            console.log('🔄 Обновляем VK посты...');
-                            const savedFilters = JSON.parse(localStorage.getItem('job_filters') || '{}');
-                            if (savedFilters.jobType) {
-                                await loadVKPostsForSelectedJobType(savedFilters.jobType);
-                            }
-                        } else {
-                            console.log('🔄 Обновляем RSS новости...');
+                            console.log('🔄 Принудительно обновляем VK новости...');
+                            window.cachedVKPosts = null;
+                            await loadVKPosts();
+                        } else if (activeFilter === 'news') {
+                            console.log('🔄 Принудительно обновляем RSS новости...');
+                            window.cachedRSSNews = null;
                             await loadInitialContent(true);
                         }
                         
-                        console.log('✅ Обновление завершено');
+                        // Показываем уведомление об успешном обновлении
+                        if (typeof window.showToast === 'function') {
+                            window.showToast('✅ Контент успешно обновлен!', 'success');
+                        }
+                        
+                        console.log('✅ Принудительное обновление завершено');
                     } catch (error) {
                         console.error('❌ Ошибка обновления:', error);
+                        if (typeof window.showToast === 'function') {
+                            window.showToast('❌ Ошибка при обновлении контента', 'error');
+                        }
                     } finally {
-                        // Включаем кнопку обратно
+                        // Восстанавливаем кнопку
                         refreshBtn.disabled = false;
-                        refreshBtn.style.opacity = '1';
+                        refreshBtn.innerHTML = originalText;
                     }
                 });
             }
             
-            // Быстрые фильтры
-            const quickFilters = document.querySelectorAll('.filter-chip');
-            quickFilters.forEach(chip => {
-                chip.addEventListener('click', function() {
+            // Автоматическое обновление каждые 15 минут
+            let autoRefreshInterval;
+            
+            function startAutoRefresh() {
+                // Очищаем предыдущий интервал если есть
+                if (autoRefreshInterval) {
+                    clearInterval(autoRefreshInterval);
+                }
+                
+                // Устанавливаем новый интервал (15 минут = 900000 мс)
+                autoRefreshInterval = setInterval(async () => {
+                    console.log('⏰ Автоматическое обновление через 15 минут');
+                    
+                    try {
+                        const activeFilter = document.querySelector('.tab-button-modern.active')?.dataset.filter;
+                        
+                        // Обновляем только если пользователь активен (не свернул вкладку)
+                        if (!document.hidden) {
+                            console.log('🔄 Автообновление контента для вкладки:', activeFilter);
+                            
+                            if (activeFilter === 'jobs') {
+                                await window.loadJobsWithFilters(true);
+                            } else if (activeFilter === 'all') {
+                                await loadAllContent();
+                            } else if (activeFilter === 'vk-news') {
+                                await loadVKPosts();
+                            } else if (activeFilter === 'news') {
+                                await loadInitialContent(true);
+                            }
+                            
+                            // Показываем ненавязчивое уведомление
+                            if (typeof window.showToast === 'function') {
+                                window.showToast('🔄 Контент автоматически обновлен', 'info');
+                            }
+                        } else {
+                            console.log('⏸️ Пользователь неактивен, пропускаем автообновление');
+                        }
+                    } catch (error) {
+                        console.error('❌ Ошибка автообновления:', error);
+                    }
+                }, 15 * 60 * 1000); // 15 минут
+                
+                console.log('⏰ Автообновление запущено (каждые 15 минут)');
+            }
+            
+            // Запускаем автообновление
+            startAutoRefresh();
+            
+            // Останавливаем автообновление при закрытии страницы
+            window.addEventListener('beforeunload', () => {
+                if (autoRefreshInterval) {
+                    clearInterval(autoRefreshInterval);
+                }
+            });
+            
+            // Глобальные функции для работы с вкладками
+            window.updateTabIndicator = function() {
+                const activeTab = document.querySelector('.tab-button-modern.active');
+                const indicator = document.getElementById('tabIndicator');
+                
+                if (activeTab && indicator) {
+                    const rect = activeTab.getBoundingClientRect();
+                    const containerRect = activeTab.parentElement.getBoundingClientRect();
+                    const left = rect.left - containerRect.left;
+                    const width = rect.width;
+                    
+                    indicator.style.left = `${left}px`;
+                    indicator.style.width = `${width}px`;
+                }
+            };
+
+            // Глобальная функция инициализации счетчиков
+            window.initializeTabCounters = function() {
+                window.updateTabCounter('all', 0);
+                window.updateTabCounter('news', 0);
+                window.updateTabCounter('vk-news', 0);
+                window.updateTabCounter('jobs', 0);
+            };
+
+            // Глобальная функция обновления счетчика вкладки
+            window.updateTabCounter = function(tabName, count) {
+                const counter = document.getElementById(`counter-${tabName}`);
+                if (counter) {
+                    counter.textContent = count;
+                    
+                    // Анимация обновления счетчика
+                    counter.style.transform = 'scale(1.2)';
+                    setTimeout(() => {
+                        counter.style.transform = 'scale(1)';
+                    }, 200);
+                }
+            };
+
+            // Современный переключатель вкладок
+            const modernTabs = document.querySelectorAll('.tab-button-modern');
+            modernTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
                     // Убираем активный класс у всех
-                    quickFilters.forEach(c => c.classList.remove('active'));
+                    modernTabs.forEach(t => t.classList.remove('active'));
+                    
                     // Добавляем активный класс к текущему
                     this.classList.add('active');
                     
+                    // Обновляем позицию индикатора
+                    window.updateTabIndicator();
+                    
                     // Применяем фильтр
                     const filter = this.dataset.filter;
+                    console.log('🔄 Переключение на вкладку:', filter);
                     applyQuickFilter(filter);
+                    
+                    // Анимация клика
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
                 });
             });
+
+            // Инициализируем позицию индикатора
+            setTimeout(() => {
+                window.updateTabIndicator();
+                window.initializeTabCounters();
+            }, 100);
+
+            // Переключатель темы
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', function() {
+                    console.log('🎨 Переключение темы');
+                    if (typeof toggleTheme === 'function') {
+                        toggleTheme();
+                    } else {
+                        console.error('❌ Функция toggleTheme не найдена');
+                    }
+                });
+            }
+
+            // Загружаем сохраненную тему
+            loadSavedTheme();
             document.addEventListener('click', function(e) {
                 // Закрытие модальных окон
                 if (e.target.classList.contains('modal-backdrop') || e.target.classList.contains('modal-close')) {
                     const modal = e.target.closest('.modal');
                     if (modal) {
+                        console.log(' Закрываем модальное окно:', modal.id);
+                        modal.classList.add('hidden');
+                        // Показываем док-бар обратно
+                        document.body.classList.remove('modal-open');
+                    }
+                }
+                
+                // Закрытие по data-modal атрибуту
+                if (e.target.hasAttribute('data-modal')) {
+                    const modalId = e.target.getAttribute('data-modal');
+                    const modal = document.getElementById(modalId);
+                    if (modal) {
+                        console.log('🔒 Закрываем модальное окно по data-modal:', modalId);
                         modal.classList.add('hidden');
                         // Показываем док-бар обратно
                         document.body.classList.remove('modal-open');
@@ -2194,58 +2443,314 @@
             }
         };
         
-        // Применение быстрого фильтра
+        // Функция переключения темы
+        window.toggleTheme = function() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            console.log(`🎨 Переключаем тему с ${currentTheme || 'light'} на ${newTheme}`);
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Обновляем иконки
+            const lightIcon = document.querySelector('.theme-icon-light');
+            const darkIcon = document.querySelector('.theme-icon-dark');
+            
+            if (newTheme === 'dark') {
+                if (lightIcon) lightIcon.style.display = 'none';
+                if (darkIcon) darkIcon.style.display = 'block';
+            } else {
+                if (lightIcon) lightIcon.style.display = 'block';
+                if (darkIcon) darkIcon.style.display = 'none';
+            }
+            
+            // Показываем уведомление
+            if (typeof window.showToast === 'function') {
+                const themeText = newTheme === 'dark' ? 'Темная тема' : 'Светлая тема';
+                window.showToast(`🎨 ${themeText} активирована`, 'success');
+            }
+        };
+
+        // Функция генерации тестовых VK постов с категориями как у RSS
+        function generateTestVKPosts() {
+            const postTemplates = [
+                // Технические новости
+                {
+                    title: 'Новые возможности React 18: что нужно знать разработчику',
+                    description: 'Разбираем ключевые изменения в React 18 и как они повлияют на разработку современных веб-приложений. Concurrent Features, Automatic Batching и другие важные обновления.',
+                    source: 'Хабр',
+                    category: 'tech'
+                },
+                {
+                    title: 'Vue.js 3.4: обновления и новые фичи для разработчиков',
+                    description: 'Обзор последних изменений во Vue.js 3.4 и практические примеры использования новых возможностей фреймворка.',
+                    source: 'Типичный программист',
+                    category: 'tech'
+                },
+                {
+                    title: 'CSS Grid vs Flexbox: полное руководство по выбору',
+                    description: 'Подробное сравнение CSS Grid и Flexbox с практическими примерами и рекомендациями по использованию в реальных проектах.',
+                    source: 'Библиотека программиста',
+                    category: 'tech'
+                },
+                {
+                    title: 'Микросервисы на Node.js: лучшие практики 2024',
+                    description: 'Современные подходы к построению микросервисной архитектуры с использованием Node.js, Docker и Kubernetes.',
+                    source: 'Хабр',
+                    category: 'tech'
+                },
+                {
+                    title: 'PostgreSQL 16: революционные возможности для разработчиков',
+                    description: 'Обзор ключевых нововведений в PostgreSQL 16 и их практическое применение в современной веб-разработке.',
+                    source: 'Типичный программист',
+                    category: 'tech'
+                },
+                // Дизайн новости
+                {
+                    title: 'Тренды UI/UX дизайна 2024: что будет актуально',
+                    description: 'Анализ основных трендов в дизайне интерфейсов и пользовательского опыта на 2024 год. Нейроморфизм, минимализм и новые подходы.',
+                    source: 'Дизайн-паб',
+                    category: 'design'
+                },
+                {
+                    title: 'Figma Auto Layout: продвинутые техники и секреты',
+                    description: 'Мастер-класс по использованию Auto Layout в Figma для создания адаптивных дизайн-систем и компонентов.',
+                    source: 'UX Russia',
+                    category: 'design'
+                },
+                {
+                    title: 'Accessibility в веб-дизайне: практическое руководство',
+                    description: 'Как создавать доступные интерфейсы: от цветовых схем до навигации. Современные стандарты и инструменты.',
+                    source: 'Smashing Magazine',
+                    category: 'design'
+                },
+                // Общие IT новости
+                {
+                    title: 'GitHub Copilot X: новая эра ИИ в разработке',
+                    description: 'Обзор возможностей GitHub Copilot X и как искусственный интеллект меняет процесс разработки программного обеспечения.',
+                    source: 'GitHub Blog',
+                    category: 'general'
+                },
+                {
+                    title: 'Безопасность веб-приложений: топ угроз 2024',
+                    description: 'Анализ основных угроз безопасности для веб-приложений и методы защиты от них. OWASP Top 10 и современные решения.',
+                    source: 'Хабр',
+                    category: 'general'
+                },
+                // Бизнес новости
+                {
+                    title: 'IT-рынок России: прогнозы и тенденции развития',
+                    description: 'Аналитический обзор состояния IT-индустрии в России, прогнозы роста и ключевые направления развития.',
+                    source: 'РБК',
+                    category: 'business'
+                },
+                {
+                    title: 'Стартапы 2024: какие технологии привлекают инвестиции',
+                    description: 'Обзор самых перспективных технологических направлений для стартапов и объемы инвестиций в различные сферы.',
+                    source: 'Коммерсантъ',
+                    category: 'business'
+                }
+            ];
+            
+            // Генерируем посты с правильными заголовками и описаниями
+            return postTemplates.map((template, index) => ({
+                id: `vk_post_${Date.now()}_${index}`,
+                title: template.title,
+                description: template.description,
+                source: template.source,
+                sourceType: 'vk',
+                isVKPost: true,
+                category: template.category,
+                publishedAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
+                url: `https://vk.com/wall-${Math.floor(Math.random() * 100000)}_${Math.floor(Math.random() * 1000)}`,
+                link: `https://vk.com/wall-${Math.floor(Math.random() * 100000)}_${Math.floor(Math.random() * 1000)}`,
+                image: Math.random() > 0.3 ? `https://picsum.photos/400/200?random=${index + Date.now()}` : null,
+                likes: Math.floor(Math.random() * 500) + 10,
+                views: Math.floor(Math.random() * 5000) + 100
+            }));
+        }
+        
+        // Функция отображения смешанного контента из кеша
+        function displayMixedContentFromCache() {
+            const feedContainer = document.getElementById('feedContainer');
+            
+            // Собираем все доступные данные из кеша
+            const allItems = [];
+            
+            // Добавляем RSS новости
+            if (window.cachedRSSNews && window.cachedRSSNews.length > 0) {
+                allItems.push(...window.cachedRSSNews);
+            }
+            
+            // Добавляем VK посты
+            if (window.cachedVKPosts && window.cachedVKPosts.length > 0) {
+                allItems.push(...window.cachedVKPosts);
+            }
+            
+            // Добавляем вакансии
+            if (window.currentJobs && window.currentJobs.length > 0) {
+                allItems.push(...window.currentJobs);
+            }
+            
+            if (allItems.length === 0) {
+                feedContainer.innerHTML = `
+                    <div style="text-align: center; padding: 3rem;">
+                        <h3>📭 Нет данных в кеше</h3>
+                        <p>Нажмите "Обновить" для загрузки свежего контента</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Сортируем по дате (новые сначала)
+            allItems.sort((a, b) => {
+                const dateA = new Date(a.publishedAt || a.published_at || a.date || Date.now());
+                const dateB = new Date(b.publishedAt || b.published_at || b.date || Date.now());
+                return dateB - dateA;
+            });
+            
+            console.log('📦 Отображаем смешанный контент из кеша:', allItems.length, 'элементов');
+            
+            // Отображаем смешанный контент
+            displayMixedContent(allItems);
+        }
+        
+        // Улучшенное применение быстрого фильтра с приоритетом кешированных данных
         function applyQuickFilter(filter) {
             const feedContainer = document.getElementById('feedContainer');
             
             console.log('🔄 Применение фильтра:', filter);
             
-            // Для вакансий - загружаем через API
-            if (filter === 'jobs') {
-                console.log('💼 Загрузка вакансий...', {
-                    apiReady: window.apiReady,
-                    loadJobsWithFilters: !!window.loadJobsWithFilters,
-                    hhApi: !!window.hhApi
-                });
-                
-                // Сохраняем текущие новости перед загрузкой вакансий
-                if (!window.cachedNewsHTML) {
-                    window.cachedNewsHTML = feedContainer.innerHTML;
+            // Сохраняем состояние текущей вкладки перед переключением
+            const currentActiveFilter = document.querySelector('.tab-button-modern.active')?.dataset.filter;
+            if (currentActiveFilter && currentActiveFilter !== filter) {
+                saveCurrentTabState(currentActiveFilter, feedContainer);
+            }
+            
+            // ПРИОРИТЕТ 1: Проверяем кешированные данные для быстрого отображения
+            let hasDisplayedContent = false;
+            
+            // Для "Всё" - показываем смешанный контент из кеша
+            if (filter === 'all') {
+                if (window.cachedRSSNews?.length > 0 || window.cachedVKPosts?.length > 0 || window.currentJobs?.length > 0) {
+                    console.log('📋 Показываем кешированный смешанный контент');
+                    displayMixedContentFromCache();
+                    hasDisplayedContent = true;
                 }
-                
-                // Просто вызываем loadJobsWithFilters - она сама подождет если нужно
-                if (typeof window.loadJobsWithFilters === 'function') {
-                    console.log('✅ loadJobsWithFilters найдена, вызываем');
-                    window.loadJobsWithFilters(false);
+            }
+            
+            // Для RSS новостей
+            else if (filter === 'news') {
+                if (window.cachedRSSNews && window.cachedRSSNews.length > 0) {
+                    console.log('📰 Показываем кешированные RSS новости:', window.cachedRSSNews.length);
+                    displayRSSNews(window.cachedRSSNews, feedContainer);
+                    hasDisplayedContent = true;
                 } else {
-                    console.error('❌ loadJobsWithFilters не найдена!');
+                    // Если нет кешированных новостей, загружаем их
+                    console.log('📰 Нет кешированных RSS новостей, загружаем...');
                     feedContainer.innerHTML = `
                         <div style="text-align: center; padding: 3rem;">
-                            <h3>⚠️ Ошибка</h3>
-                            <p>Функция загрузки вакансий не инициализирована</p>
-                            <button class="btn btn--primary" onclick="location.reload()">Перезагрузить</button>
+                            <h3>📰 Загружаем новости...</h3>
+                            <div class="spinner"></div>
                         </div>
                     `;
+                    if (typeof loadInitialContent === 'function') {
+                        loadInitialContent(false);
+                    }
+                    hasDisplayedContent = true; // Показали загрузку
+                }
+            }
+            
+            // Для VK новостей
+            else if (filter === 'vk-news') {
+                if (window.cachedVKPosts && window.cachedVKPosts.length > 0) {
+                    console.log('📱 Показываем кешированные VK посты:', window.cachedVKPosts.length);
+                    window.displayVKPosts(window.cachedVKPosts, feedContainer);
+                    hasDisplayedContent = true;
+                } else {
+                    // Если нет кешированных постов, загружаем их
+                    console.log('📱 Нет кешированных VK постов, загружаем...');
+                    feedContainer.innerHTML = `
+                        <div style="text-align: center; padding: 3rem;">
+                            <h3>📱 Загружаем VK посты...</h3>
+                            <div class="spinner"></div>
+                        </div>
+                    `;
+                    if (typeof window.loadVKPosts === 'function') {
+                        window.loadVKPosts();
+                    }
+                    hasDisplayedContent = true; // Показали загрузку
+                }
+            }
+            
+            // Для вакансий
+            else if (filter === 'jobs') {
+                if (window.currentJobs && window.currentJobs.length > 0) {
+                    console.log('💼 Показываем кешированные вакансии:', window.currentJobs.length);
+                    window.displayJobs(window.currentJobs, false);
+                    hasDisplayedContent = true;
+                }
+            }
+            
+            // Если контент отображен из кеша, выходим (новые данные загрузятся только при обновлении)
+            if (hasDisplayedContent) {
+                console.log('✅ Контент отображен из кеша, новые данные загрузятся при обновлении');
+                return;
+            }
+            
+            // ПРИОРИТЕТ 2: Если нет кешированных данных, показываем загрузку и загружаем новые
+            console.log(`🔄 Нет кешированных данных для вкладки: ${filter}, загружаем новые`);
+            
+            // Для вакансий - загружаем через API
+            if (filter === 'jobs') {
+                if (window.currentJobs && window.currentJobs.length > 0) {
+                    console.log('💼 Отображаем кешированные вакансии:', window.currentJobs.length);
+                    window.displayJobs(window.currentJobs, false);
+                } else {
+                    console.log('💼 Загружаем новые вакансии...');
+                    if (typeof window.loadJobsWithFilters === 'function') {
+                        window.loadJobsWithFilters(false);
+                    } else {
+                        console.error('❌ loadJobsWithFilters не найдена!');
+                        feedContainer.innerHTML = `
+                            <div style="text-align: center; padding: 3rem;">
+                                <h3>⚠️ Ошибка</h3>
+                                <p>Функция загрузки вакансий не инициализирована</p>
+                                <button class="btn btn--primary" onclick="location.reload()">Перезагрузить</button>
+                            </div>
+                        `;
+                    }
                 }
                 return;
             }
             
-            // Для "Новости" - показываем только RSS новости
+            // Для "Новости" - показываем только RSS новости с пагинацией
             if (filter === 'news') {
-                if (window.cachedNewsHTML) {
+                if (window.cachedRSSNews && window.cachedRSSNews.length > 0) {
+                    console.log('📰 Отображаем кешированные RSS новости:', window.cachedRSSNews.length);
+                    displayRSSNews(window.cachedRSSNews, feedContainer);
+                } else if (window.cachedNewsHTML) {
                     feedContainer.innerHTML = window.cachedNewsHTML;
+                    // Показываем только RSS новости (не VK)
+                    const articles = feedContainer.querySelectorAll('.news-card');
+                    articles.forEach(article => {
+                        const sourceType = article.dataset.sourceType;
+                        if (sourceType !== 'vk' && !article.classList.contains('job-card')) {
+                            article.style.display = 'block';
+                            article.style.animation = 'fadeInUp 0.3s ease';
+                        } else {
+                            article.style.display = 'none';
+                        }
+                    });
+                } else {
+                    feedContainer.innerHTML = `
+                        <div style="text-align: center; padding: 3rem;">
+                            <h3>📰 Загружаем новости...</h3>
+                            <div class="spinner"></div>
+                        </div>
+                    `;
                 }
-                // Показываем только RSS новости (не VK)
-                const articles = feedContainer.querySelectorAll('.news-card');
-                articles.forEach(article => {
-                    const sourceType = article.dataset.sourceType;
-                    if (sourceType !== 'vk' && !article.classList.contains('job-card')) {
-                        article.style.display = 'block';
-                        article.style.animation = 'fadeInUp 0.3s ease';
-                    } else {
-                        article.style.display = 'none';
-                    }
-                });
                 return;
             }
             
@@ -2254,77 +2759,91 @@
                 // Сначала проверяем, есть ли уже загруженные VK посты
                 if (window.cachedVKPosts && window.cachedVKPosts.length > 0) {
                     console.log('📱 Отображаем кешированные VK посты:', window.cachedVKPosts.length);
-                    displayVKPosts(window.cachedVKPosts, feedContainer);
-                    return;
-                }
-                
-                // Если есть кешированный HTML, проверяем VK посты в нем
-                if (window.cachedNewsHTML) {
-                    feedContainer.innerHTML = window.cachedNewsHTML;
-                    
-                    // Показываем только VK новости
-                    const articles = feedContainer.querySelectorAll('.news-card');
-                    let vkCount = 0;
-                    articles.forEach(article => {
-                        const sourceType = article.dataset.sourceType;
-                        if (sourceType === 'vk') {
-                            article.style.display = 'block';
-                            article.style.animation = 'fadeInUp 0.3s ease';
-                            vkCount++;
-                        } else {
-                            article.style.display = 'none';
-                        }
-                    });
-                    
-                    if (vkCount > 0) {
-                        console.log(`📱 Найдено ${vkCount} VK постов в кеше`);
-                        return;
+                    if (typeof window.displayVKPosts === 'function') {
+                        window.displayVKPosts(window.cachedVKPosts, feedContainer);
+                    } else {
+                        console.error('❌ window.displayVKPosts не определена');
                     }
-                }
-                
-                // Если нет VK постов, пытаемся загрузить их для выбранного типа вакансии
-                const savedFilters = JSON.parse(localStorage.getItem('job_filters') || '{}');
-                const jobType = savedFilters.jobType;
-                
-                if (jobType) {
-                    console.log('📱 Загружаем VK посты для типа вакансии:', jobType);
-                    
-                    // Показываем индикатор загрузки
-                    const jobTypeName = window.CONFIG?.jobTypes?.find(j => j.id === jobType)?.name || jobType;
+                    return;
+                } else {
+                    // Загружаем VK посты если их нет
                     feedContainer.innerHTML = `
                         <div style="text-align: center; padding: 3rem;">
+                            <h3>📱 Загружаем VK посты...</h3>
                             <div class="spinner"></div>
-                            <h3>📱 Загружаем новости из ВК...</h3>
-                            <p>Ищем релевантные посты для: <strong>${jobTypeName}</strong></p>
-                            <p style="color: #6c757d; font-size: 14px; margin-top: 20px;">
-                                Это может занять несколько секунд...
-                            </p>
                         </div>
                     `;
-                    
-                    // Загружаем VK посты
-                    loadVKPostsForSelectedJobType(jobType);
+                    // Попытаемся загрузить VK посты
+                    if (typeof window.loadVKPosts === 'function') {
+                        window.loadVKPosts();
+                    }
+                }
+                return;
+            }
+            
+            // Для "Всё" - показываем смешанный контент
+            if (filter === 'all') {
+                console.log('🌟 Загружаем весь контент...');
+                console.log('📊 Доступные данные:', {
+                    rssNews: window.cachedRSSNews?.length || 0,
+                    vkPosts: window.cachedVKPosts?.length || 0,
+                    jobs: window.currentJobs?.length || 0
+                });
+                
+                // Собираем все доступные данные
+                const allItems = [];
+                
+                // Добавляем RSS новости
+                if (window.cachedRSSNews && window.cachedRSSNews.length > 0) {
+                    window.cachedRSSNews.forEach(item => {
+                        allItems.push({...item, type: 'news', sourceType: 'rss'});
+                    });
+                }
+                
+                // Добавляем VK посты
+                if (window.cachedVKPosts && window.cachedVKPosts.length > 0) {
+                    window.cachedVKPosts.forEach(item => {
+                        allItems.push({...item, type: 'news', sourceType: 'vk', isVKPost: true});
+                    });
+                }
+                
+                // Добавляем вакансии
+                if (window.currentJobs && window.currentJobs.length > 0) {
+                    window.currentJobs.forEach(item => {
+                        allItems.push({...item, type: 'job'});
+                    });
+                }
+                
+                console.log('📦 Собрано элементов для отображения:', allItems.length);
+                
+                if (allItems.length > 0) {
+                    // Отображаем смешанный контент
+                    displayMixedContent(allItems);
                 } else {
                     feedContainer.innerHTML = `
                         <div style="text-align: center; padding: 3rem;">
-                            <h3>📱 Настройте тип вакансии</h3>
-                            <p>Выберите тип вакансии в фильтрах, чтобы увидеть релевантные VK посты</p>
-                            <p style="color: #6c757d; font-size: 14px; margin: 20px 0;">
-                                VK посты подбираются автоматически на основе выбранной специализации
+                            <h3>🌟 Загружаем контент...</h3>
+                            <div class="spinner"></div>
+                            <p style="color: #6c757d; margin-top: 1rem;">
+                                Если контент не появляется, попробуйте обновить страницу
                             </p>
-                            <button class="btn btn--primary" onclick="document.getElementById('filtersToggle').click()">
-                                🔧 Открыть фильтры
-                            </button>
                         </div>
                     `;
                 }
                 return;
             }
             
-            // Для "Все" - показываем RSS, VK и вакансии поочередно
-            if (filter === 'all') {
-                loadAllContent();
-                return;
+            // Если не попали ни в одну категорию, показываем все новости
+            console.log('📰 Показываем все доступные новости по умолчанию...');
+            if (window.cachedRSSNews && window.cachedRSSNews.length > 0) {
+                displayRSSNews(window.cachedRSSNews, feedContainer);
+            } else {
+                feedContainer.innerHTML = `
+                    <div style="text-align: center; padding: 3rem;">
+                        <h3>📰 Загружаем новости...</h3>
+                        <div class="spinner"></div>
+                    </div>
+                `;
             }
         }
         
@@ -2353,6 +2872,10 @@
                     console.log('📰 Загружаем RSS новости...');
                     const rssNews = await window.rssAggregator.aggregateNews();
                     allContent = [...allContent, ...rssNews];
+                    
+                    // Кешируем RSS новости для быстрого доступа
+                    window.cachedRSSNews = rssNews;
+                    
                     console.log(`✅ Загружено ${rssNews.length} RSS новостей`);
                     window.loadingState.setLoading('rss', false);
                 }
@@ -2429,10 +2952,11 @@
                 }
             }).join('');
             
-            feedContainer.innerHTML = html;
+            // Для смешанного контента используем обычную сетку
+            feedContainer.innerHTML = `<div class="mixed-content-grid">${html}</div>`;
             
             // Анимация появления
-            const cards = feedContainer.querySelectorAll('.news-card, .job-card');
+            const cards = feedContainer.querySelectorAll('.news-card, .job-card-compact');
             cards.forEach((card, index) => {
                 card.style.opacity = '0';
                 card.style.transform = 'translateY(20px)';
@@ -2442,6 +2966,9 @@
                     card.style.transform = 'translateY(0)';
                 }, index * 50);
             });
+            
+            // Обновляем счетчик для вкладки "Всё"
+            window.updateTabCounter('all', items.length);
         }
         
         // Демо-вакансии и старые карточки удалены - используется только реальный HH.ru API с сеткой
@@ -2449,7 +2976,7 @@
         // Функции для модального окна статьи
         function openArticleModal(articleId) {
             const modal = document.getElementById('articleModal');
-            const article = findArticleById(articleId);
+            const article = window.findArticleById(articleId);
             
             if (!article) {
                 return;
@@ -2482,22 +3009,42 @@
             loadComments(articleId);
             
             modal.classList.remove('hidden');
+            document.body.classList.add('modal-open');
         }
         
         function closeArticleModal() {
             document.getElementById('articleModal').classList.add('hidden');
+            document.body.classList.remove('modal-open');
         }
         
-        function findArticleById(articleId) {
+        window.findArticleById = function(articleId) {
             // Ищем статью в загруженных данных
             if (window.rssAggregator && window.rssAggregator.articles) {
                 return window.rssAggregator.articles.find(article => article.id === articleId);
             }
+            
+            // Ищем в кешированных RSS новостях
+            if (window.cachedRSSNews) {
+                const found = window.cachedRSSNews.find(article => article.id === articleId);
+                if (found) return found;
+            }
+            
+            // Ищем в кешированных VK постах
+            if (window.cachedVKPosts) {
+                const found = window.cachedVKPosts.find(article => article.id === articleId);
+                if (found) return found;
+            }
+            
+            // Ищем в сохраненных статьях
+            const savedArticles = JSON.parse(localStorage.getItem('saved_articles') || '[]');
+            const found = savedArticles.find(article => article.id === articleId);
+            if (found) return found;
+            
             return null;
-        }
+        };
         
-        function toggleLike(articleId) {
-            const article = findArticleById(articleId);
+        window.toggleLike = function(articleId) {
+            const article = window.findArticleById(articleId);
             if (!article) return;
             
             // Получаем лайки из localStorage
@@ -2536,9 +3083,23 @@
             });
         }
         
-        function toggleSave(articleId) {
-            const article = findArticleById(articleId);
-            if (!article) return;
+        window.toggleSave = function(articleId) {
+            console.log('💾 Переключаем сохранение для статьи:', articleId);
+            
+            // Находим статью в различных источниках данных
+            let article = window.findArticleById(articleId);
+            
+            // Если не найдена, создаем базовую структуру
+            if (!article) {
+                console.warn('⚠️ Статья не найдена, создаем базовую структуру');
+                article = {
+                    id: articleId,
+                    title: 'Сохраненная статья',
+                    description: 'Описание недоступно',
+                    source: 'Неизвестный источник',
+                    publishedAt: new Date().toISOString()
+                };
+            }
             
             // Получаем сохраненные статьи
             const savedArticles = JSON.parse(localStorage.getItem('saved_articles') || '[]');
@@ -2547,18 +3108,18 @@
             if (index > -1) {
                 // Удаляем из избранного
                 savedArticles.splice(index, 1);
-                showToast('Удалено из избранного', 'info');
+                showToast('❌ Удалено из избранного', 'info');
             } else {
                 // Добавляем в избранное
                 savedArticles.push(article);
-                showToast('Добавлено в избранное', 'success');
+                showToast('⭐ Добавлено в избранное', 'success');
             }
             
             localStorage.setItem('saved_articles', JSON.stringify(savedArticles));
             
-            // Обновляем UI кнопки
-            updateSaveButton(articleId, index === -1);
-        }
+            // Обновляем UI всех кнопок с этим ID
+            updateAllSaveButtons(articleId, index === -1);
+        };
         
         function updateSaveButton(articleId, isSaved) {
             const saveBtn = document.getElementById('articleModalSave');
@@ -2572,6 +3133,25 @@
                     saveBtn.classList.remove('active');
                 }
             }
+        }
+
+        function updateAllSaveButtons(articleId, isSaved) {
+            // Обновляем кнопку в модальном окне
+            updateSaveButton(articleId, isSaved);
+            
+            // Обновляем все кнопки в карточках с этим ID
+            const saveBtns = document.querySelectorAll(`[onclick*="${articleId}"]`);
+            saveBtns.forEach(btn => {
+                if (btn.classList.contains('save-btn')) {
+                    if (isSaved) {
+                        btn.classList.add('active');
+                        btn.title = 'Удалить из избранного';
+                    } else {
+                        btn.classList.remove('active');
+                        btn.title = 'Добавить в избранное';
+                    }
+                }
+            });
         }
         
         function loadComments(articleId) {
@@ -2756,7 +3336,7 @@
                     initializeFiltersButton();
 
                     // Определяем активный фильтр
-                    const activeFilter = document.querySelector('.filter-chip.active')?.dataset.filter;
+                    const activeFilter = document.querySelector('.tab-button-modern.active')?.dataset.filter;
                     
                     // Обновляем контент в зависимости от активной вкладки и настроек
                     if (activeFilter === 'jobs') {
@@ -2764,22 +3344,18 @@
                         console.log('🔄 Обновляем вакансии с новыми фильтрами');
                         loadJobsWithFilters(true);
                     } else if (activeFilter === 'vk-news') {
-                        // Если активны VK новости - обновляем их для выбранного типа
-                        if (jobType) {
-                            console.log('🔄 Обновляем VK новости для типа:', jobType);
-                            loadVKPostsForSelectedJobType(jobType);
-                        }
+                        // Если активны VK новости - обновляем их
+                        console.log('🔄 Обновляем VK новости');
+                        loadVKPosts();
                     } else if (activeFilter === 'all') {
                         // Если активна вкладка "Все" - перезагружаем весь контент
                         console.log('🔄 Обновляем весь контент с новыми фильтрами');
                         loadAllContent();
                     }
                     
-                    // Дополнительно: если выбран тип вакансии, всегда обновляем VK посты в фоне
-                    if (jobType) {
-                        console.log('📱 Загружаем VK посты для типа вакансии:', jobType);
-                        loadVKPostsForSelectedJobType(jobType);
-                    }
+                    // Дополнительно: всегда обновляем VK посты в фоне
+                    console.log('📱 Загружаем VK посты');
+                    loadVKPosts();
                     
                     // Показываем уведомление
                     if (typeof window.showToast === 'function') {
@@ -2790,44 +3366,186 @@
         }
         
 
-        // Функция создания карточки новости
+        // Функция создания карточки новости с фильтрацией
         window.createNewsCard = function(item) {
-            const publishedDate = new Date(item.publishedAt || item.published_at || Date.now());
+            if (!item) {
+                console.warn('⚠️ createNewsCard: пустой элемент');
+                return '';
+            }
+            
+            // Безопасное получение даты
+            let publishedDate;
+            try {
+                publishedDate = new Date(item.publishedAt || item.published_at || Date.now());
+                if (isNaN(publishedDate.getTime())) {
+                    publishedDate = new Date();
+                }
+            } catch (e) {
+                publishedDate = new Date();
+            }
+            
+            // Фильтр по времени: показываем только посты за последние 24 часа
+            const now = new Date();
+            const daysDiff = (now - publishedDate) / (1000 * 60 * 60 * 24);
+            if (daysDiff > 7) {
+                console.log('⏰ Пост старше 7 дней, пропускаем:', item.title || 'Без заголовка');
+                return '';
+            }
+            
             const timeAgo = getTimeAgo(publishedDate);
             
+            // Безопасное получение названия источника
+            let sourceName = 'Новости';
+            if (item.source) {
+                if (typeof item.source === 'string') {
+                    sourceName = item.source;
+                } else if (typeof item.source === 'object') {
+                    sourceName = item.source.name || item.source.title || 'Новости';
+                }
+            }
+            
+            // Безопасное получение описания
+            let description = '';
+            if (item.description) {
+                description = typeof item.description === 'string' ? item.description : String(item.description);
+            } else if (item.summary) {
+                description = typeof item.summary === 'string' ? item.summary : String(item.summary);
+            } else if (item.content) {
+                description = typeof item.content === 'string' ? item.content : String(item.content);
+            }
+            
+            // Обрезаем описание если слишком длинное
+            if (description.length > 300) {
+                description = description.substring(0, 300) + '...';
+            }
+            
+            // Безопасное получение заголовка
+            let title = '';
+            if (item.title) {
+                title = typeof item.title === 'string' ? item.title : String(item.title);
+                title = title.trim();
+                
+                // Если заголовок пустой, берем начало описания
+                if (!title) {
+                    title = description.substring(0, 50) + (description.length > 50 ? '...' : '');
+                }
+            }
+            
+            // Фильтр по заголовку: пропускаем посты без заголовка или с "Без заголовка"
+            if (!title || title === 'Без заголовка' || title.toLowerCase().includes('без заголовка')) {
+                console.log('📝 Пост без заголовка, пропускаем:', title || 'пустой заголовок');
+                return '';
+            }
+            
+            // Безопасное получение ссылки
+            const link = item.link || item.url || '#';
+            
+            // Безопасное получение изображения
+            const imageUrl = item.image || item.thumbnail || item.enclosure?.url || null;
+            
+            // Определяем тип источника
+            const sourceType = item.isVKPost ? 'vk' : (item.sourceType || 'rss');
+            
+            // Генерируем уникальный ID если его нет
+            const articleId = item.id || `${sourceType}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            
+            // Сохраняем ID в объекте статьи для дальнейшего использования
+            if (!item.id) {
+                item.id = articleId;
+            }
+            
+            // Используем современный рендерер для создания news-card
+            if (window.newsRenderer) {
+                // Подготавливаем данные в формате, ожидаемом newsRenderer
+                const normalizedItem = {
+                    id: articleId,
+                    title: title,
+                    description: description,
+                    link: link,
+                    publishedAt: publishedDate.toISOString(),
+                    source: {
+                        name: sourceName,
+                        type: sourceType,
+                        category: item.category || (sourceType === 'vk' ? 'social' : 'tech')
+                    },
+                    category: item.category || (sourceType === 'vk' ? 'social' : 'tech'),
+                    likes: item.likes || 0,
+                    views: item.views || 0,
+                    image: imageUrl,
+                    isVKPost: sourceType === 'vk',
+                    readingTime: Math.ceil((description.length || 0) / 200) || 1
+                };
+                
+                return window.newsRenderer.renderCard(normalizedItem);
+            }
+            
+            // Fallback: создаем простую современную карточку если newsRenderer недоступен
+            const sourceIcon = sourceType === 'vk' ? '📱' : 
+                              (item.category === 'tech' ? '💻' : 
+                               item.category === 'business' ? '💼' : '📰');
+            
             return `
-                <article class="news-card" data-source-type="${item.sourceType || 'rss'}">
+                <article class="news-card" data-article-id="${articleId}" data-source-type="${sourceType}">
                     <div class="news-card-header">
-                        <div class="news-source">
-                            <span class="source-icon">${item.sourceType === 'vk' ? '📱' : '📰'}</span>
-                            <span class="source-name">${item.source || 'Новости'}</span>
+                        <div class="source-info">
+                            <div class="source-avatar">
+                                <span class="source-icon">${sourceIcon}</span>
+                            </div>
+                            <div class="source-details">
+                                <span class="source-name">${sourceName}</span>
+                                <span class="publish-time">${timeAgo}</span>
+                            </div>
                         </div>
-                        <time class="news-time">${timeAgo}</time>
+                        <div class="article-actions">
+                            <button class="action-btn like-btn" title="Лайк" data-article-id="${articleId}" data-likes="${item.likes || 0}">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                                </svg>
+                                <span class="like-count">${item.likes || 0}</span>
+                            </button>
+                            <button class="action-btn save-btn" title="Добавить в избранное">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"></path>
+                                </svg>
+                            </button>
+                            <button class="action-btn share-btn" title="Поделиться">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
-                    <h3 class="news-title">
-                        <a href="${item.link || item.url || '#'}" target="_blank" rel="noopener">
-                            ${item.title}
-                        </a>
-                    </h3>
-                    <p class="news-description">${item.description || item.summary || ''}</p>
-                    ${item.image ? `<img src="${item.image}" alt="${item.title}" class="news-image" loading="lazy">` : ''}
-                    <div class="news-footer">
-                        <div class="news-tags">
-                            ${item.category ? `<span class="news-tag">${item.category}</span>` : ''}
-                            ${item.sourceType === 'vk' ? '<span class="news-tag vk-tag">VK</span>' : ''}
+                    
+                    <div class="news-card-content" data-article-url="${link}">
+                        <div class="news-card-clickable" role="button" tabindex="0">
+                            <h3 class="news-title">${title}</h3>
+                            ${description ? `<p class="news-description">${description}</p>` : ''}
+                            ${imageUrl ? `<img src="${imageUrl}" alt="${title}" class="news-image" loading="lazy" onerror="this.style.display='none'">` : ''}
                         </div>
-                        <a href="${item.link || item.url || '#'}" target="_blank" class="news-read-more">
-                            Читать далее →
+                    </div>
+                    
+                    <div class="news-card-footer">
+                        <div class="article-meta">
+                            <span class="category-tag ${item.category || 'general'}">${item.category || (sourceType === 'vk' ? 'VK' : 'RSS')}</span>
+                            <span class="reading-time">${Math.ceil((description.length || 0) / 200) || 1} мин чтения</span>
+                        </div>
+                        <a href="${link}" target="_blank" rel="noopener" class="news-card-link">
+                            <button class="btn btn--primary btn--small">
+                                Читать полностью
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path>
+                                </svg>
+                            </button>
                         </a>
                     </div>
                 </article>
             `;
         };
 
-        // Функция создания карточки вакансии
+        // Функция создания карточки вакансии с красной рамкой HH
         window.createJobCard = function(job) {
             return `
-                <div class="job-card" data-job-id="${job.id}" onclick="window.openJobDetails('${job.id}')">
+                <div class="job-card-compact" data-job-id="${job.id}" data-source="hh" onclick="window.openJobDetails('${job.id}')">
                     <div class="job-header">
                         ${job.companyLogo ? 
                             `<img src="${job.companyLogo}" alt="${job.company}" class="job-logo">` 
@@ -2835,6 +3553,9 @@
                         <div class="job-info">
                             <h4 class="job-title">${job.title}</h4>
                             <p class="job-company">${job.company}</p>
+                        </div>
+                        <div class="job-source-badge">
+                            <span class="hh-badge">HH.ru</span>
                         </div>
                     </div>
                     <div class="job-details">
@@ -2844,8 +3565,17 @@
                         ${job.schedule === 'remote' ? '<div class="job-remote">🏠 Удаленка</div>' : ''}
                     </div>
                     <div class="job-footer">
-                        <span class="job-type">${job.type || 'Вакансия'}</span>
-                        <time class="job-published">${getTimeAgo(new Date(job.published_at || Date.now()))}</time>
+                        <div class="job-meta">
+                            <span class="job-type">${job.type || 'Вакансия'}</span>
+                            <time class="job-published">${getTimeAgo(new Date(job.published_at || Date.now()))}</time>
+                        </div>
+                        <div class="job-actions">
+                            <button class="action-btn save-btn" title="Добавить в избранное" onclick="event.stopPropagation(); toggleSave('${job.id}')">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -2864,7 +3594,109 @@
             return date.toLocaleDateString('ru-RU');
         };
 
-        // Функция загрузки VK постов для выбранного типа вакансии
+        // Функция загрузки VK постов по категориям (как RSS)
+        window.loadVKPosts = async function loadVKPosts() {
+            console.log('📱 Загружаем VK посты по категориям');
+            
+            // Устанавливаем состояние загрузки VK
+            if (window.loadingState) {
+                window.loadingState.setLoading('vk', true);
+            }
+            
+            try {
+                // Сначала пытаемся загрузить через API
+                let vkPosts = [];
+                
+                if (window.rssAggregator && typeof window.rssAggregator.loadVKPosts === 'function') {
+                    vkPosts = await window.rssAggregator.loadVKPosts();
+                }
+                
+                // Если API не работает, используем тестовые данные
+                if (!vkPosts || vkPosts.length === 0) {
+                    console.log('📱 API недоступен, используем тестовые VK посты');
+                    vkPosts = generateTestVKPosts();
+                }
+                
+                if (vkPosts && vkPosts.length > 0) {
+                    console.log(`✅ Загружено ${vkPosts.length} VK постов`);
+                    
+                    // Сохраняем VK посты в глобальной переменной для быстрого доступа
+                    window.cachedVKPosts = vkPosts;
+                    
+                    // Определяем активную вкладку
+                    const activeFilter = document.querySelector('.tab-button-modern.active')?.dataset.filter;
+                    const feedContainer = document.getElementById('feedContainer');
+                    
+                    if (activeFilter === 'vk-news' && feedContainer) {
+                        console.log('📱 Активна вкладка VK новостей, отображаем посты');
+                        // Отображаем VK посты с красивой анимацией
+                        window.displayVKPosts(vkPosts, feedContainer);
+                        
+                        // Показываем уведомление об успешной загрузке
+                        if (typeof window.showToast === 'function') {
+                            window.showToast(`📱 Загружено ${vkPosts.length} VK постов`, 'success');
+                        }
+                    } else if (activeFilter === 'all') {
+                        // Если активна вкладка "Всё", перезагружаем весь контент
+                        console.log('🔄 Обновляем весь контент с новыми VK постами');
+                        loadAllContent();
+                    } else {
+                        console.log('📱 VK посты загружены, но активна другая вкладка:', activeFilter);
+                    }
+                    
+                } else {
+                    console.log('ℹ️ Нет VK постов');
+                    
+                    // Если активна вкладка VK новостей, показываем сообщение
+                    const activeFilter = document.querySelector('.tab-button-modern.active')?.dataset.filter;
+                    if (activeFilter === 'vk-news') {
+                        const feedContainer = document.getElementById('feedContainer');
+                        if (feedContainer) {
+                            feedContainer.innerHTML = `
+                                <div style="text-align: center; padding: 3rem;">
+                                    <h3>📱 VK Новости</h3>
+                                    <p>Пока нет доступных постов из VK</p>
+                                    <button class="btn btn--primary" onclick="loadVKPosts()">
+                                        🔄 Обновить
+                                    </button>
+                                </div>
+                            `;
+                        }
+                    }
+                }
+                
+            } catch (error) {
+                console.error('❌ Ошибка загрузки VK постов:', error);
+                
+                // Показываем ошибку пользователю
+                const activeFilter = document.querySelector('.tab-button-modern.active')?.dataset.filter;
+                if (activeFilter === 'vk-news') {
+                    const feedContainer = document.getElementById('feedContainer');
+                    if (feedContainer) {
+                        feedContainer.innerHTML = `
+                            <div style="text-align: center; padding: 3rem;">
+                                <h3>⚠️ Ошибка загрузки</h3>
+                                <p>Не удалось загрузить VK посты. Проверьте подключение к интернету</p>
+                                <button class="btn btn--primary" onclick="loadVKPosts()">
+                                    🔄 Повторить попытку
+                                </button>
+                            </div>
+                        `;
+                    }
+                }
+                
+                if (typeof window.showToast === 'function') {
+                    window.showToast('❌ Ошибка загрузки VK постов', 'error');
+                }
+            } finally {
+                // Убираем состояние загрузки
+                if (window.loadingState) {
+                    window.loadingState.setLoading('vk', false);
+                }
+            }
+        };
+
+        // Функция загрузки VK постов для выбранного типа вакансии (оставляем для совместимости)
         window.loadVKPostsForSelectedJobType = async function loadVKPostsForSelectedJobType(jobType) {
             if (!window.rssAggregator || !jobType) {
                 console.warn('⚠️ RSS Aggregator не готов или тип вакансии не указан');
@@ -2879,7 +3711,18 @@
             }
             
             try {
-                const vkPosts = await window.rssAggregator.loadVKPostsForJobType(jobType);
+                // Сначала пытаемся загрузить через API
+                let vkPosts = [];
+                
+                if (window.rssAggregator && typeof window.rssAggregator.loadVKPostsForJobType === 'function') {
+                    vkPosts = await window.rssAggregator.loadVKPostsForJobType(jobType);
+                }
+                
+                // Если API не работает, используем тестовые данные
+                if (!vkPosts || vkPosts.length === 0) {
+                    console.log('📱 API недоступен, используем тестовые VK посты');
+                    vkPosts = generateTestVKPosts();
+                }
                 
                 if (vkPosts && vkPosts.length > 0) {
                     console.log(`✅ Загружено ${vkPosts.length} VK постов для ${jobType}`);
@@ -2888,12 +3731,13 @@
                     window.cachedVKPosts = vkPosts;
                     
                     // Определяем активную вкладку
-                    const activeFilter = document.querySelector('.filter-chip.active')?.dataset.filter;
+                    const activeFilter = document.querySelector('.tab-button-modern.active')?.dataset.filter;
                     const feedContainer = document.getElementById('feedContainer');
                     
                     if (activeFilter === 'vk-news' && feedContainer) {
+                        console.log('📱 Активна вкладка VK новостей, отображаем посты');
                         // Отображаем VK посты с красивой анимацией
-                        displayVKPosts(vkPosts, feedContainer);
+                        window.displayVKPosts(vkPosts, feedContainer);
                         
                         // Показываем уведомление об успешной загрузке
                         if (typeof window.showToast === 'function') {
@@ -2904,13 +3748,15 @@
                         // Если активна вкладка "Всё", перезагружаем весь контент
                         console.log('🔄 Обновляем весь контент с новыми VK постами');
                         loadAllContent();
+                    } else {
+                        console.log('📱 VK посты загружены, но активна другая вкладка:', activeFilter);
                     }
                     
                 } else {
                     console.log(`ℹ️ Нет VK постов для типа ${jobType}`);
                     
                     // Если активна вкладка VK новостей, показываем сообщение
-                    const activeFilter = document.querySelector('.filter-chip.active')?.dataset.filter;
+                    const activeFilter = document.querySelector('.tab-button-modern.active')?.dataset.filter;
                     if (activeFilter === 'vk-news') {
                         const feedContainer = document.getElementById('feedContainer');
                         if (feedContainer) {
@@ -2932,7 +3778,7 @@
                 console.error('❌ Ошибка загрузки VK постов:', error);
                 
                 // Показываем ошибку пользователю
-                const activeFilter = document.querySelector('.filter-chip.active')?.dataset.filter;
+                const activeFilter = document.querySelector('.tab-button-modern.active')?.dataset.filter;
                 if (activeFilter === 'vk-news') {
                     const feedContainer = document.getElementById('feedContainer');
                     if (feedContainer) {
@@ -2959,25 +3805,395 @@
             }
         };
 
-        // Функция отображения VK постов с анимацией
-        function displayVKPosts(vkPosts, feedContainer) {
-            if (!vkPosts || !feedContainer) return;
+        // Улучшенная система кеширования для каждой вкладки
+        window.tabCache = {
+            'all': { data: null, html: null, pagination: null },
+            'news': { data: null, html: null, pagination: null },
+            'vk-news': { data: null, html: null, pagination: null },
+            'jobs': { data: null, html: null, pagination: null }
+        };
+
+        // Система пагинации для контента
+        window.contentPagination = {
+            currentPage: 1,
+            itemsPerPage: 10,
+            totalItems: 0,
+            allItems: [],
+            isLoading: false,
             
-            const vkHTML = vkPosts.map(post => createNewsCard(post)).join('');
-            feedContainer.innerHTML = vkHTML;
+            init: function(items) {
+                this.allItems = items || [];
+                this.totalItems = this.allItems.length;
+                this.currentPage = 1;
+                this.isLoading = false;
+                console.log('📄 Пагинация инициализирована:', {
+                    totalItems: this.totalItems,
+                    itemsPerPage: this.itemsPerPage
+                });
+            },
             
-            // Добавляем красивую анимацию появления карточек
-            const cards = feedContainer.querySelectorAll('.news-card');
-            cards.forEach((card, index) => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(30px)';
-                card.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+            getCurrentItems: function() {
+                const startIndex = 0;
+                const endIndex = this.currentPage * this.itemsPerPage;
+                return this.allItems.slice(startIndex, endIndex);
+            },
+            
+            hasMoreItems: function() {
+                return (this.currentPage * this.itemsPerPage) < this.totalItems;
+            },
+            
+            loadMore: function() {
+                if (this.hasMoreItems() && !this.isLoading) {
+                    this.currentPage++;
+                    return this.getCurrentItems();
+                }
+                return null;
+            },
+
+            // Сохранение состояния пагинации для вкладки
+            saveState: function(tabName) {
+                window.tabCache[tabName].pagination = {
+                    currentPage: this.currentPage,
+                    itemsPerPage: this.itemsPerPage,
+                    totalItems: this.totalItems,
+                    allItems: [...this.allItems]
+                };
+            },
+
+            // Восстановление состояния пагинации для вкладки
+            restoreState: function(tabName) {
+                const state = window.tabCache[tabName].pagination;
+                if (state) {
+                    this.currentPage = state.currentPage;
+                    this.itemsPerPage = state.itemsPerPage;
+                    this.totalItems = state.totalItems;
+                    this.allItems = [...state.allItems];
+                    return true;
+                }
+                return false;
+            }
+        };
+
+        // Глобальная функция отображения VK постов с пагинацией
+        window.displayVKPosts = function(vkPosts, feedContainer, append = false) {
+            if (!vkPosts || !feedContainer) {
+                console.warn('⚠️ displayVKPosts: отсутствуют данные', {
+                    vkPosts: !!vkPosts,
+                    postsCount: vkPosts?.length,
+                    feedContainer: !!feedContainer
+                });
+                return;
+            }
+            
+            console.log('📱 Отображаем VK посты:', vkPosts.length, append ? '(добавляем)' : '(заменяем)');
+            
+            try {
+                // Инициализируем пагинацию если это первая загрузка
+                if (!append) {
+                    window.contentPagination.init(vkPosts);
+                }
                 
-                setTimeout(() => {
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, index * 100);
+                // Получаем элементы для отображения
+                const itemsToShow = append ? 
+                    window.contentPagination.loadMore() : 
+                    window.contentPagination.getCurrentItems();
+                
+                if (!itemsToShow || itemsToShow.length === 0) {
+                    if (!append) {
+                        feedContainer.innerHTML = `
+                            <div style="text-align: center; padding: 3rem;">
+                                <h3>📱 Нет постов для отображения</h3>
+                                <p>Попробуйте выбрать другой тип вакансии</p>
+                            </div>
+                        `;
+                    }
+                    return;
+                }
+                
+                const vkHTML = itemsToShow.map(post => {
+                    const cardHTML = createNewsCard(post);
+                    if (!cardHTML) {
+                        console.warn('⚠️ Пустая карточка для поста:', post);
+                    }
+                    return cardHTML;
+                }).filter(html => html).join('');
+                
+                if (!vkHTML) {
+                    console.error('❌ Не удалось создать HTML для VK постов');
+                    return;
+                }
+                
+                // Добавляем или заменяем контент
+                if (append) {
+                    // Удаляем индикатор загрузки если есть
+                    const loadingIndicator = feedContainer.querySelector('.loading-more');
+                    if (loadingIndicator) {
+                        loadingIndicator.remove();
+                    }
+                    
+                    // Добавляем карточки в существующую сетку
+                    const postsGrid = feedContainer.querySelector('.posts-grid');
+                    if (postsGrid) {
+                        postsGrid.insertAdjacentHTML('beforeend', vkHTML);
+                    } else {
+                        feedContainer.insertAdjacentHTML('beforeend', vkHTML);
+                    }
+                } else {
+                    // Создаем новую сетку для VK постов
+                    feedContainer.innerHTML = `<div class="posts-grid">${vkHTML}</div>`;
+                }
+                
+                // Добавляем индикатор "загрузить еще" если есть еще элементы
+                if (window.contentPagination.hasMoreItems()) {
+                    addLoadMoreIndicator(feedContainer);
+                }
+                
+                console.log('✅ VK посты отображены, HTML длина:', vkHTML.length);
+                
+                // Обновляем кеш для VK вкладки
+                if (!append) {
+                    updateTabCache('vk-news', vkPosts, feedContainer.innerHTML);
+                    window.updateTabCounter('vk-news', vkPosts.length);
+                }
+                
+                // Добавляем красивую анимацию появления карточек
+                const newCards = append ? 
+                    Array.from(feedContainer.querySelectorAll('.news-card')).slice(-itemsToShow.length) :
+                    feedContainer.querySelectorAll('.news-card');
+                
+                console.log('🎨 Анимируем карточки:', newCards.length);
+                
+                newCards.forEach((card, index) => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(30px)';
+                    card.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                    
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, index * 100);
+                });
+                
+            } catch (error) {
+                console.error('❌ Ошибка в displayVKPosts:', error);
+                if (!append) {
+                    feedContainer.innerHTML = `
+                        <div style="text-align: center; padding: 3rem;">
+                            <h3>⚠️ Ошибка отображения</h3>
+                            <p>Произошла ошибка при отображении VK постов</p>
+                            <button class="btn btn--primary" onclick="location.reload()">
+                                🔄 Перезагрузить страницу
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+        };
+
+        // Функция добавления индикатора "загрузить еще"
+        function addLoadMoreIndicator(container) {
+            const loadMoreHTML = `
+                <div class="loading-more" style="text-align: center; padding: 2rem; border-top: 1px solid #e9ecef; margin-top: 2rem;">
+                    <div class="load-more-content">
+                        <p style="color: #6c757d; margin-bottom: 1rem;">
+                            Показано ${window.contentPagination.currentPage * window.contentPagination.itemsPerPage} из ${window.contentPagination.totalItems} постов
+                        </p>
+                        <button class="btn btn--secondary" onclick="loadMoreContent()" id="loadMoreBtn">
+                            📄 Загрузить еще ${Math.min(window.contentPagination.itemsPerPage, window.contentPagination.totalItems - window.contentPagination.currentPage * window.contentPagination.itemsPerPage)} постов
+                        </button>
+                    </div>
+                    <div class="loading-spinner" style="display: none;">
+                        <div class="spinner"></div>
+                        <p style="color: #6c757d; margin-top: 1rem;">Загружаем еще посты...</p>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', loadMoreHTML);
+        }
+
+        // Функция загрузки дополнительного контента
+        window.loadMoreContent = function() {
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            const loadMoreContent = document.querySelector('.load-more-content');
+            const loadingSpinner = document.querySelector('.loading-spinner');
+            
+            if (loadMoreBtn) {
+                loadMoreBtn.disabled = true;
+                loadMoreContent.style.display = 'none';
+                loadingSpinner.style.display = 'block';
+            }
+            
+            // Имитируем небольшую задержку для UX
+            setTimeout(() => {
+                const feedContainer = document.getElementById('feedContainer');
+                const activeFilter = document.querySelector('.tab-button-modern.active')?.dataset.filter;
+                
+                if (activeFilter === 'vk-news' && window.cachedVKPosts) {
+                    window.displayVKPosts(window.cachedVKPosts, feedContainer, true);
+                } else if (activeFilter === 'news' && window.cachedRSSNews) {
+                    displayRSSNews(window.cachedRSSNews, feedContainer, true);
+                } else if (activeFilter === 'jobs' && window.currentJobs) {
+                    displayMoreJobs(window.currentJobs, feedContainer);
+                }
+                
+                if (loadMoreBtn) {
+                    loadMoreBtn.disabled = false;
+                    loadMoreContent.style.display = 'block';
+                    loadingSpinner.style.display = 'none';
+                }
+            }, 800);
+        };
+
+        // Функция сохранения состояния текущей вкладки
+        function saveCurrentTabState(tabName, feedContainer) {
+            if (!tabName || !feedContainer) return;
+            
+            console.log(`💾 Сохраняем состояние вкладки: ${tabName}`);
+            
+            // Сохраняем HTML контент
+            window.tabCache[tabName].html = feedContainer.innerHTML;
+            
+            // Сохраняем состояние пагинации
+            window.contentPagination.saveState(tabName);
+            
+            // Сохраняем данные в зависимости от типа вкладки
+            if (tabName === 'vk-news' && window.cachedVKPosts) {
+                window.tabCache[tabName].data = [...window.cachedVKPosts];
+            } else if (tabName === 'news' && window.cachedRSSNews) {
+                window.tabCache[tabName].data = [...window.cachedRSSNews];
+            } else if (tabName === 'jobs' && window.currentJobs) {
+                window.tabCache[tabName].data = [...window.currentJobs];
+            }
+        }
+
+        // Функция восстановления анимаций для карточек
+        function restoreCardAnimations(feedContainer, tabType) {
+            const selector = tabType === 'jobs' ? '.job-card-compact' : '.news-card';
+            
+            const cards = feedContainer.querySelectorAll(selector);
+            
+            cards.forEach((card, index) => {
+                // Сбрасываем стили анимации
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+                card.style.transition = 'all 0.3s ease';
             });
+        }
+
+        // Функция обновления кеша после загрузки новых данных
+        function updateTabCache(tabName, data, html) {
+            if (!window.tabCache[tabName]) {
+                window.tabCache[tabName] = { data: null, html: null, pagination: null };
+            }
+            
+            window.tabCache[tabName].data = data ? [...data] : null;
+            window.tabCache[tabName].html = html || null;
+            
+            console.log(`✅ Кеш обновлен для вкладки: ${tabName}`, {
+                dataLength: data?.length || 0,
+                hasHtml: !!html
+            });
+        }
+
+        // Функции для вкладок перенесены выше для правильного порядка инициализации
+
+        // Обработка изменения размера окна для индикатора
+        window.addEventListener('resize', () => {
+            setTimeout(window.updateTabIndicator, 100);
+        });
+
+        // Функции для работы с темой
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            // Добавляем класс для плавной анимации
+            document.body.classList.add('theme-switching');
+            
+            // Устанавливаем новую тему
+            document.documentElement.setAttribute('data-theme', newTheme);
+            
+            // Сохраняем в localStorage
+            localStorage.setItem('theme', newTheme);
+            
+            // Убираем класс анимации через некоторое время
+            setTimeout(() => {
+                document.body.classList.remove('theme-switching');
+            }, 500);
+            
+            // Анимация кнопки
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle) {
+                themeToggle.style.transform = 'rotate(180deg)';
+                setTimeout(() => {
+                    themeToggle.style.transform = 'rotate(0deg)';
+                }, 300);
+            }
+            
+            console.log(`🎨 Тема переключена на: ${newTheme}`);
+        }
+
+        function loadSavedTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+            
+            document.documentElement.setAttribute('data-theme', theme);
+            console.log(`🎨 Загружена тема: ${theme}`);
+        }
+
+        // Слушаем изменения системной темы
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) {
+                const theme = e.matches ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', theme);
+                console.log(`🎨 Системная тема изменена на: ${theme}`);
+            }
+        });
+
+        // Добавляем недостающие функции для обеспечения работоспособности
+        if (typeof window.showToast !== 'function') {
+            window.showToast = function(message, type = 'info') {
+                console.log(`🔔 Toast (${type}):`, message);
+                
+                // Создаем простое уведомление
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+                toast.textContent = message;
+                toast.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${type === 'error' ? '#dc3545' : type === 'success' ? '#28a745' : '#007bff'};
+                    color: white;
+                    padding: 12px 20px;
+                    border-radius: 8px;
+                    z-index: 10000;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    font-size: 14px;
+                    max-width: 300px;
+                    word-wrap: break-word;
+                `;
+                
+                document.body.appendChild(toast);
+                
+                // Удаляем через 3 секунды
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 3000);
+            };
+        }
+
+        // Функция hideLoadingSpinner уже определена выше как глобальная
+
+        if (typeof window.initializeFiltersButton !== 'function') {
+            window.initializeFiltersButton = function() {
+                console.log('🔧 Инициализация кнопки фильтров');
+                // Заглушка для функции инициализации фильтров
+            };
         }
         
         // Оптимизированная загрузка вакансий с фильтрами
@@ -2997,7 +4213,7 @@
             if (!forceRefresh) {
                 const cachedJobs = getCachedData(cacheKey);
                 if (cachedJobs && cachedJobs.length > 0) {
-                    displayJobs(cachedJobs);
+                    window.displayJobs(cachedJobs);
                     showToast('💼 Вакансии загружены из кеша', 'success');
                     return;
                 }
@@ -3047,7 +4263,7 @@
                 // Сохраняем в кеш с уникальным ключом
                 setCachedData(cacheKey, jobs);
                 
-                displayJobs(jobs);
+                window.displayJobs(jobs);
                 hideLoadingSpinner();
                 window.loadingState.setLoading('jobs', false);
 
@@ -3059,9 +4275,82 @@
             }
         };
 
-        // Отображение вакансий (3 в ряд)
-        function displayJobs(jobs) {
-            console.log('📋 displayJobs вызван с', jobs.length, 'вакансиями');
+        // Функция отображения RSS новостей с пагинацией
+        window.displayRSSNews = function(rssNews, feedContainer, append = false) {
+            if (!rssNews || !feedContainer) return;
+            
+            console.log('📰 Отображаем RSS новости:', rssNews.length, append ? '(добавляем)' : '(заменяем)');
+            
+            try {
+                // Инициализируем пагинацию если это первая загрузка
+                if (!append) {
+                    window.contentPagination.init(rssNews);
+                }
+                
+                // Получаем элементы для отображения
+                const itemsToShow = append ? 
+                    window.contentPagination.loadMore() : 
+                    window.contentPagination.getCurrentItems();
+                
+                if (!itemsToShow || itemsToShow.length === 0) {
+                    if (!append) {
+                        feedContainer.innerHTML = `
+                            <div style="text-align: center; padding: 3rem;">
+                                <h3>📰 Нет новостей для отображения</h3>
+                                <p>Попробуйте обновить страницу</p>
+                            </div>
+                        `;
+                    }
+                    return;
+                }
+                
+                const newsHTML = itemsToShow.map(news => createNewsCard(news)).filter(html => html).join('');
+                
+                if (append) {
+                    const loadingIndicator = feedContainer.querySelector('.loading-more');
+                    if (loadingIndicator) {
+                        loadingIndicator.remove();
+                    }
+                    feedContainer.insertAdjacentHTML('beforeend', newsHTML);
+                } else {
+                    feedContainer.innerHTML = newsHTML;
+                }
+                
+                // Добавляем индикатор "загрузить еще" если есть еще элементы
+                if (window.contentPagination.hasMoreItems()) {
+                    addLoadMoreIndicator(feedContainer);
+                }
+                
+                // Обновляем кеш для RSS новостей
+                if (!append) {
+                    updateTabCache('news', rssNews, feedContainer.innerHTML);
+                    window.updateTabCounter('news', rssNews.length);
+                }
+                
+                // Анимация для новых карточек
+                const newCards = append ? 
+                    Array.from(feedContainer.querySelectorAll('.news-card')).slice(-itemsToShow.length) :
+                    feedContainer.querySelectorAll('.news-card');
+                
+                newCards.forEach((card, index) => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(30px)';
+                    card.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                    
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, index * 100);
+                });
+                
+            } catch (error) {
+                console.error('❌ Ошибка в displayRSSNews:', error);
+            }
+        };
+
+        // Отображение вакансий с пагинацией
+        window.displayJobs = function(jobs, append = false) {
+            console.log('📋 displayJobs вызван с', jobs.length, 'вакансиями', append ? '(добавляем)' : '(заменяем)');
             
             const feedContainer = document.getElementById('feedContainer');
             if (!feedContainer) {
@@ -3069,7 +4358,7 @@
                 return;
             }
 
-            if (jobs.length === 0) {
+            if (jobs.length === 0 && !append) {
                 console.warn('⚠️ Нет вакансий для отображения');
                 feedContainer.innerHTML = `
                     <div style="text-align: center; padding: 3rem;">
@@ -3080,42 +4369,98 @@
                 return;
             }
 
-            // Группируем по 3 вакансии
-            let html = '<div class="jobs-grid">';
-            
-            jobs.forEach((job, index) => {
-                html += `
-                    <div class="job-card-compact" data-job-id="${job.id}" onclick="window.openJobDetails('${job.id}')">
-                        ${job.companyLogo ? 
-                            `<img src="${job.companyLogo}" alt="${job.company}" class="job-logo">` 
-                            : '<div class="job-logo-placeholder">💼</div>'}
-                        <h4 class="job-title">${job.title}</h4>
-                        <p class="job-company">${job.company}</p>
-                        <div class="job-salary">${job.salary}</div>
-                        <div class="job-location">📍 ${job.location}</div>
-                        <div class="job-badge">${job.schedule === 'remote' ? '🏠 Удаленка' : job.experience}</div>
-                    </div>
-                `;
-            });
-            
-            html += '</div>';
-            feedContainer.innerHTML = html;
-            
-            console.log('✅ Вакансии отображены. HTML длина:', html.length);
-            
-            // Сохраняем вакансии глобально для модалки
-            window.currentJobs = jobs;
+            try {
+                // Инициализируем пагинацию если это первая загрузка
+                if (!append) {
+                    window.contentPagination.init(jobs);
+                }
+                
+                // Получаем элементы для отображения
+                const itemsToShow = append ? 
+                    window.contentPagination.loadMore() : 
+                    window.contentPagination.getCurrentItems();
+                
+                if (!itemsToShow || itemsToShow.length === 0) {
+                    return;
+                }
+
+                // Создаем HTML для вакансий
+                let html = append ? '' : '<div class="jobs-grid">';
+                
+                itemsToShow.forEach((job, index) => {
+                    html += `
+                        <div class="job-card-compact" data-job-id="${job.id}" onclick="window.openJobDetails('${job.id}')">
+                            ${job.companyLogo ? 
+                                `<img src="${job.companyLogo}" alt="${job.company}" class="job-logo">` 
+                                : '<div class="job-logo-placeholder">💼</div>'}
+                            <h4 class="job-title">${job.title}</h4>
+                            <p class="job-company">${job.company}</p>
+                            <div class="job-salary">${job.salary}</div>
+                            <div class="job-location">📍 ${job.location}</div>
+                            <div class="job-badge">${job.schedule === 'remote' ? '🏠 Удаленка' : job.experience}</div>
+                        </div>
+                    `;
+                });
+                
+                if (append) {
+                    // Удаляем индикатор загрузки
+                    const loadingIndicator = feedContainer.querySelector('.loading-more');
+                    if (loadingIndicator) {
+                        loadingIndicator.remove();
+                    }
+                    
+                    // Добавляем новые вакансии в существующую сетку
+                    const jobsGrid = feedContainer.querySelector('.jobs-grid');
+                    if (jobsGrid) {
+                        jobsGrid.insertAdjacentHTML('beforeend', html);
+                    }
+                } else {
+                    html += '</div>';
+                    feedContainer.innerHTML = html;
+                }
+                
+                // Добавляем индикатор "загрузить еще" если есть еще элементы
+                if (window.contentPagination.hasMoreItems()) {
+                    addLoadMoreIndicator(feedContainer);
+                }
+                
+                // Обновляем кеш для вакансий
+                if (!append) {
+                    updateTabCache('jobs', jobs, feedContainer.innerHTML);
+                    window.updateTabCounter('jobs', jobs.length);
+                }
+                
+                console.log('✅ Вакансии отображены. HTML длина:', html.length);
+                
+                // Сохраняем вакансии глобально для модалки
+                window.currentJobs = jobs;
+                
+            } catch (error) {
+                console.error('❌ Ошибка в window.displayJobs:', error);
+            }
         }
 
-        function showLoadingSpinner() {
-            const spinner = document.getElementById('loadingSpinner');
-            if (spinner) spinner.classList.remove('hidden');
+        // Функция для загрузки дополнительных вакансий
+        function displayMoreJobs(allJobs, feedContainer) {
+            window.displayJobs(allJobs, true);
         }
 
-        function hideLoadingSpinner() {
+        // Глобальные функции для управления спиннером
+        window.showLoadingSpinner = function() {
             const spinner = document.getElementById('loadingSpinner');
-            if (spinner) spinner.classList.add('hidden');
-        }
+            if (spinner) {
+                spinner.classList.remove('hidden');
+                console.log('🔄 Показываем спиннер загрузки');
+            }
+        };
+
+        window.hideLoadingSpinner = function() {
+            const spinner = document.getElementById('loadingSpinner');
+            if (spinner) {
+                spinner.classList.add('hidden');
+                console.log('✅ Скрываем спиннер загрузки');
+            }
+        };
 
         // Глобальная функция показа уведомлений
         window.showToast = function(message, type = 'info') {
@@ -3199,10 +4544,9 @@
             
             // Автоматическая загрузка VK постов при инициализации, если выбран тип вакансии
             setTimeout(() => {
-                const savedFilters = JSON.parse(localStorage.getItem('job_filters') || '{}');
-                if (savedFilters.jobType && window.rssAggregator) {
-                    console.log('🔄 Автоматическая загрузка VK постов для сохраненного типа:', savedFilters.jobType);
-                    loadVKPostsForSelectedJobType(savedFilters.jobType);
+                if (window.rssAggregator) {
+                    console.log('🔄 Автоматическая загрузка VK постов');
+                    loadVKPosts();
                 }
             }, 2000); // Ждем 2 секунды для полной инициализации API
             
@@ -3706,5 +5050,821 @@
             }, 1000);
         }
     </script>
+
+    <!-- Стили для VK карточек (точно как в тестовом файле) -->
+    <style>
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+
+        .post-header {
+            padding: 20px 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .post-source {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .post-time {
+            font-size: 12px;
+            color: #adb5bd;
+        }
+
+        .post-title {
+            padding: 10px 20px;
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.4;
+            color: #212529;
+            margin: 0;
+        }
+
+        .post-title a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .post-title a:hover {
+            color: #007bff;
+        }
+
+        .post-description {
+            padding: 0 20px;
+            color: #6c757d;
+            line-height: 1.6;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .post-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            margin: 15px 0;
+        }
+
+        .post-footer {
+            padding: 15px 20px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .post-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .post-tag {
+            background: #e9ecef;
+            color: #495057;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .post-tag.vk-tag {
+            background: #4267B2;
+            color: white;
+        }
+
+        .post-read-more {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .post-read-more:hover {
+            color: #0056b3;
+        }
+
+        /* Адаптивность для VK карточек */
+        @media (max-width: 768px) {
+            .posts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Переопределяем контейнер для VK постов */
+        #feedContainer .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            padding: 0;
+        }
+
+
+        /* Современный переключатель вкладок */
+        .tab-switcher-modern {
+            display: flex;
+            background: white;
+            border-radius: 15px;
+            padding: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .tab-button-modern {
+            flex: 1;
+            padding: 16px 20px;
+            border: none;
+            background: transparent;
+            color: #6c757d;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-radius: 10px;
+        }
+
+        .tab-button-modern:hover {
+            color: #495057;
+            transform: translateY(-1px);
+        }
+
+        .tab-button-modern.active {
+            color: white;
+            transform: translateY(0);
+        }
+
+        .tab-icon-modern {
+            font-size: 18px;
+        }
+
+        .tab-text-modern {
+            font-weight: 600;
+        }
+
+        .tab-counter-modern {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-left: 4px;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.3s ease;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .tab-button-modern.active .tab-counter-modern {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .tab-indicator-modern {
+            position: absolute;
+            top: 8px;
+            bottom: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .content-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        /* Обновляем стили quick-filters */
+        .quick-filters {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+
+        /* Адаптивность для переключателя */
+        @media (max-width: 768px) {
+            .tab-switcher-modern {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .tab-indicator-modern {
+                display: none;
+            }
+
+            .tab-button-modern.active {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+
+            .tab-text-modern {
+                font-size: 13px;
+            }
+
+            .tab-icon-modern {
+                font-size: 16px;
+            }
+
+            .quick-filters {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .content-actions {
+                align-self: flex-end;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tab-button-modern {
+                padding: 12px 16px;
+                gap: 6px;
+            }
+
+            .tab-text-modern {
+                display: none;
+            }
+
+            .tab-switcher-modern {
+                flex-direction: row;
+            }
+
+            .tab-indicator-modern {
+                display: block;
+            }
+        }
+
+        /* CSS переменные для темной темы */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-muted: #adb5bd;
+            --border-color: #e9ecef;
+            --border-light: #f1f3f4;
+            --shadow-light: rgba(0,0,0,0.08);
+            --shadow-medium: rgba(0,0,0,0.15);
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --card-bg: #ffffff;
+            --header-bg: var(--gradient-secondary);
+            --primary-color: #007bff;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+            --warning-color: #ffc107;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --bg-tertiary: #404040;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --text-muted: #808080;
+            --border-color: #404040;
+            --shadow-light: rgba(0,0,0,0.3);
+            --shadow-medium: rgba(0,0,0,0.5);
+            --card-bg: #2d2d2d;
+            --header-bg: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+        }
+
+        /* Обновленные стили с переменными */
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .header {
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab-switcher-modern {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 5px 20px var(--shadow-light);
+            margin: 0 auto;
+            max-width: fit-content;
+        }
+
+        .tab-button-modern {
+            color: var(--text-secondary);
+        }
+
+        .tab-button-modern:hover {
+            color: var(--text-primary);
+        }
+
+
+
+
+
+
+        /* Карточки вакансий HH - красная рамка */
+        .job-card-compact {
+            border-left: 4px solid #dc3545;
+            border-color: rgba(220, 53, 69, 0.2);
+            background: var(--card-bg);
+            transition: all 0.3s ease, border-color 0.3s ease;
+            position: relative;
+        }
+
+        .job-card-compact:hover {
+            border-color: rgba(220, 53, 69, 0.4);
+            box-shadow: 0 15px 35px rgba(220, 53, 69, 0.2);
+        }
+
+        .job-source-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+
+        .hh-badge {
+            background: #dc3545;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .job-header {
+            position: relative;
+            padding-right: 60px;
+        }
+
+        /* Обычные новостные карточки */
+        .news-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 5px 20px var(--shadow-light);
+            transition: all 0.3s ease;
+        }
+
+        .news-card:hover {
+            box-shadow: 0 15px 35px var(--shadow-medium);
+        }
+
+        /* Переключатель темы */
+        .theme-toggle {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .theme-icon {
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] .theme-icon-light {
+            display: none;
+        }
+
+        [data-theme="dark"] .theme-icon-dark {
+            display: block !important;
+        }
+
+        /* Улучшенная адаптивность */
+        /* Стили для спиннера загрузки */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem auto;
+            display: inline-block;
+        }
+
+        .loading-spinner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .loading-spinner.hidden {
+            display: none !important;
+        }
+
+        .loading-spinner p {
+            margin: 0.5rem 0 0 0;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Маленький спиннер для кнопок */
+        .btn .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 0.5rem 0 0;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        /* Стили для модальных окон */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 1;
+            visibility: visible;
+            transition: all 0.3s ease;
+        }
+
+        .modal.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(1);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.hidden .modal-content {
+            transform: scale(0.9);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-desc {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        /* Стили для API статуса */
+        .api-status-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .status-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .status-icon {
+            font-size: 1.5rem;
+        }
+
+        .status-info {
+            flex: 1;
+        }
+
+        .status-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .status-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Стили для формы API ключа */
+        .api-input-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .api-input-section h3 {
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .api-input-form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-control {
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        /* Стили для информационного блока */
+        .api-info-section h3 {
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .info-list li {
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .info-list li:last-child {
+            border-bottom: none;
+        }
+
+        .info-list a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .info-list a:hover {
+            text-decoration: underline;
+        }
+
+        /* Центрирование блока фильтров */
+        .quick-filters {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Стили для действий в карточках */
+        .post-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .action-btn:hover {
+            background: var(--bg-secondary);
+            color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        .save-btn.active {
+            color: #ffd700;
+        }
+
+        .save-btn.active svg {
+            fill: #ffd700;
+        }
+
+        .like-btn.liked {
+            color: #e74c3c;
+        }
+
+        .like-btn.liked svg {
+            fill: #e74c3c;
+        }
+
+        .comment-btn:hover {
+            color: #3498db;
+        }
+
+        .like-count {
+            font-size: 0.8rem;
+            margin-left: 0.25rem;
+        }
+
+        .job-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .job-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .job-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .header-actions {
+                gap: 0.25rem;
+            }
+
+            .app-version {
+                display: none;
+            }
+
+            .tab-switcher-modern {
+                margin: 0;
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+                max-width: 100%;
+            }
+
+            .tab-button-modern {
+                padding: 14px 12px;
+                font-size: 13px;
+            }
+
+            .tab-icon-modern {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-content {
+                padding: 1rem;
+            }
+
+            .site-title {
+                font-size: 1.5rem;
+            }
+
+            .breadcrumb {
+                display: none;
+            }
+
+            .tab-text-modern {
+                display: none;
+            }
+
+            .tab-button-modern {
+                padding: 12px 8px;
+                min-width: 50px;
+            }
+
+            .quick-filters {
+                margin-bottom: 1rem;
+            }
+
+            .content-actions {
+                margin-top: 1rem;
+            }
+        }
+
+        /* Плавные переходы для темной темы */
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        /* Улучшенные стили для темной темы */
+        [data-theme="dark"] .post-source,
+        [data-theme="dark"] .post-description {
+            color: var(--text-secondary);
+        }
+
+        [data-theme="dark"] .post-title {
+            color: var(--text-primary);
+        }
+
+        [data-theme="dark"] .post-time {
+            color: var(--text-muted);
+        }
+
+        [data-theme="dark"] .post-tag {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+        }
+
+        [data-theme="dark"] .post-tag.vk-tag {
+            background: #4267B2;
+            color: white;
+        }
+
+        /* Анимация переключения темы */
+        .theme-switching {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Смешанная сетка контента */
+        .mixed-content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            padding: 0;
+        }
+
+        /* Обеспечиваем правильное отображение всех типов карточек в смешанной сетке */
+        .mixed-content-grid .news-card,
+        .mixed-content-grid .job-card-compact {
+            width: 100%;
+            margin: 0;
+        }
+    </style>
 </body>
 </html>
