@@ -133,8 +133,20 @@ const navigateToPage = (itemId, dock) => {
         item.classList.toggle('active', item.textContent.trim() === labels[itemId]);
     });
     
+    // Специальная логика для каждой страницы
+    if (itemId === 'favorites') {
+        // Загружаем избранные статьи
+        setTimeout(() => {
+            if (typeof loadFavorites === 'function') {
+                loadFavorites();
+            } else if (window.loadFavorites) {
+                window.loadFavorites();
+            }
+        }, 100);
+    }
+    
     // Уведомление
-    window.showToast?.(`Переход: ${labels[itemId]}`, 'info');
+    console.log(`🧭 Переход: ${labels[itemId]}`);
 };
 
 // Переключатель темы

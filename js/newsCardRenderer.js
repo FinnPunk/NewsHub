@@ -18,7 +18,7 @@ class NewsCardRenderer {
             if (e.target.closest('.save-btn')) {
                 e.preventDefault();
                 const articleId = e.target.closest('.news-card').dataset.articleId;
-                this.toggleSave(articleId);
+                window.toggleSave(articleId);
             }
             
             if (e.target.closest('.share-btn')) {

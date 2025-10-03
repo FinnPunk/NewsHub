@@ -28,7 +28,7 @@
                     </nav>
                 </div>
                 <div class="header-actions">
-                    <div class="app-version" id="appVersion">v2.7.3</div>
+                    <div class="app-version" id="appVersion">v2.7.5</div>
                     
                     <!-- Переключатель темы -->
                     <button class="btn btn--icon theme-toggle" id="themeToggle" title="Переключить тему">
@@ -1135,6 +1135,17 @@
             
             // Загружаем начальный контент
             loadInitialContent();
+            
+            // Инициализируем состояние кнопок сохранения
+            setTimeout(() => {
+                const savedArticles = JSON.parse(localStorage.getItem('saved_articles') || '[]');
+                savedArticles.forEach(article => {
+                    if (article.id) {
+                        updateAllSaveButtons(article.id, true);
+                    }
+                });
+                console.log(`💾 Инициализировано состояние ${savedArticles.length} сохраненных статей`);
+            }, 2000); // Даем больше времени для загрузки всего контента
         }
         
         // RSS Sources Management Functions
@@ -1581,7 +1592,7 @@
         }
         
         // Загрузка избранных статей
-        function loadFavorites() {
+        window.loadFavorites = function() {
             console.log('⭐ Загружаем избранные статьи');
             const favoritesFeed = document.getElementById('favoritesFeed');
             const emptyFavorites = document.getElementById('emptyFavorites');
@@ -1604,21 +1615,23 @@
                 const favoritesHTML = savedArticles.map(article => {
                     // Убеждаемся что у статьи есть ID
                     if (!article.id) {
-                        article.id = `favorite_${Date.now()}_${Math.random()}`;
+                        article.id = `favorite_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
                     }
                     return window.createNewsCard(article);
                 }).filter(html => html).join('');
                 
                 favoritesFeed.innerHTML = favoritesHTML;
                 
-                // Обновляем состояние кнопок избранного
-                savedArticles.forEach(article => {
-                    if (article.id) {
-                        updateAllSaveButtons(article.id, true);
-                    }
-                });
+                // Инициализация состояния кнопок избранного при загрузке страницы
+                setTimeout(() => {
+                    savedArticles.forEach(article => {
+                        if (article.id) {
+                            updateAllSaveButtons(article.id, true);
+                        }
+                    });
+                }, 500); // Даем время для отрисовки карточек
             }
-        }
+        };
         
         // Проверка кеша
         function getCachedData(key, maxAge = 15 * 60 * 1000) {
@@ -3153,6 +3166,50 @@
             });
         }
         
+        // Функция показа уведомлений
+        function showToast(message, type = 'info') {
+            console.log(`🔔 ${type.toUpperCase()}: ${message}`);
+            
+            // Создаем элемент toast
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--card-bg);
+                color: var(--text-primary);
+                padding: 12px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                opacity: 0;
+                transform: translateX(100%);
+                transition: all 0.3s ease;
+                border-left: 4px solid ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Анимация появления
+            setTimeout(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateX(0)';
+            }, 10);
+            
+            // Автоудаление через 3 секунды
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
         window.toggleSave = function(articleId) {
             console.log('💾 Переключаем сохранение для статьи:', articleId);
             
@@ -3210,6 +3267,22 @@
             updateSaveButton(articleId, isSaved);
             
             // Обновляем все кнопки в карточках с этим ID
+            // Ищем по data-article-id в карточках
+            const cards = document.querySelectorAll(`[data-article-id="${articleId}"]`);
+            cards.forEach(card => {
+                const saveBtn = card.querySelector('.save-btn');
+                if (saveBtn) {
+                    if (isSaved) {
+                        saveBtn.classList.add('active');
+                        saveBtn.title = 'Удалить из избранного';
+                    } else {
+                        saveBtn.classList.remove('active');
+                        saveBtn.title = 'Добавить в избранное';
+                    }
+                }
+            });
+            
+            // Также ищем кнопки с onclick (для совместимости со старыми карточками)
             const saveBtns = document.querySelectorAll(`[onclick*="${articleId}"]`);
             saveBtns.forEach(btn => {
                 if (btn.classList.contains('save-btn')) {
