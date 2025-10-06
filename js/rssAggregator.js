@@ -799,40 +799,262 @@ class RSSAggregator {
             }
             
             if (jobType && window.CONFIG?.vkGroups) {
-                // Фильтруем группы по связанным вакансиям
-                const relevantGroups = vkGroups.filter(group => 
-                    group.relatedJobs && group.relatedJobs.includes(jobType)
-                );
+                console.log(`🔍 Исходное количество VK групп: ${vkGroups.length}`);
+                console.log(`🔍 Ищем группы для типа вакансии: "${jobType}"`);
+                console.log(`🔍 Доступно групп в CONFIG: ${window.CONFIG.vkGroups.length}`);
+                
+                // Фильтруем и приоритизируем группы по связанным вакансиям
+                const relevantGroups = vkGroups.filter(group => {
+                    const hasRelatedJobs = group.relatedJobs && group.relatedJobs.includes(jobType);
+                    if (hasRelatedJobs) {
+                        console.log(`✅ Группа "${group.name}" подходит для "${jobType}"`);
+                    }
+                    return hasRelatedJobs;
+                });
                 
                 if (relevantGroups.length > 0) {
-                    vkGroups = relevantGroups;
-                    console.log(`🎯 Фильтрация по типу "${jobType}": ${vkGroups.length} групп`);
+                    // Сортируем группы по приоритету для данного типа вакансии
+                    const prioritizedGroups = this.prioritizeGroupsForJobType(relevantGroups, jobType);
+                    vkGroups = prioritizedGroups;
+                    
+                    console.log(`🎯 Найдено релевантных групп для "${jobType}": ${relevantGroups.length}`);
+                    console.log(`📋 Приоритизированные группы:`, vkGroups.map(g => `${g.name} (${g.id}) - приоритет: ${g.priority || 'обычный'}`));
+                    console.log(`✅ Используем ${vkGroups.length} отфильтрованных групп`);
+                } else {
+                    // Если нет точных совпадений, ищем по категориям
+                    const categoryGroups = this.getGroupsByJobCategory(vkGroups, jobType);
+                    if (categoryGroups.length > 0) {
+                        vkGroups = categoryGroups;
+                        console.log(`🔄 Не найдено прямых совпадений, используем ${categoryGroups.length} групп по категории`);
+                    } else {
+                        console.warn(`⚠️ Не найдено релевантных групп для типа "${jobType}", используем универсальные IT группы`);
+                        vkGroups = this.getUniversalTechGroups(vkGroups);
+                    }
                 }
+            } else {
+                console.log(`📱 Загружаем из всех ${vkGroups.length} VK групп (без фильтрации по типу вакансии)`);
             }
             
             const allPosts = [];
             
-            // Загружаем по 5 постов из каждой группы
-            for (const group of vkGroups) {
+            // Загружаем посты с адаптивным количеством в зависимости от приоритета
+            const totalPostsTarget = 20; // Целевое количество постов
+            const postsPerGroup = Math.max(2, Math.floor(totalPostsTarget / Math.min(vkGroups.length, 8)));
+            
+            console.log(`📱 Начинаем загрузку из ${vkGroups.length} VK групп с контролем частоты запросов`);
+            
+            for (let i = 0; i < vkGroups.length; i++) {
+                const group = vkGroups[i];
                 const groupId = group.id || group;
+                
+                // Приоритетные группы (первые 3) получают больше постов
+                const postCount = i < 3 ? Math.min(postsPerGroup + 2, 8) : postsPerGroup;
+                
+                console.log(`📱 Загружаем группу ${i + 1}/${vkGroups.length}: ${groupId} (${postCount} постов)`);
+                
                 try {
-                    const posts = await this.vkApi.getGroupPosts(groupId, 5);
+                    const posts = await this.vkApi.getGroupPosts(groupId, postCount);
                     if (posts && posts.length > 0) {
-                        const transformed = this.vkApi.transformPosts(posts, groupId);
-                        allPosts.push(...transformed);
-                        console.log(`✅ VK ${groupId}: ${posts.length} постов`);
+                        // Добавляем метаданные о приоритете группы
+                        const enrichedPosts = posts.map(post => ({
+                            ...post,
+                            groupPriority: i + 1,
+                            isHighPriority: i < 3,
+                            groupCategory: group.category
+                        }));
+                        
+                        allPosts.push(...enrichedPosts);
+                        console.log(`✅ VK ${groupId}: ${posts.length} постов (приоритет: ${i + 1})`);
+                    } else {
+                        console.log(`ℹ️ VK ${groupId}: нет постов`);
                     }
                 } catch (error) {
                     console.warn(`⚠️ Ошибка загрузки VK группы ${groupId}:`, error);
                 }
+                
+                // Ограничиваем общее количество постов
+                if (allPosts.length >= totalPostsTarget) {
+                    console.log(`📊 Достигнуто целевое количество постов: ${allPosts.length}`);
+                    break;
+                }
             }
             
+            // Сортируем посты по релевантности и приоритету
+            const sortedPosts = this.sortPostsByRelevance(allPosts, jobType);
+            
             console.log(`📱 Всего загружено ${allPosts.length} постов из VK`);
-            return allPosts;
+            console.log(`🎯 Посты отсортированы по релевантности для "${jobType}"`);
+            
+            return sortedPosts;
         } catch (error) {
             console.error('❌ Ошибка загрузки из VK:', error);
             return [];
         }
+    }
+    
+    // Приоритизация групп для конкретного типа вакансии
+    prioritizeGroupsForJobType(groups, jobType) {
+        // Определяем приоритеты групп для разных типов вакансий
+        const jobTypePriorities = {
+            'frontend_developer': ['habr', 'tproger', 'webstandards_ru', 'css_live', 'loftblog'],
+            'backend_developer': ['habr', 'tproger', 'devnull', 'coders_stuff', 'devcolibri'],
+            'full_stack_developer': ['habr', 'tproger', 'proglib', 'frontend_and_backend'],
+            'devops_engineer': ['devnull', 'devops', 'habr', 'tproger'],
+            'data_scientist': ['data_science', 'ml_ai_bigdata', 'physics_math', 'habr'],
+            'machine_learning_engineer': ['ml_ai_bigdata', 'data_science', 'habr', 'yandex'],
+            'ux_ui_designer': ['designpub', 'web_design_club', 'habr'],
+            'web_designer': ['web_design_club', 'webstandards_ru', 'css_live', 'designpub'],
+            'graphic_designer': ['designpub', 'artists_ru', 'web_design_club'],
+            'photographer': ['photographers_ru', 'phototech', 'artists_ru'],
+            'game_developer': ['gamedev_ru', 'game_dev_memes', 'habr', 'tproger'],
+            'product_manager': ['vc_ru', 'startup_vc', 'startup_club'],
+            'project_manager': ['vc_ru', 'startup_vc'],
+            'doctor': ['medical_jobs', 'doctors_ru', 'medical_community', 'medicine_news'],
+            'nurse': ['medical_jobs', 'medical_community', 'medicine_news'],
+            'pharmacist': ['pharmacy_ru', 'medical_jobs'],
+            'lawyer': ['legal_jobs', 'law_community']
+        };
+        
+        const priorities = jobTypePriorities[jobType] || [];
+        
+        // Сортируем группы по приоритету
+        return groups.sort((a, b) => {
+            const aPriority = priorities.indexOf(a.id);
+            const bPriority = priorities.indexOf(b.id);
+            
+            // Если группа есть в приоритетах, она идет первой
+            if (aPriority !== -1 && bPriority !== -1) {
+                return aPriority - bPriority;
+            } else if (aPriority !== -1) {
+                return -1;
+            } else if (bPriority !== -1) {
+                return 1;
+            }
+            
+            // Если обе группы не в приоритетах, сортируем по алфавиту
+            return a.name.localeCompare(b.name);
+        });
+    }
+    
+    // Получение групп по категории профессии
+    getGroupsByJobCategory(groups, jobType) {
+        // Определяем категории для типов вакансий
+        const jobCategories = {
+            'frontend_developer': ['tech'],
+            'backend_developer': ['tech'],
+            'full_stack_developer': ['tech'],
+            'devops_engineer': ['tech'],
+            'data_scientist': ['tech', 'education'],
+            'machine_learning_engineer': ['tech'],
+            'ux_ui_designer': ['design'],
+            'web_designer': ['design'],
+            'graphic_designer': ['design', 'creative'],
+            'photographer': ['creative'],
+            'game_developer': ['tech'],
+            'product_manager': ['business'],
+            'project_manager': ['business', 'management'],
+            'doctor': ['healthcare'],
+            'nurse': ['healthcare'],
+            'pharmacist': ['healthcare'],
+            'lawyer': ['professional'],
+            'teacher': ['education'],
+            'journalist': ['media'],
+            'chef': ['service'],
+            'accountant': ['finance']
+        };
+        
+        const categories = jobCategories[jobType] || ['tech'];
+        
+        return groups.filter(group => 
+            categories.includes(group.category)
+        );
+    }
+    
+    // Получение универсальных IT групп как fallback
+    getUniversalTechGroups(groups) {
+        const universalGroups = ['habr', 'tproger', 'proglib', 'yandex', 'netology'];
+        
+        return groups.filter(group => 
+            universalGroups.includes(group.id) || 
+            group.category === 'tech'
+        ).slice(0, 5); // Ограничиваем до 5 групп
+    }
+    
+    // Сортировка постов по релевантности для типа вакансии
+    sortPostsByRelevance(posts, jobType) {
+        if (!jobType || !posts.length) return posts;
+        
+        // Ключевые слова для разных типов вакансий
+        const jobKeywords = {
+            'frontend_developer': ['react', 'vue', 'angular', 'javascript', 'css', 'html', 'frontend', 'фронтенд'],
+            'backend_developer': ['node.js', 'python', 'java', 'php', 'backend', 'бэкенд', 'api', 'сервер'],
+            'full_stack_developer': ['fullstack', 'full-stack', 'фулстек', 'javascript', 'react', 'node'],
+            'devops_engineer': ['docker', 'kubernetes', 'aws', 'devops', 'деплой', 'ci/cd', 'jenkins'],
+            'data_scientist': ['python', 'machine learning', 'data science', 'pandas', 'numpy', 'анализ данных'],
+            'machine_learning_engineer': ['ml', 'ai', 'tensorflow', 'pytorch', 'машинное обучение'],
+            'ux_ui_designer': ['ux', 'ui', 'figma', 'sketch', 'дизайн', 'интерфейс'],
+            'web_designer': ['веб-дизайн', 'photoshop', 'illustrator', 'дизайн сайтов'],
+            'graphic_designer': ['графический дизайн', 'иллюстрация', 'брендинг', 'логотип'],
+            'photographer': ['фотография', 'фотосъемка', 'камера', 'объектив', 'lightroom'],
+            'game_developer': ['unity', 'unreal', 'gamedev', 'разработка игр', 'геймдев'],
+            'product_manager': ['product management', 'продуктовый менеджер', 'roadmap', 'agile'],
+            'project_manager': ['project management', 'проектный менеджер', 'scrum', 'kanban'],
+            'doctor': ['медицина', 'лечение', 'диагностика', 'пациент', 'здоровье'],
+            'nurse': ['медсестра', 'уход', 'пациент', 'медицина'],
+            'pharmacist': ['фармация', 'лекарства', 'аптека', 'препараты'],
+            'lawyer': ['право', 'юриспруденция', 'закон', 'суд', 'адвокат']
+        };
+        
+        const keywords = jobKeywords[jobType] || [];
+        
+        return posts.sort((a, b) => {
+            // Вычисляем релевантность поста
+            const aRelevance = this.calculatePostRelevance(a, keywords);
+            const bRelevance = this.calculatePostRelevance(b, keywords);
+            
+            // Сначала сортируем по релевантности
+            if (aRelevance !== bRelevance) {
+                return bRelevance - aRelevance;
+            }
+            
+            // Затем по приоритету группы
+            if (a.groupPriority !== b.groupPriority) {
+                return a.groupPriority - b.groupPriority;
+            }
+            
+            // Затем по дате (новые сначала)
+            return new Date(b.date) - new Date(a.date);
+        });
+    }
+    
+    // Вычисление релевантности поста
+    calculatePostRelevance(post, keywords) {
+        let relevance = 0;
+        const text = (post.title + ' ' + post.description + ' ' + post.text).toLowerCase();
+        
+        // Проверяем наличие ключевых слов
+        keywords.forEach(keyword => {
+            const keywordLower = keyword.toLowerCase();
+            if (text.includes(keywordLower)) {
+                relevance += 2; // Базовые очки за ключевое слово
+                
+                // Дополнительные очки если ключевое слово в заголовке
+                if (post.title.toLowerCase().includes(keywordLower)) {
+                    relevance += 3;
+                }
+            }
+        });
+        
+        // Бонус за приоритетную группу
+        if (post.isHighPriority) {
+            relevance += 1;
+        }
+        
+        // Бонус за активность (лайки, просмотры)
+        if (post.likes > 50) relevance += 1;
+        if (post.views > 1000) relevance += 1;
+        
+        return relevance;
     }
     
     // Определение типа вакансии из поискового запроса

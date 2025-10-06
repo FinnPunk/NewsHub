@@ -43,46 +43,46 @@ export const CONFIG = {
         { id: 'yandex', name: 'Яндекс', category: 'tech', url: 'https://vk.com/yandex', enabled: true, relatedJobs: ['frontend_developer', 'backend_developer', 'data_scientist', 'machine_learning_engineer', 'devops_engineer', 'support_specialist'] },
         
         // Frontend специфичные
-        { id: 'webstandards_ru', name: 'Web Standards', category: 'tech', url: 'https://vk.com/webstandards_ru', enabled: true, relatedJobs: ['frontend_developer', 'web_designer', 'photographer'] },
-        { id: 'css_live', name: 'CSS Live', category: 'tech', url: 'https://vk.com/css_live', enabled: true, relatedJobs: ['frontend_developer', 'accountant', 'psychologist'] },
-        { id: 'loftblog', name: 'Loftblog', category: 'tech', url: 'https://vk.com/loftblog', enabled: true, relatedJobs: ['frontend_developer', 'event_manager', 'mathematician'] },
-        { id: 'frontend_and_backend', name: 'Frontend & Backend', category: 'tech', url: 'https://vk.com/frontend_and_backend', enabled: true, relatedJobs: ['frontend_developer', 'backend_developer', 'graphic_designer'] },
-        { id: 'verstka_html', name: 'Верстка HTML', category: 'tech', url: 'https://vk.com/verstka_html', enabled: true, relatedJobs: ['frontend_developer', 'journalist'] },
+        { id: 'webstandards_ru', name: 'Web Standards', category: 'tech', url: 'https://vk.com/webstandards_ru', enabled: true, relatedJobs: ['frontend_developer', 'web_designer'] },
+        { id: 'css_live', name: 'CSS Live', category: 'tech', url: 'https://vk.com/css_live', enabled: true, relatedJobs: ['frontend_developer', 'web_designer'] },
+        { id: 'loftblog', name: 'Loftblog', category: 'tech', url: 'https://vk.com/loftblog', enabled: true, relatedJobs: ['frontend_developer', 'web_designer'] },
+        { id: 'frontend_and_backend', name: 'Frontend & Backend', category: 'tech', url: 'https://vk.com/frontend_and_backend', enabled: true, relatedJobs: ['frontend_developer', 'backend_developer'] },
+        { id: 'verstka_html', name: 'Верстка HTML', category: 'tech', url: 'https://vk.com/verstka_html', enabled: true, relatedJobs: ['frontend_developer', 'web_designer'] },
         { id: 'let_us_code', name: 'Let Us Code', category: 'tech', url: 'https://vk.com/let_us_code', enabled: true, relatedJobs: ['frontend_developer', 'web_designer'] },
-        { id: 'webyroki_ru', name: 'Веб-уроки', category: 'education', url: 'https://vk.com/webyroki_ru', enabled: true, relatedJobs: ['frontend_developer', 'consultant'] },
+        { id: 'webyroki_ru', name: 'Веб-уроки', category: 'education', url: 'https://vk.com/webyroki_ru', enabled: true, relatedJobs: ['frontend_developer', 'web_designer'] },
         
         // Backend/DevOps/System
-        { id: 'devnull', name: '/dev/null', category: 'tech', url: 'https://vk.com/devnull', enabled: true, relatedJobs: ['backend_developer', 'devops_engineer', 'system_administrator', 'veterinarian'] },
-        { id: 'devops', name: 'DevOps', category: 'tech', url: 'https://vk.com/devops', enabled: true, relatedJobs: ['devops_engineer', 'system_administrator', 'interior_designer'] },
-        { id: 'coders_stuff', name: 'Coders Stuff', category: 'tech', url: 'https://vk.com/coders_stuff', enabled: true, relatedJobs: ['backend_developer', 'video_editor'] },
-        { id: 'devcolibri', name: 'DevColibri', category: 'tech', url: 'https://vk.com/devcolibri', enabled: true, relatedJobs: ['backend_developer', 'analyst'] },
-        { id: 'it_town', name: 'IT Town', category: 'tech', url: 'https://vk.com/it_town', enabled: true, relatedJobs: ['backend_developer', 'sales_associate'] },
-        { id: 'techiespro', name: 'TechiesPro', category: 'tech', url: 'https://vk.com/techiespro', enabled: true, relatedJobs: ['backend_developer', 'customer_service'] },
+        { id: 'devnull', name: '/dev/null', category: 'tech', url: 'https://vk.com/devnull', enabled: true, relatedJobs: ['backend_developer', 'devops_engineer', 'system_administrator'] },
+        { id: 'devops', name: 'DevOps', category: 'tech', url: 'https://vk.com/devops', enabled: true, relatedJobs: ['devops_engineer', 'system_administrator'] },
+        { id: 'coders_stuff', name: 'Coders Stuff', category: 'tech', url: 'https://vk.com/coders_stuff', enabled: true, relatedJobs: ['backend_developer', 'software_engineer'] },
+        { id: 'devcolibri', name: 'DevColibri', category: 'tech', url: 'https://vk.com/devcolibri', enabled: true, relatedJobs: ['backend_developer', 'software_engineer'] },
+        { id: 'it_town', name: 'IT Town', category: 'tech', url: 'https://vk.com/it_town', enabled: true, relatedJobs: ['backend_developer', 'software_engineer'] },
+        { id: 'techiespro', name: 'TechiesPro', category: 'tech', url: 'https://vk.com/techiespro', enabled: true, relatedJobs: ['backend_developer', 'software_engineer'] },
         
         // Data Science & ML & Analytics
-        { id: 'data_science', name: 'Data Science', category: 'tech', url: 'https://vk.com/data_science', enabled: true, relatedJobs: ['data_scientist', 'machine_learning_engineer', 'devops_engineer'] },
-        { id: 'ml_ai_bigdata', name: 'ML & AI & BigData', category: 'tech', url: 'https://vk.com/ml_ai_bigdata', enabled: true, relatedJobs: ['machine_learning_engineer', 'data_scientist', 'sound_engineer'] },
-        { id: 'physics_math', name: 'Физика и математика', category: 'education', url: 'https://vk.com/physics_math', enabled: true, relatedJobs: ['data_scientist', 'therapist'] },
+        { id: 'data_science', name: 'Data Science', category: 'tech', url: 'https://vk.com/data_science', enabled: true, relatedJobs: ['data_scientist', 'machine_learning_engineer'] },
+        { id: 'ml_ai_bigdata', name: 'ML & AI & BigData', category: 'tech', url: 'https://vk.com/ml_ai_bigdata', enabled: true, relatedJobs: ['machine_learning_engineer', 'data_scientist'] },
+        { id: 'physics_math', name: 'Физика и математика', category: 'education', url: 'https://vk.com/physics_math', enabled: true, relatedJobs: ['data_scientist', 'mathematician'] },
         
         // Design & Creative
         { id: 'designpub', name: 'Дизайн', category: 'design', url: 'https://vk.com/designpub', enabled: true, relatedJobs: ['ux_ui_designer', 'graphic_designer', 'animator'] },
-        { id: 'web_design_club', name: 'Клуб веб-дизайнеров', category: 'design', url: 'https://vk.com/web_design_club', enabled: true, relatedJobs: ['web_designer', 'backend_developer'] },
-        { id: 'artists_ru', name: 'Художники России', category: 'creative', url: 'https://vk.com/artists_ru', enabled: true, relatedJobs: ['artist', 'seo_specialist'] },
-        { id: 'photographers_ru', name: 'Фотографы России', category: 'creative', url: 'https://vk.com/photographers_ru', enabled: true, relatedJobs: ['photographer', 'chef'] },
-        { id: 'phototech', name: 'Фототехника', category: 'creative', url: 'https://vk.com/phototech', enabled: true, relatedJobs: ['photographer', 'scientist'] },
+        { id: 'web_design_club', name: 'Клуб веб-дизайнеров', category: 'design', url: 'https://vk.com/web_design_club', enabled: true, relatedJobs: ['web_designer', 'ux_ui_designer'] },
+        { id: 'artists_ru', name: 'Художники России', category: 'creative', url: 'https://vk.com/artists_ru', enabled: true, relatedJobs: ['artist', 'graphic_designer'] },
+        { id: 'photographers_ru', name: 'Фотографы России', category: 'creative', url: 'https://vk.com/photographers_ru', enabled: true, relatedJobs: ['photographer'] },
+        { id: 'phototech', name: 'Фототехника', category: 'creative', url: 'https://vk.com/phototech', enabled: true, relatedJobs: ['photographer'] },
         
         // Game Development
-        { id: 'gamedev_ru', name: 'GameDev', category: 'tech', url: 'https://vk.com/gamedev_ru', enabled: true, relatedJobs: ['game_developer', 'cloud_architect'] },
-        { id: 'game_dev_memes', name: 'GameDev Memes', category: 'tech', url: 'https://vk.com/game_dev_memes', enabled: true, relatedJobs: ['game_developer', 'product_manager'] },
+        { id: 'gamedev_ru', name: 'GameDev', category: 'tech', url: 'https://vk.com/gamedev_ru', enabled: true, relatedJobs: ['game_developer'] },
+        { id: 'game_dev_memes', name: 'GameDev Memes', category: 'tech', url: 'https://vk.com/game_dev_memes', enabled: true, relatedJobs: ['game_developer'] },
         
         // Business & Management
-        { id: 'vc_ru', name: 'VC.ru', category: 'business', url: 'https://vk.com/vc_ru', enabled: true, relatedJobs: ['product_manager', 'project_manager', 'social_worker'] },
-        { id: 'startup_vc', name: 'Startup VC', category: 'business', url: 'https://vk.com/startup_vc', enabled: true, relatedJobs: ['product_manager', 'hr_manager'] },
-        { id: 'startup_club', name: 'Startup Club', category: 'business', url: 'https://vk.com/startup_club', enabled: true, relatedJobs: ['product_manager', 'teacher'] },
+        { id: 'vc_ru', name: 'VC.ru', category: 'business', url: 'https://vk.com/vc_ru', enabled: true, relatedJobs: ['product_manager', 'project_manager'] },
+        { id: 'startup_vc', name: 'Startup VC', category: 'business', url: 'https://vk.com/startup_vc', enabled: true, relatedJobs: ['product_manager'] },
+        { id: 'startup_club', name: 'Startup Club', category: 'business', url: 'https://vk.com/startup_club', enabled: true, relatedJobs: ['product_manager'] },
         
         // Marketing & SMM
         { id: 'smmrussia', name: 'SMM Russia', category: 'marketing', url: 'https://vk.com/smmrussia', enabled: true, relatedJobs: ['social_media_manager', 'digital_marketer'] },
-        { id: 'smm_managers', name: 'SMM Менеджеры', category: 'marketing', url: 'https://vk.com/smm_managers', enabled: true, relatedJobs: ['social_media_manager', 'data_scientist'] },
+        { id: 'smm_pro', name: 'SMM PRO', category: 'marketing', url: 'https://vk.com/smm_pro', enabled: true, relatedJobs: ['social_media_manager', 'data_scientist'] },
         { id: 'digital_marketers', name: 'Digital Marketers', category: 'marketing', url: 'https://vk.com/digital_marketers', enabled: true, relatedJobs: ['digital_marketer', 'database_administrator'] },
         { id: 'seo_specialists', name: 'SEO Specialists', category: 'marketing', url: 'https://vk.com/seo_specialists', enabled: true, relatedJobs: ['seo_specialist', 'music_producer'] },
         { id: 'brand_managers', name: 'Brand Managers', category: 'marketing', url: 'https://vk.com/brand_managers', enabled: true, relatedJobs: ['brand_manager', 'sales_manager'] },
@@ -97,23 +97,26 @@ export const CONFIG = {
         { id: 'skillkit', name: 'SkillKit', category: 'education', url: 'https://vk.com/skillkit', enabled: true, relatedJobs: ['teacher', 'mobile_developer'] },
         
         // Security & Hacking
-        { id: 'greyteam', name: 'Grey Team', category: 'tech', url: 'https://vk.com/greyteam', enabled: true, relatedJobs: ['security_engineer', 'penetration_tester', 'doctor'] },
+        { id: 'greyteam', name: 'Grey Team', category: 'tech', url: 'https://vk.com/greyteam', enabled: true, relatedJobs: ['security_engineer', 'penetration_tester'] },
         
         // Finance & Investment
-        { id: 'investment_club', name: 'Investment Club', category: 'finance', url: 'https://vk.com/investment_club', enabled: true, relatedJobs: ['financial_analyst', 'investment_banker', 'barista'] },
-        { id: 'excel_finance', name: 'Excel & Finance', category: 'finance', url: 'https://vk.com/excel_finance', enabled: true, relatedJobs: ['financial_analyst', 'accountant', 'pharmacist'] },
-        { id: 'accounting_club', name: 'Accounting Club', category: 'finance', url: 'https://vk.com/accounting_club', enabled: true, relatedJobs: ['accountant', 'interpreter'] },
+        { id: 'investment_club', name: 'Investment Club', category: 'finance', url: 'https://vk.com/investment_club', enabled: true, relatedJobs: ['financial_analyst', 'investment_banker'] },
+        { id: 'excel_finance', name: 'Excel & Finance', category: 'finance', url: 'https://vk.com/excel_finance', enabled: true, relatedJobs: ['financial_analyst', 'accountant'] },
+        { id: 'accounting_club', name: 'Accounting Club', category: 'finance', url: 'https://vk.com/accounting_club', enabled: true, relatedJobs: ['accountant'] },
         
         // HR & Recruitment
         { id: 'hr_tech', name: 'HR Tech', category: 'management', url: 'https://vk.com/hr_tech', enabled: true, relatedJobs: ['hr_manager', 'engineer'] },
         
         // Legal & Law
-        { id: 'legal_jobs', name: 'Юридические вакансии', category: 'professional', url: 'https://vk.com/legal_jobs', enabled: true, relatedJobs: ['lawyer', 'financial_analyst', 'mathematician'] },
-        { id: 'law_community', name: 'Law Community', category: 'professional', url: 'https://vk.com/law_community', enabled: true, relatedJobs: ['lawyer', 'digital_marketer'] },
+        { id: 'legal_jobs', name: 'Юридические вакансии', category: 'professional', url: 'https://vk.com/legal_jobs', enabled: true, relatedJobs: ['lawyer'] },
+        { id: 'law_community', name: 'Law Community', category: 'professional', url: 'https://vk.com/law_community', enabled: true, relatedJobs: ['lawyer'] },
         
         // Healthcare & Medical
-        { id: 'medical_jobs', name: 'Медицинские вакансии', category: 'healthcare', url: 'https://vk.com/medical_jobs', enabled: true, relatedJobs: ['doctor', 'nurse', 'pharmacist', 'mathematician'] },
-        { id: 'medical_community', name: 'Medical Community', category: 'healthcare', url: 'https://vk.com/medical_community', enabled: true, relatedJobs: ['doctor', 'security_engineer'] },
+        { id: 'medical_jobs', name: 'Медицинские вакансии', category: 'healthcare', url: 'https://vk.com/medical_jobs', enabled: true, relatedJobs: ['doctor', 'nurse', 'pharmacist'] },
+        { id: 'medical_community', name: 'Medical Community', category: 'healthcare', url: 'https://vk.com/medical_community', enabled: true, relatedJobs: ['doctor', 'nurse', 'therapist'] },
+        { id: 'doctors_ru', name: 'Врачи России', category: 'healthcare', url: 'https://vk.com/doctors_ru', enabled: true, relatedJobs: ['doctor'] },
+        { id: 'medicine_news', name: 'Медицинские новости', category: 'healthcare', url: 'https://vk.com/medicine_news', enabled: true, relatedJobs: ['doctor', 'nurse'] },
+        { id: 'pharmacy_ru', name: 'Фармацевты России', category: 'healthcare', url: 'https://vk.com/pharmacy_ru', enabled: true, relatedJobs: ['pharmacist'] },
         
         // Construction & Architecture
         { id: 'construction_jobs', name: 'Construction Jobs', category: 'engineering', url: 'https://vk.com/construction_jobs', enabled: true, relatedJobs: ['construction_manager', 'civil_engineer', 'nurse'] },
